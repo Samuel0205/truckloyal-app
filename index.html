@@ -4,31 +4,43 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>TruckLoyal</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<title>Food Truck Rewards</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg:#0A0A08;--s1:#141412;--s2:#1C1C19;--s3:#242420;
-  --b1:rgba(255,255,255,0.07);--b2:rgba(255,255,255,0.12);--b3:rgba(255,255,255,0.18);
-  --tx:#F5F0E8;--mu:rgba(245,240,232,0.48);--fa:rgba(245,240,232,0.18);
-  --or:#FF5A1F;--gd:#F5B800;--gn:#2ECC8E;--rd:#FF4F4F;--bl:#4F9EFF;
-  --brand:#FF5A1F;--brand2:#F5B800;
+  /* Warm cream light base */
+  --bg:#FFF8F0;--s1:#FFFFFF;--s2:#FFF2E6;--s3:#FFE8D4;
+  /* Borders — warm tan, visible but soft */
+  --b1:rgba(180,120,60,0.12);--b2:rgba(180,120,60,0.2);--b3:rgba(180,120,60,0.32);
+  /* Text — rich warm brown */
+  --tx:#2D1B0E;--mu:rgba(45,27,14,0.5);--fa:rgba(45,27,14,0.2);
+  /* Brand colors — vibrant food truck palette */
+  --or:#FF5722;--gd:#F9A825;--gn:#2E7D32;--rd:#C62828;--bl:#1565C0;
+  --brand:#FF5722;--brand2:#F9A825;
+  /* Shadows for light mode depth */
+  --sh1:0 1px 4px rgba(180,100,40,.10);
+  --sh2:0 4px 16px rgba(180,100,40,.13);
+  --sh3:0 8px 32px rgba(180,100,40,.18);
   --nav:66px;--sb:env(safe-area-inset-bottom,0px);
-  --fd:'Playfair Display',serif;--fb:'DM Sans',sans-serif;
+  --fd:'Nunito',sans-serif;--fd-weight:900;--fb:'Nunito',sans-serif;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-family:var(--fb);-webkit-font-smoothing:antialiased}
 #app{display:flex;flex-direction:column;height:100%;max-width:430px;margin:0 auto;position:relative;overflow:hidden;background:var(--bg)}
-.topbar{display:flex;align-items:center;justify-content:space-between;padding:10px 18px 8px;padding-top:calc(10px + env(safe-area-inset-top,0px));background:var(--bg);border-bottom:1px solid var(--b1);flex-shrink:0;z-index:60}
-.tl-logo{font-family:var(--fd);font-weight:900;font-size:20px;letter-spacing:-.5px;display:flex;align-items:center;gap:8px}
-.mode-tog{display:flex;background:var(--s1);border:1px solid var(--b2);border-radius:99px;padding:3px;gap:2px}
-.mb{padding:5px 14px;border-radius:99px;font-size:12px;font-weight:600;border:none;cursor:pointer;font-family:var(--fb);transition:all .2s;background:transparent;color:var(--mu)}
-.mb.on{background:var(--s3);color:var(--tx);border:1px solid var(--b2)}
+
+/* Subtle dot pattern on bg for texture */
+#app::before{content:'';position:fixed;inset:0;max-width:430px;margin:0 auto;background-image:radial-gradient(circle,rgba(255,87,34,.08) 1px,transparent 1px);background-size:20px 20px;pointer-events:none;z-index:0}
+.scroll,#scroll{position:relative;z-index:1}
+
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:10px 18px 8px;padding-top:calc(10px + env(safe-area-inset-top,0px));background:var(--brand);flex-shrink:0;z-index:60;box-shadow:0 2px 12px rgba(255,87,34,.3)}
+.tl-logo{font-family:var(--fd);font-weight:900;font-size:18px;letter-spacing:.3px;color:white;text-shadow:0 1px 3px rgba(0,0,0,.2)}
+.mode-tog{display:flex;background:rgba(255,255,255,.2);border:1.5px solid rgba(255,255,255,.35);border-radius:99px;padding:3px;gap:2px}
+.mb{padding:5px 12px;border-radius:99px;font-size:11px;font-weight:700;border:none;cursor:pointer;font-family:var(--fb);transition:all .2s;background:transparent;color:rgba(255,255,255,.8)}
+.mb.on{background:white;color:var(--brand);box-shadow:var(--sh1)}
 .scroll{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:none}
 .scroll::-webkit-scrollbar{display:none}
-.bnav{display:flex;align-items:stretch;background:rgba(10,10,8,.97);border-top:1px solid var(--b1);padding-bottom:var(--sb);height:var(--nav);flex-shrink:0;backdrop-filter:blur(24px)}
-.ni{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;border:none;background:transparent;color:var(--mu);font-size:10px;font-weight:600;font-family:var(--fb);letter-spacing:.3px;transition:color .15s;padding:6px 0 4px}
+.bnav{display:flex;align-items:stretch;background:white;border-top:2px solid var(--b2);padding-bottom:var(--sb);height:var(--nav);flex-shrink:0;box-shadow:0 -4px 20px rgba(180,100,40,.1)}
+.ni{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;border:none;background:transparent;color:var(--mu);font-size:10px;font-weight:700;font-family:var(--fb);transition:color .15s;padding:6px 0 4px}
 .ni-icon{font-size:20px;line-height:1;transition:transform .2s}
 .ni.on{color:var(--brand)}
 .ni.on .ni-icon{transform:translateY(-2px)}
@@ -36,555 +48,823 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
 .ni.on .ni-pip{opacity:1}
 .screen{display:none;min-height:100%}
 .screen.on{display:block}
-.sh{padding:20px 20px 14px;position:sticky;top:0;background:var(--bg);z-index:10;border-bottom:1px solid var(--b1)}
-.sh h1{font-family:var(--fd);font-size:24px;font-weight:800;letter-spacing:-.3px}
-.sh p{font-size:13px;color:var(--mu);margin-top:3px}
+.sh{padding:18px 20px 14px;position:sticky;top:0;background:white;z-index:10;border-bottom:2px solid var(--b1);box-shadow:var(--sh1)}
+.sh h1{font-family:var(--fd);font-weight:900;font-size:22px;color:var(--tx)}
+.sh p{font-size:12px;color:var(--mu);margin-top:3px;font-weight:600}
 .sh-row{display:flex;align-items:center;gap:10px}
-.back-btn{width:36px;height:36px;background:var(--s1);border:1px solid var(--b2);border-radius:11px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;flex-shrink:0}
-.back-btn:active{background:var(--s2)}
+.back-btn{width:36px;height:36px;background:var(--s2);border:1.5px solid var(--b2);border-radius:11px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;flex-shrink:0;box-shadow:var(--sh1)}
+.back-btn:active{background:var(--s3)}
 .bp{padding:16px 20px 90px}
-.card{background:var(--s1);border:1px solid var(--b2);border-radius:18px;padding:16px;margin-bottom:12px}
-.card-title{font-family:var(--fd);font-size:15px;font-weight:700;margin-bottom:12px}
+.card{background:white;border:1.5px solid var(--b2);border-radius:18px;padding:16px;margin-bottom:12px;box-shadow:var(--sh2)}
+.card-title{font-family:var(--fd);font-weight:900;font-size:15px;color:var(--tx);margin-bottom:12px}
 .field{margin-bottom:14px}
-.field label{display:block;font-size:11px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--mu);margin-bottom:7px}
-.field input,.field select{width:100%;background:var(--s2);border:1.5px solid var(--b2);border-radius:12px;padding:13px 14px;color:var(--tx);font-size:16px;font-family:var(--fb);outline:none;transition:border-color .2s;-webkit-appearance:none}
-.field input:focus{border-color:var(--brand)}
+.field label{display:block;font-size:11px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:var(--mu);margin-bottom:7px}
+.field input,.field select,.field textarea{width:100%;background:var(--s2);border:2px solid var(--b2);border-radius:12px;padding:13px 14px;color:var(--tx);font-size:16px;font-family:var(--fb);font-weight:600;outline:none;transition:border-color .2s;-webkit-appearance:none}
+.field input:focus,.field select:focus{border-color:var(--brand);background:white;box-shadow:0 0 0 3px rgba(255,87,34,.1)}
 .field input.err{border-color:var(--rd)}
 .two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.btn{display:flex;align-items:center;justify-content:center;gap:8px;border:none;border-radius:14px;padding:15px 20px;font-family:var(--fd);font-size:16px;font-weight:700;cursor:pointer;width:100%;transition:opacity .15s,transform .1s;-webkit-appearance:none}
-.btn:active{transform:scale(.97);opacity:.9}
-.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
-.btn-p{background:var(--brand);color:white}
-.btn-s{background:var(--s2);color:var(--tx);border:1px solid var(--b2)}
-.btn-g{background:transparent;color:var(--mu);border:1.5px solid var(--b2)}
-.btn-gn{background:rgba(46,204,142,.12);color:var(--gn);border:1px solid rgba(46,204,142,.25)}
-.btn-sm{padding:9px 16px;font-size:13px;border-radius:10px;width:auto}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;border:none;border-radius:14px;padding:15px 20px;font-family:var(--fd);font-size:17px;cursor:pointer;width:100%;transition:all .15s;letter-spacing:.3px}
+.btn:active{transform:scale(.97)}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.btn-p{background:var(--brand);color:white;box-shadow:0 4px 14px rgba(255,87,34,.4)}
+.btn-p:active{box-shadow:0 2px 6px rgba(255,87,34,.3)}
+.btn-s{background:white;color:var(--tx);border:2px solid var(--b2);box-shadow:var(--sh1)}
+.btn-g{background:transparent;color:var(--mu);border:2px solid var(--b2)}
+.btn-gn{background:rgba(46,125,50,.08);color:#2E7D32;border:2px solid rgba(46,125,50,.25)}
+.btn-gd{background:rgba(249,168,37,.1);color:#E65100;border:2px solid rgba(249,168,37,.3)}
+.btn-sm{padding:9px 16px;font-size:14px;border-radius:10px;width:auto;font-family:var(--fd)}
 .btn-row{display:flex;gap:10px}
-.tr{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--b1)}
+.tr{display:flex;align-items:center;justify-content:space-between;padding:13px 0;border-bottom:1.5px solid var(--b1)}
 .tr:last-child{border-bottom:none}
-.tr-info .tt{font-size:14px;font-weight:600;margin-bottom:2px}
-.tr-info .td{font-size:12px;color:var(--mu);line-height:1.4}
+.tr-info .tt{font-size:14px;font-weight:700;margin-bottom:2px}
+.tr-info .td{font-size:12px;color:var(--mu);line-height:1.4;font-weight:600}
 .tog{position:relative;width:48px;height:28px;flex-shrink:0;margin-left:16px}
 .tog input{opacity:0;width:0;height:0;position:absolute}
-.tog-track{position:absolute;inset:0;background:var(--s2);border:1.5px solid var(--b2);border-radius:999px;cursor:pointer;transition:all .2s}
+.tog-track{position:absolute;inset:0;background:var(--s3);border:2px solid var(--b2);border-radius:999px;cursor:pointer;transition:all .2s}
 .tog input:checked+.tog-track{background:var(--brand);border-color:var(--brand)}
-.tog-track::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;background:white;border-radius:50%;transition:transform .2s;box-shadow:0 1px 4px rgba(0,0,0,.5)}
+.tog-track::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;background:white;border-radius:50%;transition:transform .2s;box-shadow:0 2px 6px rgba(0,0,0,.2)}
 .tog input:checked+.tog-track::after{transform:translateX(20px)}
-.li{display:flex;align-items:center;gap:12px;background:var(--s1);border:1px solid var(--b2);border-radius:14px;padding:14px;margin-bottom:10px}
+.li{display:flex;align-items:center;gap:12px;background:white;border:1.5px solid var(--b2);border-radius:14px;padding:14px;margin-bottom:10px;box-shadow:var(--sh1)}
 .li-icon{font-size:22px;width:44px;height:44px;background:var(--s2);border-radius:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .li-info{flex:1;min-width:0}
-.li-name{font-size:14px;font-weight:600;margin-bottom:2px}
-.li-sub{font-size:12px;color:var(--mu)}
+.li-name{font-size:14px;font-weight:700;margin-bottom:2px}
+.li-sub{font-size:12px;color:var(--mu);font-weight:600}
 .li-act{display:flex;gap:6px;flex-shrink:0}
-.iBtn{width:34px;height:34px;border-radius:9px;border:1px solid var(--b2);background:var(--s2);color:var(--mu);font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center}
-.iBtn:active{background:rgba(255,79,79,.15);color:var(--rd)}
-.tag{display:inline-flex;align-items:center;padding:3px 9px;border-radius:99px;font-size:11px;font-weight:600;flex-shrink:0}
-.tag-gn{background:rgba(46,204,142,.1);color:var(--gn);border:1px solid rgba(46,204,142,.22)}
-.tag-gd{background:rgba(245,184,0,.1);color:var(--gd);border:1px solid rgba(245,184,0,.22)}
-.tag-or{background:rgba(255,90,31,.1);color:var(--brand);border:1px solid rgba(255,90,31,.22)}
-.callout{display:flex;gap:12px;padding:14px 16px;border-radius:14px;margin-bottom:14px}
-.co-gn{background:rgba(46,204,142,.05);border:1px solid rgba(46,204,142,.18)}
-.co-or{background:rgba(255,90,31,.05);border:1px solid rgba(255,90,31,.18)}
-.co-gd{background:rgba(245,184,0,.05);border:1px solid rgba(245,184,0,.18)}
-.co-icon{font-size:20px;flex-shrink:0;margin-top:1px}
-.co-title{font-size:13px;font-weight:700;margin-bottom:3px}
-.co-gn .co-title{color:var(--gn)}
-.co-or .co-title{color:var(--brand)}
-.co-gd .co-title{color:var(--gd)}
-.co-desc{font-size:12px;color:var(--mu);line-height:1.6}
-.stats{display:grid;gap:10px;margin-bottom:14px}
+.iBtn{width:34px;height:34px;border-radius:9px;border:1.5px solid var(--b2);background:var(--s2);color:var(--mu);font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.iBtn:active{background:#FFF0EE;color:var(--rd)}
+.tag{display:inline-flex;align-items:center;padding:4px 10px;border-radius:99px;font-size:11px;font-weight:800;flex-shrink:0}
+.tag-gn{background:#E8F5E9;color:#2E7D32;border:1.5px solid #A5D6A7}
+.tag-gd{background:#FFF8E1;color:#E65100;border:1.5px solid #FFE082}
+.tag-or{background:#FFF3E0;color:#E64A19;border:1.5px solid #FFCC80}
+.tag-bl{background:#E3F2FD;color:#1565C0;border:1.5px solid #90CAF9}
+.callout{display:flex;gap:12px;padding:13px 15px;border-radius:14px;margin-bottom:12px;box-shadow:var(--sh1)}
+.co-gn{background:#F1F8E9;border:1.5px solid #C5E1A5}
+.co-or{background:#FFF3E0;border:1.5px solid #FFCC80}
+.co-gd{background:#FFFDE7;border:1.5px solid #FFE082}
+.co-bl{background:#E3F2FD;border:1.5px solid #90CAF9}
+.co-icon{font-size:18px;flex-shrink:0;margin-top:1px}
+.co-title{font-size:12px;font-weight:800;margin-bottom:3px}
+.co-gn .co-title{color:#2E7D32}
+.co-or .co-title{color:#E64A19}
+.co-gd .co-title{color:#F57F17}
+.co-bl .co-title{color:#1565C0}
+.co-desc{font-size:12px;color:var(--mu);line-height:1.5;font-weight:600}
+.stats{display:grid;gap:10px;margin-bottom:12px}
 .g2{grid-template-columns:1fr 1fr}
 .g3{grid-template-columns:repeat(3,1fr)}
-.sc{background:var(--s1);border:1px solid var(--b2);border-radius:14px;padding:14px 12px;text-align:center}
-.sv{font-family:var(--fd);font-size:26px;font-weight:800;line-height:1;margin-bottom:3px}
-.sl{font-size:10px;color:var(--mu);letter-spacing:.5px;text-transform:uppercase}
-.div{height:1px;background:var(--b1);margin:14px 0}
-.pbar{background:var(--s2);border-radius:99px;height:8px;overflow:hidden}
-.pfill{height:100%;border-radius:99px;transition:width .7s cubic-bezier(.4,0,.2,1)}
-
-/* LOADING */
-.loading-overlay{position:fixed;inset:0;background:rgba(10,10,8,.85);z-index:800;display:none;align-items:center;justify-content:center;flex-direction:column;gap:16px;backdrop-filter:blur(8px)}
-.loading-overlay.show{display:flex}
-.lspinner{width:44px;height:44px;border:3px solid var(--b2);border-top-color:var(--brand);border-radius:50%;animation:spin .8s linear infinite}
-.ltxt{font-size:14px;color:var(--mu)}
-@keyframes spin{to{transform:rotate(360deg)}}
-
-/* SHEET */
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;display:none;align-items:flex-end;backdrop-filter:blur(6px)}
+.sc{background:white;border:1.5px solid var(--b2);border-radius:14px;padding:14px 12px;text-align:center;box-shadow:var(--sh1)}
+.sv{font-family:var(--fd);font-weight:900;font-size:24px;line-height:1;margin-bottom:3px}
+.sl{font-size:10px;color:var(--mu);letter-spacing:.5px;text-transform:uppercase;font-weight:700}
+.pbar{background:var(--s2);border-radius:99px;height:10px;overflow:hidden;border:1.5px solid var(--b1)}
+.pfill{height:100%;border-radius:99px;transition:width .7s cubic-bezier(.4,0,.2,1);background:linear-gradient(90deg,var(--brand),var(--brand2))}
+/* OVERLAY/SHEET */
+.overlay{position:fixed;inset:0;background:rgba(45,27,14,.55);z-index:200;display:none;align-items:flex-end;backdrop-filter:blur(8px)}
 .overlay.open{display:flex}
-.sheet{background:var(--s1);border-radius:24px 24px 0 0;padding:20px 20px calc(20px + var(--sb));width:100%;border:1px solid var(--b2);border-bottom:none;animation:sheetUp .3s cubic-bezier(.34,1.56,.64,1)}
+.sheet{background:white;border-radius:28px 28px 0 0;padding:20px 20px calc(20px + var(--sb));width:100%;border-top:3px solid var(--b2);animation:sheetUp .3s cubic-bezier(.34,1.56,.64,1);max-height:90vh;overflow-y:auto;box-shadow:0 -8px 40px rgba(180,100,40,.15)}
 @keyframes sheetUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
-.sheet-handle{width:36px;height:4px;background:var(--b2);border-radius:99px;margin:0 auto 18px}
-.sheet-title{font-family:var(--fd);font-size:20px;font-weight:800;margin-bottom:16px}
-
+.sheet-handle{width:40px;height:5px;background:var(--b2);border-radius:99px;margin:0 auto 18px}
+.sheet-title{font-family:var(--fd);font-weight:900;font-size:20px;color:var(--tx);margin-bottom:16px}
 /* TOAST */
-.toast{position:fixed;bottom:calc(var(--nav) + 14px);left:50%;transform:translateX(-50%);background:var(--s2);border:1px solid var(--b3);color:var(--tx);padding:10px 20px;border-radius:99px;font-size:13px;font-weight:600;white-space:nowrap;opacity:0;transition:opacity .25s;z-index:500;pointer-events:none;box-shadow:0 8px 32px rgba(0,0,0,.5)}
+.toast{position:fixed;bottom:calc(var(--nav) + 14px);left:50%;transform:translateX(-50%);background:var(--tx);color:white;padding:11px 22px;border-radius:99px;font-size:13px;font-weight:700;white-space:nowrap;opacity:0;transition:opacity .25s;z-index:500;pointer-events:none;box-shadow:0 8px 32px rgba(45,27,14,.25)}
 .toast.show{opacity:1}
-
 /* CONFETTI */
 .cc-wrap{position:fixed;inset:0;pointer-events:none;z-index:400;overflow:hidden}
 .cp{position:absolute;top:-20px;border-radius:2px;animation:fall linear forwards}
 @keyframes fall{to{transform:translateY(110vh) rotate(720deg);opacity:0}}
+/* LOADING */
+.load-over{position:fixed;inset:0;background:rgba(255,248,240,.9);z-index:800;display:none;align-items:center;justify-content:center;flex-direction:column;gap:16px;backdrop-filter:blur(8px)}
+.load-over.show{display:flex}
+.lspin{width:44px;height:44px;border:4px solid var(--b2);border-top-color:var(--brand);border-radius:50%;animation:spin .8s linear infinite}
+.ltxt{font-size:14px;color:var(--mu);font-weight:700}
+@keyframes spin{to{transform:rotate(360deg)}}
 
 /* AUTH */
-.auth-wrap{min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px 48px}
-.auth-logo{font-size:48px;margin-bottom:12px;animation:float 3s ease-in-out infinite}
-@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-.auth-title{font-family:var(--fd);font-size:28px;font-weight:900;margin-bottom:6px;text-align:center;letter-spacing:-.3px}
-.auth-sub{font-size:14px;color:var(--mu);margin-bottom:28px;text-align:center;line-height:1.6}
+.auth-wrap{min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px 48px;background:linear-gradient(160deg,#FFF3E0 0%,#FFF8F0 60%)}
+.auth-logo{font-size:56px;margin-bottom:12px;animation:float 3s ease-in-out infinite;filter:drop-shadow(0 4px 8px rgba(255,87,34,.3))}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.auth-title{font-family:var(--fd);font-weight:900;font-size:30px;color:var(--tx);margin-bottom:6px;text-align:center}
+.auth-sub{font-size:14px;color:var(--mu);margin-bottom:24px;text-align:center;line-height:1.6;max-width:300px;font-weight:600}
 .auth-form{width:100%}
-.auth-err{background:rgba(255,79,79,.08);border:1px solid rgba(255,79,79,.2);border-radius:12px;padding:11px 14px;font-size:13px;color:var(--rd);margin-bottom:14px;display:none}
+.auth-err{background:#FFEBEE;border:2px solid #EF9A9A;border-radius:12px;padding:11px 14px;font-size:13px;color:#C62828;margin-bottom:14px;display:none;font-weight:700}
 .auth-err.show{display:block}
-.auth-switch{text-align:center;margin-top:16px;font-size:13px;color:var(--mu)}
-.auth-switch span{color:var(--brand);cursor:pointer;font-weight:600}
+.auth-switch{text-align:center;margin-top:16px;font-size:13px;color:var(--mu);font-weight:600}
+.auth-switch span{color:var(--brand);cursor:pointer;font-weight:800}
 
-/* VENDOR HOME */
-.vh-hero{padding:20px 20px 16px;border-bottom:1px solid var(--b1);background:linear-gradient(160deg,rgba(255,90,31,.08) 0%,transparent 55%)}
-.vh-greet{font-size:11px;color:var(--mu);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px}
-.vh-name{font-family:var(--fd);font-size:26px;font-weight:900;margin-bottom:10px}
-.live-pill{display:inline-flex;align-items:center;gap:6px;background:rgba(46,204,142,.1);border:1px solid rgba(46,204,142,.22);border-radius:99px;padding:5px 12px;font-size:12px;font-weight:600;color:var(--gn)}
-.ldot{width:6px;height:6px;background:var(--gn);border-radius:50%;animation:blink 2s ease-in-out infinite}
+/* VENDOR HERO */
+.vh-hero{padding:24px 20px 18px;border-bottom:2px solid var(--b1);background:linear-gradient(135deg,#FF5722 0%,#FF8A65 100%);position:relative;overflow:hidden}
+.vh-hero::after{content:'🚚';position:absolute;right:-10px;bottom:-14px;font-size:80px;opacity:.12;pointer-events:none}
+.vh-greet{font-size:11px;color:rgba(255,255,255,.8);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px;font-weight:700}
+.vh-name{font-family:var(--fd);font-weight:900;font-size:26px;color:white;margin-bottom:10px;text-shadow:0 1px 4px rgba(0,0,0,.15)}
+.live-pill{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.25);border:1.5px solid rgba(255,255,255,.45);border-radius:99px;padding:5px 14px;font-size:12px;font-weight:700;color:white}
+.ldot{width:6px;height:6px;background:white;border-radius:50%;animation:blink 2s ease-in-out infinite}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
-.qa-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px 20px}
-.qa{background:var(--s1);border:1px solid var(--b2);border-radius:16px;padding:16px;cursor:pointer;transition:all .15s;display:flex;flex-direction:column;gap:8px}
-.qa:active{transform:scale(.97);background:var(--s2)}
-.qa.wide{grid-column:span 2;flex-direction:row;align-items:center;gap:14px;background:rgba(255,90,31,.06);border-color:rgba(255,90,31,.2)}
-.qa-ico{font-size:26px}
-.qa.wide .qa-ico{font-size:30px}
-.qa-lbl{font-size:13px;font-weight:600;line-height:1.3}
-.qa-sub{font-size:11px;color:var(--mu)}
 
-/* CUSTOMER */
-.cw{min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px 40px;text-align:center;position:relative;overflow:hidden}
-.cw-glow{position:absolute;bottom:-80px;left:50%;transform:translateX(-50%);width:320px;height:320px;border-radius:50%;filter:blur(100px);opacity:.22;pointer-events:none}
-.cw-emoji{font-size:60px;margin-bottom:8px;animation:float 3s ease-in-out infinite}
-.cw-brand{font-family:var(--fd);font-size:36px;font-weight:900;line-height:1;margin-bottom:5px}
-.cw-tag{font-size:11px;letter-spacing:2.5px;text-transform:uppercase;color:var(--mu);margin-bottom:22px}
-.cw-perks{background:rgba(255,255,255,.03);border:1px solid var(--b2);border-radius:18px;padding:18px;width:100%;text-align:left;margin-bottom:14px}
-.cw-perks h3{font-family:var(--fd);font-size:16px;font-weight:700;margin-bottom:12px}
-.cw-perk{display:flex;align-items:center;gap:10px;font-size:13px;color:rgba(245,240,232,.8);margin-bottom:9px}
-.cw-perk:last-child{margin-bottom:0}
-.cw-pico{width:30px;height:30px;border-radius:8px;font-size:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.sp-row{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--mu);margin-bottom:16px}
-.sp-faces{display:flex}
-.sp-face{width:24px;height:24px;border-radius:50%;border:2px solid var(--bg);font-size:11px;display:flex;align-items:center;justify-content:center;margin-left:-6px}
-.sp-face:first-child{margin-left:0}
-.cd-hdr{padding:20px 20px 16px;border-bottom:1px solid var(--b1);background:linear-gradient(180deg,rgba(255,90,31,.08) 0%,transparent 100%)}
-.cd-greet{font-size:11px;color:var(--mu);letter-spacing:1.2px;text-transform:uppercase;margin-bottom:4px}
-.cd-name{font-family:var(--fd);font-size:28px;font-weight:900;margin-bottom:10px}
-.cd-tier{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;border-radius:99px;padding:6px 14px;margin-bottom:14px}
-.sk-card{background:var(--s1);border:1px solid var(--b2);border-radius:16px;padding:14px 16px;margin-bottom:10px}
+/* QUICK ACTIONS */
+.qa-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px 20px}
+.qa{background:white;border:2px solid var(--b2);border-radius:18px;padding:16px;cursor:pointer;transition:all .15s;display:flex;flex-direction:column;gap:6px;box-shadow:var(--sh1)}
+.qa:active{transform:scale(.97);background:var(--s2)}
+.qa.wide{grid-column:span 2;flex-direction:row;align-items:center;gap:14px}
+.qa.accent{background:#FFF3E0;border-color:#FFCC80}
+.qa.accent-gd{background:#FFFDE7;border-color:#FFE082}
+.qa.accent-gn{background:#F1F8E9;border-color:#C5E1A5}
+.qa-ico{font-size:28px}
+.qa.wide .qa-ico{font-size:32px}
+.qa-lbl{font-size:13px;font-weight:800;line-height:1.3}
+.qa-sub{font-size:11px;color:var(--mu);font-weight:600}
+
+/* CUSTOMER MY TRUCKS */
+.truck-card{background:white;border:2px solid var(--b2);border-radius:18px;padding:16px;margin-bottom:12px;cursor:pointer;transition:all .15s;box-shadow:var(--sh2)}
+.truck-card:active{transform:scale(.98)}
+.truck-card.active-truck{border-color:#FFCC80;background:#FFFDE7}
+.tc-top{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.tc-icon{width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;box-shadow:var(--sh1)}
+.tc-name{font-family:var(--fd);font-weight:900;font-size:18px;color:var(--tx);margin-bottom:2px}
+.tc-sub{font-size:12px;color:var(--mu);font-weight:600}
+.tc-stats{display:flex;gap:8px}
+.tc-stat{flex:1;background:var(--s2);border-radius:12px;padding:10px 8px;text-align:center;border:1.5px solid var(--b1)}
+.tc-stat-val{font-family:var(--fd);font-weight:900;font-size:18px;line-height:1}
+.tc-stat-lbl{font-size:10px;color:var(--mu);margin-top:2px;text-transform:uppercase;letter-spacing:.4px;font-weight:700}
+
+/* CUSTOMER QR */
+.my-qr-wrap{background:white;border-radius:20px;padding:20px;display:inline-flex;flex-direction:column;align-items:center;gap:10px;border:3px solid var(--b2);box-shadow:var(--sh3)}
+.my-qr-id{font-size:14px;color:var(--tx);font-weight:800;letter-spacing:2px;font-family:monospace}
+
+/* VENDOR AWARD POINTS */
+.award-tabs{display:flex;background:var(--s2);border:2px solid var(--b2);border-radius:14px;padding:4px;gap:4px;margin-bottom:16px}
+.award-tab{flex:1;padding:10px 8px;border:none;border-radius:11px;font-size:12px;font-weight:700;font-family:var(--fb);cursor:pointer;background:transparent;color:var(--mu);transition:all .2s;text-align:center}
+.award-tab.on{background:white;color:var(--tx);box-shadow:var(--sh1)}
+.award-method{display:none}
+.award-method.on{display:block}
+
+/* SPIN */
+.spin-wrap{min-height:100%;display:flex;flex-direction:column;align-items:center;padding:20px 24px 40px;text-align:center;background:linear-gradient(160deg,#FFF3E0 0%,#FFF8F0 100%)}
+.spin-title{font-family:var(--fd);font-weight:900;font-size:26px;color:var(--tx);margin-bottom:4px}
+.spin-sub{font-size:13px;color:var(--mu);margin-bottom:16px;font-weight:600}
+.spp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:14px;width:100%}
+.spp-item{background:white;border:2px solid var(--b2);border-radius:12px;padding:10px 8px;text-align:center;box-shadow:var(--sh1)}
+.spp-pts{font-family:var(--fd);font-weight:900;font-size:15px;color:#E65100;line-height:1}
+.spp-lbl{font-size:10px;color:var(--mu);margin-top:3px;font-weight:700}
+.spp-item.jackpot{border-color:#FFE082;background:#FFFDE7}
+.wheel-area{position:relative;margin-bottom:16px}
+.wheel-ptr{position:absolute;top:-10px;left:50%;transform:translateX(-50%);font-size:24px;z-index:5;filter:drop-shadow(0 2px 8px rgba(255,87,34,.9))}
+
+/* STREAK */
+.sk-card{background:white;border:2px solid var(--b2);border-radius:16px;padding:14px 16px;margin-bottom:10px;box-shadow:var(--sh1)}
 .sk-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-.sk-lbl{font-size:13px;font-weight:600}
-.sk-cnt{font-family:var(--fd);font-size:20px;font-weight:800;color:var(--brand)}
+.sk-lbl{font-size:13px;font-weight:800}
+.sk-cnt{font-family:var(--fd);font-weight:900;font-size:20px;color:var(--brand)}
 .sk-days{display:flex;gap:5px}
-.sd{flex:1;aspect-ratio:1;border-radius:8px;font-size:9px;font-weight:700;text-transform:uppercase;display:flex;align-items:center;justify-content:center}
-.sd.done{background:var(--brand);color:white}
-.sd.today{background:var(--brand);color:white;box-shadow:0 0 16px rgba(255,90,31,.5)}
-.sd.future{background:var(--s2);color:var(--fa)}
-.sk-tip{font-size:11px;color:var(--gd);margin-top:8px}
-.rrow{display:flex;align-items:center;gap:12px;background:var(--s1);border:1px solid var(--b2);border-radius:14px;padding:12px;margin-bottom:9px}
-.rrow.unlocked{border-color:rgba(46,204,142,.28);background:rgba(46,204,142,.04)}
-.rrow.used{opacity:.38}
-.rico{width:40px;height:40px;border-radius:10px;background:rgba(255,255,255,.05);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.sd{flex:1;aspect-ratio:1;border-radius:8px;font-size:9px;font-weight:800;text-transform:uppercase;display:flex;align-items:center;justify-content:center}
+.sd.done{background:var(--brand);color:white;box-shadow:0 2px 8px rgba(255,87,34,.35)}
+.sd.today{background:var(--brand);color:white;box-shadow:0 0 16px rgba(255,87,34,.55)}
+.sd.future{background:var(--s2);color:var(--fa);border:1.5px solid var(--b1)}
+
+/* REWARDS */
+.rrow{display:flex;align-items:center;gap:12px;background:white;border:2px solid var(--b2);border-radius:14px;padding:12px;margin-bottom:9px;box-shadow:var(--sh1)}
+.rrow.unlocked{border-color:#A5D6A7;background:#F1F8E9}
+.rico{width:40px;height:40px;border-radius:10px;background:var(--s2);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
 .rinfo{flex:1}
-.rname{font-size:14px;font-weight:600;margin-bottom:2px}
-.rpts{font-size:12px;color:var(--mu)}
-.rdm-btn{border:none;border-radius:9px;padding:7px 14px;font-size:12px;font-weight:700;font-family:var(--fb);cursor:pointer;flex-shrink:0}
-.rdm-btn.ready{background:var(--gn);color:white}
-.rdm-btn.locked{background:var(--s2);color:var(--mu)}
-.rdm-btn.used{background:var(--s2);color:var(--fa)}
-.spin-wrap{min-height:100%;display:flex;flex-direction:column;align-items:center;padding:24px 24px 40px;text-align:center}
-.spin-title{font-family:var(--fd);font-size:28px;font-weight:900;margin-bottom:4px}
-.spin-sub{font-size:13px;color:var(--mu);margin-bottom:24px}
-.wheel-area{position:relative;margin-bottom:20px}
-.wheel-ptr{position:absolute;top:-10px;left:50%;transform:translateX(-50%);font-size:24px;z-index:5;filter:drop-shadow(0 2px 8px rgba(255,90,31,.9))}
-.win-box{background:linear-gradient(135deg,rgba(245,184,0,.1),rgba(255,90,31,.1));border:1.5px solid rgba(245,184,0,.28);border-radius:18px;padding:20px;text-align:center;margin-bottom:14px}
-.win-emo{font-size:48px;margin-bottom:8px}
-.win-name{font-family:var(--fd);font-size:24px;font-weight:900;color:var(--gd)}
-.win-code{font-size:13px;color:var(--mu);margin-top:5px;letter-spacing:1px}
-.rdm-code-box{background:var(--s2);border:1.5px dashed var(--b2);border-radius:14px;padding:18px;text-align:center;margin-bottom:16px}
-.rdm-code-val{font-family:var(--fd);font-size:30px;font-weight:900;letter-spacing:5px;color:var(--gd);margin-bottom:4px}
-.rdm-code-hint{font-size:12px;color:var(--mu)}
-.hist-item{display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:1px solid var(--b1)}
+.rname{font-size:14px;font-weight:700;margin-bottom:2px}
+.rpts{font-size:12px;color:var(--mu);font-weight:600}
+.rdm-btn{border:none;border-radius:10px;padding:8px 14px;font-size:12px;font-weight:800;font-family:var(--fb);cursor:pointer;flex-shrink:0}
+.rdm-btn.ready{background:#2E7D32;color:white;box-shadow:0 2px 8px rgba(46,125,50,.3)}
+.rdm-btn.locked{background:var(--s2);color:var(--mu);border:2px solid var(--b2)}
+
+/* REDEMPTION CODE BOX */
+.code-box{background:var(--s2);border:3px dashed var(--b3);border-radius:16px;padding:20px;text-align:center;margin-bottom:14px}
+.code-val{font-family:var(--fd);font-weight:900;font-size:34px;color:#E65100;margin-bottom:6px;letter-spacing:3px}
+.code-sub{font-size:12px;color:var(--mu);line-height:1.5;font-weight:600}
+.rdm-step{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px;font-size:13px;color:var(--mu);line-height:1.5;font-weight:600}
+.rdm-step:last-child{margin-bottom:0}
+.rdm-step-num{width:24px;height:24px;background:var(--brand);color:white;border-radius:50%;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;box-shadow:0 2px 8px rgba(255,87,34,.35)}
+
+/* HISTORY */
+.hist-item{display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:1.5px solid var(--b1)}
 .hist-item:last-child{border-bottom:none}
 .hist-left{display:flex;align-items:center;gap:10px}
-.hist-ico{width:36px;height:36px;border-radius:9px;background:var(--s2);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
-.hist-desc{font-size:13px;font-weight:500}
-.hist-date{font-size:11px;color:var(--mu);margin-top:2px}
-.hist-pts{font-family:var(--fd);font-size:17px;font-weight:800}
-.sub-row{display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:1px solid var(--b1)}
-.sub-row:last-child{border-bottom:none}
-.sub-lbl{font-size:14px;font-weight:600;margin-bottom:2px}
-.sub-sub{font-size:12px;color:var(--mu)}
-.ref-code-box{background:var(--s2);border:1.5px dashed var(--b2);border-radius:14px;padding:16px;text-align:center;margin-bottom:14px}
-.ref-code-val{font-family:var(--fd);font-size:22px;font-weight:900;letter-spacing:3px;color:var(--brand);margin-bottom:4px}
-.ref-code-hint{font-size:12px;color:var(--mu)}
-.ep{display:flex;flex-wrap:wrap;gap:8px}
-.eopt{width:48px;height:48px;background:var(--s2);border:2px solid var(--b2);border-radius:12px;font-size:22px;display:flex;align-items:center;justify-content:center;cursor:pointer}
-.eopt.sel{border-color:var(--brand);background:rgba(255,90,31,.1)}
-.cdot{width:44px;height:44px;border-radius:12px;border:2.5px solid transparent;position:relative;overflow:hidden;cursor:pointer}
-.cdot.sel{border-color:white}
-.cdot input[type=color]{position:absolute;inset:-8px;width:calc(100% + 16px);height:calc(100% + 16px);opacity:0;cursor:pointer}
-.qr-wrap{background:white;border-radius:16px;padding:14px;display:inline-block}
-.share-row{display:flex;gap:8px;margin-top:10px}
-.share-btn{flex:1;background:var(--s2);border:1px solid var(--b2);border-radius:12px;padding:10px;font-size:12px;font-weight:600;color:var(--mu);cursor:pointer;text-align:center;font-family:var(--fb)}
-.share-btn .sb-ico{font-size:18px;display:block;margin-bottom:3px}
-.trend-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--b1)}
-.trend-row:last-child{border-bottom:none}
-.trend-chg{font-size:11px;font-weight:600;padding:2px 7px;border-radius:99px}
-.trend-chg.up{background:rgba(46,204,142,.1);color:var(--gn)}
-.trend-chg.dn{background:rgba(255,79,79,.1);color:var(--rd)}
+.hist-ico{width:36px;height:36px;border-radius:9px;background:var(--s2);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;border:1.5px solid var(--b1)}
+.hist-desc{font-size:13px;font-weight:700}
+.hist-date{font-size:11px;color:var(--mu);margin-top:2px;font-weight:600}
+.hist-pts{font-family:var(--fd);font-weight:900;font-size:17px}
+
+/* VENDOR CONFIRM REDEEM */
+.confirm-card{background:#F1F8E9;border:3px solid #A5D6A7;border-radius:18px;padding:20px;text-align:center;margin-bottom:16px;box-shadow:var(--sh2)}
+.confirm-reward-name{font-family:var(--fd);font-weight:900;font-size:22px;color:var(--tx);margin-bottom:4px}
+.confirm-customer{font-size:14px;color:var(--mu);font-weight:600}
+.confirm-pts{font-size:13px;color:var(--rd);margin-top:6px;font-weight:700}
 </style>
 </head>
 <body>
 <div id="app">
   <div class="topbar">
-    <div class="tl-logo">🔥 TruckLoyal</div>
+    <div class="tl-logo">🔥 Food Truck Rewards</div>
     <div class="mode-tog">
       <button class="mb on" id="mb-v" onclick="setMode('vendor')">🏪 Vendor</button>
       <button class="mb" id="mb-c" onclick="setMode('customer')">👤 Customer</button>
     </div>
   </div>
-
   <div class="scroll" id="scroll">
 
-    <!-- ═══ VENDOR: LOGIN ═══ -->
+    <!-- ══════════════════════════════════════
+         VENDOR SCREENS
+    ══════════════════════════════════════ -->
+
+    <!-- VENDOR LOGIN -->
     <div class="screen on" id="s-v-login">
       <div class="auth-wrap">
         <div class="auth-logo">🚚</div>
-        <div class="auth-title">Welcome back</div>
-        <div class="auth-sub">Sign in to your TruckLoyal vendor dashboard</div>
+        <div class="auth-title">Vendor Login</div>
+        <div class="auth-sub">Manage your loyalty program, award points, and confirm rewards</div>
         <div class="auth-err" id="v-login-err"></div>
         <div class="auth-form">
-          <div class="field"><label>Email</label><input type="email" id="v-login-email" placeholder="you@yourtruck.com"></div>
-          <div class="field"><label>Password</label><input type="password" id="v-login-pass" placeholder="••••••••"></div>
-          <button class="btn btn-p" id="v-login-btn" onclick="vendorLogin()">
-            <span>Sign In</span>
-            <div style="width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite;display:none" id="v-login-spin"></div>
-          </button>
-          <div class="auth-switch">No account? <span onclick="goV('s-v-signup')">Create one free →</span></div>
+          <div class="field"><label>Email</label><input type="email" id="v-login-email" placeholder="you@yourtruck.com" autocomplete="email"></div>
+          <div class="field"><label>Password</label><input type="password" id="v-login-pass" placeholder="••••••••" autocomplete="current-password"></div>
+          <button class="btn btn-p" id="v-login-btn" onclick="vendorLogin()">Sign In</button>
+          <div class="auth-switch">No account? <span onclick="goV('s-v-signup')">Start free 14-day trial →</span></div>
         </div>
       </div>
     </div>
 
-    <!-- ═══ VENDOR: SIGNUP ═══ -->
+    <!-- VENDOR SIGNUP -->
     <div class="screen" id="s-v-signup">
       <div class="auth-wrap">
         <div class="auth-logo">🚀</div>
-        <div class="auth-title">Start your free trial</div>
-        <div class="auth-sub">14 days free. Set up in 2 minutes. No credit card needed.</div>
+        <div class="auth-title">Start Free Trial</div>
+        <div class="auth-sub">Set up in minutes. No credit card needed. Cancel anytime.</div>
         <div class="auth-err" id="v-signup-err"></div>
         <div class="auth-form">
-          <div class="field"><label>Truck Name</label><input type="text" id="v-su-name" placeholder="e.g. Fire & Smoke BBQ"></div>
-          <div class="field"><label>Email</label><input type="email" id="v-su-email" placeholder="you@yourtruck.com"></div>
-          <div class="field"><label>Password</label><input type="password" id="v-su-pass" placeholder="8+ characters"></div>
-          <button class="btn btn-p" id="v-signup-btn" onclick="vendorSignup()">
-            <span>Create My Account</span>
-            <div style="width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite;display:none" id="v-signup-spin"></div>
-          </button>
+          <div class="field"><label>Truck / Business Name</label><input type="text" id="v-su-name" placeholder="e.g. Flavor on Wheels"></div>
+          <div class="field"><label>Your Name</label><input type="text" id="v-su-owner" placeholder="First and last name"></div>
+          <div class="field"><label>Email</label><input type="email" id="v-su-email" placeholder="you@yourtruck.com" autocomplete="email"></div>
+          <div class="field"><label>Password</label><input type="password" id="v-su-pass" placeholder="8+ characters" autocomplete="new-password"></div>
+          <button class="btn btn-p" id="v-signup-btn" onclick="vendorSignup()">Create My Account</button>
           <div class="auth-switch">Already have an account? <span onclick="goV('s-v-login')">Sign in</span></div>
         </div>
       </div>
     </div>
 
-    <!-- ═══ VENDOR: HOME ═══ -->
+    <!-- VENDOR HOME -->
     <div class="screen" id="s-v-home">
       <div class="vh-hero">
         <div class="vh-greet">Dashboard</div>
-        <div class="vh-name" id="v-hero-name">Loading... 🚚</div>
-        <div class="live-pill"><div class="ldot"></div> Program Live · <span id="v-hero-members">–</span> members</div>
+        <div class="vh-name" id="v-hero-name">My Truck 🚚</div>
+        <div class="live-pill"><div class="ldot"></div> Program Live · <span id="v-hero-members">0</span> members</div>
       </div>
       <div style="padding:14px 20px 0">
-        <div class="stats g3" style="margin-bottom:10px">
-          <div class="sc"><div class="sv" style="color:var(--brand)" id="v-stat-visits">–</div><div class="sl">Visits Today</div></div>
-          <div class="sc"><div class="sv" style="color:var(--gn)" id="v-stat-members">–</div><div class="sl">Members</div></div>
-          <div class="sc"><div class="sv" style="color:var(--gd)" id="v-stat-redemptions">–</div><div class="sl">Redemptions</div></div>
-        </div>
-        <div class="callout co-or" id="v-winback-banner" style="cursor:pointer" onclick="sendWinback()">
-          <div class="co-icon">🔥</div>
-          <div><div class="co-title">Win-Back Opportunity</div><div class="co-desc">Customers haven't visited in 30+ days. Tap to send them a bonus points message.</div></div>
+        <div class="stats g3">
+          <div class="sc"><div class="sv" style="color:var(--brand)" id="v-stat-visits">0</div><div class="sl">Visits Today</div></div>
+          <div class="sc"><div class="sv" style="color:var(--gn)" id="v-stat-members">0</div><div class="sl">Members</div></div>
+          <div class="sc"><div class="sv" style="color:var(--gd)" id="v-stat-rdm">0</div><div class="sl">Redeemed</div></div>
         </div>
       </div>
       <div class="qa-grid">
-        <div class="qa wide" onclick="setMode('customer')"><div class="qa-ico">📱</div><div><div class="qa-lbl">Preview Customer App</div><div class="qa-sub">See what your customers experience</div></div></div>
+        <!-- PRIMARY ACTION: Award points is #1 — vendors use this at the window every day -->
+        <div class="qa wide accent-gn" onclick="goV('s-v-award')">
+          <div class="qa-ico">⚡</div>
+          <div><div class="qa-lbl" style="color:var(--gn)">Award Points</div><div class="qa-sub">Customer bought something — give them their points</div></div>
+        </div>
+        <!-- SECONDARY ACTION: Confirm a redemption -->
+        <div class="qa wide accent-gd" onclick="goV('s-v-confirm')">
+          <div class="qa-ico">✅</div>
+          <div><div class="qa-lbl" style="color:var(--gd)">Confirm Redemption</div><div class="qa-sub">Customer is claiming a reward — verify their code</div></div>
+        </div>
+        <div class="qa" onclick="goV('s-v-rewards')"><div class="qa-ico">🎁</div><div class="qa-lbl">Rewards</div><div class="qa-sub">What customers earn</div></div>
+        <div class="qa" onclick="goV('s-v-spin')"><div class="qa-ico">🎰</div><div class="qa-lbl">Spin Prizes</div><div class="qa-sub">Bonus points on wheel</div></div>
+        <div class="qa" onclick="goV('s-v-points')"><div class="qa-ico">⚙️</div><div class="qa-lbl">Points Rules</div><div class="qa-sub">Rates & bonuses</div></div>
         <div class="qa" onclick="goV('s-v-brand')"><div class="qa-ico">🎨</div><div class="qa-lbl">Brand</div><div class="qa-sub">Colors & identity</div></div>
-        <div class="qa" onclick="goV('s-v-rewards')"><div class="qa-ico">🎁</div><div class="qa-lbl">Rewards</div><div class="qa-sub">Menu items & pts</div></div>
-        <div class="qa" onclick="goV('s-v-spin')"><div class="qa-ico">🎰</div><div class="qa-lbl">Spin Wheel</div><div class="qa-sub">Prizes & odds</div></div>
-        <div class="qa" onclick="goV('s-v-tiers')"><div class="qa-ico">👑</div><div class="qa-lbl">Tiers</div><div class="qa-sub">VIP structure</div></div>
+      </div>
+      <div style="padding:0 20px 20px">
+        <!-- Today's location — posted here, shows on customer dashboard -->
+        <div class="card">
+          <div class="card-title">📍 Today's Location</div>
+          <div style="font-size:12px;color:var(--mu);margin-bottom:10px;line-height:1.5">Post where you're parked today. Your members will see this when they open the app.</div>
+          <div class="field" style="margin-bottom:10px">
+            <input type="text" id="v-location-input" placeholder="e.g. Downtown Market, 5th & Main, 11am–3pm" oninput="debounceSaveLocation()" style="background:var(--s2);border:1.5px solid var(--b2);border-radius:12px;padding:12px 14px;color:var(--tx);font-size:15px;font-family:var(--fb);outline:none;width:100%">
+          </div>
+          <button class="btn btn-sm btn-p" onclick="saveLocation()">Post Location</button>
+        </div>
       </div>
     </div>
 
-    <!-- ═══ VENDOR: BRAND ═══ -->
-    <div class="screen" id="s-v-brand">
-      <div class="sh sh-row"><div class="back-btn" onclick="goV('s-v-home')">←</div><div><h1>🎨 Brand</h1></div></div>
+    <!-- VENDOR: AWARD POINTS (used at the window every day) -->
+    <div class="screen" id="s-v-award">
+      <div class="sh sh-row"><div class="back-btn" onclick="goV('s-v-home')">←</div><div><h1>⚡ Award Points</h1><p>Customer made a purchase — give them their points</p></div></div>
+      <div class="bp">
+        <!-- Three ways to identify the customer -->
+        <div class="award-tabs">
+          <button class="award-tab on" onclick="switchAwardTab('phone')">📱 Phone</button>
+          <button class="award-tab" onclick="switchAwardTab('id')">🔢 Rewards ID</button>
+          <button class="award-tab" onclick="switchAwardTab('qr')">📷 Scan QR</button>
+        </div>
+
+        <!-- Method 1: Phone number lookup -->
+        <div class="award-method on" id="award-phone">
+          <div class="field">
+            <label>Customer Phone Number</label>
+            <input type="tel" id="award-phone-input" placeholder="(555) 000-0000" maxlength="14" oninput="formatAwardPhone(this)" autocomplete="off">
+          </div>
+          <button class="btn btn-s" onclick="lookupByPhone()">Find Customer →</button>
+        </div>
+
+        <!-- Method 2: Rewards ID number -->
+        <div class="award-method" id="award-id">
+          <div class="field">
+            <label>Customer Rewards ID</label>
+            <input type="text" id="award-id-input" placeholder="e.g. FTR-000001" autocomplete="off" style="font-family:monospace;letter-spacing:2px;font-size:18px;text-transform:uppercase">
+          </div>
+          <button class="btn btn-s" onclick="lookupByID()">Find Customer →</button>
+        </div>
+
+        <!-- Method 3: QR code (uses camera) -->
+        <div class="award-method" id="award-qr">
+          <div class="callout co-bl">
+            <div class="co-icon">📷</div>
+            <div><div class="co-title">Scan customer's QR code</div><div class="co-desc">Ask the customer to open their app and show their QR code from the Profile tab. Point your camera at it.</div></div>
+          </div>
+          <div style="background:var(--s2);border:1.5px dashed var(--b2);border-radius:14px;padding:40px 20px;text-align:center;margin-bottom:14px;cursor:pointer" onclick="startQRScan()">
+            <div style="font-size:40px;margin-bottom:8px">📷</div>
+            <div style="font-size:14px;font-weight:600;margin-bottom:4px">Tap to open camera</div>
+            <div style="font-size:12px;color:var(--mu)">Scan the customer's QR code</div>
+          </div>
+          <div style="font-size:12px;color:var(--mu);text-align:center">— or enter their ID manually —</div>
+          <div class="field" style="margin-top:12px">
+            <input type="text" id="award-qr-manual" placeholder="FTR-000001" autocomplete="off" style="font-family:monospace;letter-spacing:2px;text-transform:uppercase;font-size:16px" oninput="this.value=this.value.toUpperCase()">
+          </div>
+          <button class="btn btn-s" onclick="lookupByQRManual()">Find Customer →</button>
+        </div>
+
+        <!-- Customer found — award points form -->
+        <div id="award-customer-found" style="display:none">
+          <div class="card" style="border-color:rgba(46,204,142,.3);background:rgba(46,204,142,.04)">
+            <div style="display:flex;align-items:center;gap:12px">
+              <div style="width:48px;height:48px;border-radius:50%;background:rgba(46,204,142,.15);color:var(--gn);display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-size:20px;font-weight:800;flex-shrink:0" id="award-cust-av">J</div>
+              <div>
+                <div style="font-family:var(--fd);font-size:18px;font-weight:800" id="award-cust-name">Customer Name</div>
+                <div style="font-size:12px;color:var(--mu)" id="award-cust-sub">FTR-000001 · 250 pts</div>
+              </div>
+              <div class="tag tag-gn" id="award-cust-tier">Starter</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">💰 Order Amount</div>
+            <div style="font-size:12px;color:var(--mu);margin-bottom:12px;line-height:1.5">Enter what the customer spent. Points are calculated automatically based on your rate (<span id="award-rate-label">10 pts per $1</span>).</div>
+            <div class="field">
+              <label>Order Total ($)</label>
+              <input type="number" id="award-order-total" placeholder="0.00" min="0" step="0.01" oninput="calcAwardPts()" style="font-size:24px;font-family:var(--fd);font-weight:800;text-align:center">
+            </div>
+            <div style="background:var(--s2);border-radius:12px;padding:14px;margin-bottom:14px">
+              <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+                <div style="font-size:13px;color:var(--mu)">Order points</div>
+                <div style="font-family:var(--fd);font-weight:800;color:var(--gd)" id="award-pts-calc">+0 pts</div>
+              </div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:6px" id="award-visit-bonus-row">
+                <div style="font-size:13px;color:var(--mu)">Visit bonus</div>
+                <div style="font-family:var(--fd);font-weight:800;color:var(--gd)" id="award-visit-pts">+50 pts</div>
+              </div>
+              <div style="height:1px;background:var(--b1);margin-bottom:8px"></div>
+              <div style="display:flex;justify-content:space-between">
+                <div style="font-size:13px;font-weight:600">Total awarded</div>
+                <div style="font-family:var(--fd);font-weight:800;color:var(--brand)" id="award-total-pts">+50 pts</div>
+              </div>
+            </div>
+            <button class="btn btn-gn" onclick="awardPoints()">Award Points ✓</button>
+            <button class="btn btn-g" style="margin-top:10px" onclick="resetAwardForm()">Find Different Customer</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VENDOR: CONFIRM REDEMPTION -->
+    <div class="screen" id="s-v-confirm">
+      <div class="sh sh-row"><div class="back-btn" onclick="goV('s-v-home')">←</div><div><h1>✅ Confirm Reward</h1><p>Customer is claiming a reward</p></div></div>
+      <div class="bp">
+        <div class="callout co-gd">
+          <div class="co-icon">💡</div>
+          <div><div class="co-title">How this works</div><div class="co-desc">The customer shows a 7-character code from their app. Enter it below to verify it's valid, see what reward they earned, and confirm it was given to them.</div></div>
+        </div>
+        <div class="field">
+          <label>Customer's Redemption Code</label>
+          <input type="text" id="confirm-code-input" placeholder="STK-0000" maxlength="8" autocomplete="off" oninput="this.value=this.value.toUpperCase()" style="font-family:monospace;letter-spacing:4px;font-size:24px;text-align:center;text-transform:uppercase">
+        </div>
+        <button class="btn btn-s" onclick="lookupRedemptionCode()">Look Up Code →</button>
+
+        <!-- Found — show details and confirm -->
+        <div id="confirm-found" style="display:none;margin-top:16px">
+          <div class="confirm-card">
+            <div style="font-size:40px;margin-bottom:8px" id="confirm-reward-emo">🎁</div>
+            <div class="confirm-reward-name" id="confirm-reward-name">Free Item</div>
+            <div class="confirm-customer" id="confirm-customer-name">Customer Name</div>
+            <div class="confirm-pts" id="confirm-pts-cost">–400 points will be deducted</div>
+            <div style="margin-top:10px"><div class="tag tag-gd" id="confirm-code-display">STK-0000</div></div>
+          </div>
+          <div class="callout co-or">
+            <div class="co-icon">⚠️</div>
+            <div><div class="co-title">Before you confirm</div><div class="co-desc">Make sure you have given the customer this item. Confirming cannot be undone and will deduct the points from their account.</div></div>
+          </div>
+          <button class="btn btn-gn" onclick="confirmRedemption()">✓ I Gave Them the Item — Confirm</button>
+          <button class="btn btn-g" style="margin-top:10px" onclick="resetConfirmForm()">Cancel</button>
+        </div>
+
+        <!-- Not found -->
+        <div id="confirm-notfound" style="display:none;margin-top:16px">
+          <div class="callout co-or">
+            <div class="co-icon">❌</div>
+            <div><div class="co-title">Code not found</div><div class="co-desc">This code is invalid, already used, or expired. Ask the customer to generate a new code from their app.</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VENDOR: REWARDS -->
+    <div class="screen" id="s-v-rewards">
+      <div class="sh sh-row"><div class="back-btn" onclick="goV('s-v-home')">←</div><div><h1>🎁 Rewards</h1><p>Menu items customers redeem with points</p></div></div>
+      <div class="bp">
+        <div class="callout co-bl">
+          <div class="co-icon">💡</div>
+          <div><div class="co-title">Setting good reward costs</div><div class="co-desc">At 10pts/$1 and $12 avg order: customers earn ~120pts/visit. Set a free drink (~$4) at 350pts = ~3 visits. Set a free entrée (~$10) at 800pts = ~7 visits. Adjust to match your margins.</div></div>
+        </div>
+        <div id="v-rewards-list"></div>
+        <button class="btn btn-s" onclick="openSheet('sh-add-reward')">+ Add Menu Item as Reward</button>
+      </div>
+    </div>
+
+    <!-- VENDOR: SPIN PRIZES -->
+    <div class="screen" id="s-v-spin">
+      <div class="sh sh-row"><div class="back-btn" onclick="goV('s-v-home')">←</div><div><h1>🎰 Spin Prizes</h1><p>Bonus points on the wheel — shown before spinning</p></div></div>
+      <div class="bp">
+        <div class="callout co-gd">
+          <div class="co-icon">🎯</div>
+          <div><div class="co-title">All prizes are bonus points</div><div class="co-desc">Every spin wins something. Customers see all possible prizes before they spin so there's no confusion. Small amounts (25–75pts) should be most common. Jackpots (200+pts) should be rare.</div></div>
+        </div>
+        <div id="v-prizes-list"></div>
+        <button class="btn btn-s" onclick="openSheet('sh-add-prize')">+ Add Prize Slot</button>
+      </div>
+    </div>
+
+    <!-- VENDOR: POINTS RULES -->
+    <div class="screen" id="s-v-points">
+      <div class="sh sh-row"><div class="back-btn" onclick="goV('s-v-home')">←</div><div><h1>⚙️ Points Rules</h1></div></div>
       <div class="bp">
         <div class="card">
-          <div class="card-title">🏷️ Truck Details</div>
+          <div class="card-title">💰 Order-Based Earning</div>
+          <div class="field"><label>Points per $1 Spent</label><input type="number" id="pts-per-dollar" value="10" min="1" step="1"></div>
+          <div class="field"><label>Base Visit Points (regardless of order size)</label><input type="number" id="pts-per-visit" value="50" min="0"></div>
+          <div style="font-size:12px;color:var(--mu);line-height:1.6;padding:10px;background:var(--s2);border-radius:10px">
+            Example: Customer spends $15 → <span id="pts-example" style="color:var(--gd)">200 pts</span> (50 base + 150 order)
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">🔥 Bonus Rules</div>
+          <div class="tr"><div class="tr-info"><div class="tt">Double Points — First Visit</div><div class="td">New members get 2× on their first ever check-in</div></div><label class="tog"><input type="checkbox" id="tog-first" checked><div class="tog-track"></div></label></div>
+          <div class="tr"><div class="tr-info"><div class="tt">Streak Multiplier (1.5×)</div><div class="td">Visiting consecutive days earns 1.5× points</div></div><label class="tog"><input type="checkbox" id="tog-streak" checked><div class="tog-track"></div></label></div>
+          <div class="tr"><div class="tr-info"><div class="tt">Birthday Bonus (100pts)</div><div class="td">Auto award on customer's birthday if they've added it</div></div><label class="tog"><input type="checkbox" id="tog-bday"><div class="tog-track"></div></label></div>
+          <div class="tr"><div class="tr-info"><div class="tt">Referral Bonus</div><div class="td">Customer earns 100pts when a referred friend makes their first purchase</div></div><label class="tog"><input type="checkbox" id="tog-ref" checked><div class="tog-track"></div></label></div>
+          <div class="tr"><div class="tr-info"><div class="tt">Win-Back (30 days inactive)</div><div class="td">Auto-send 50pts to customers who haven't visited in 30 days</div></div><label class="tog"><input type="checkbox" id="tog-winback"><div class="tog-track"></div></label></div>
+        </div>
+        <button class="btn btn-p" onclick="savePointsConfig()">Save Rules</button>
+      </div>
+    </div>
+
+    <!-- VENDOR: BRAND -->
+    <div class="screen" id="s-v-brand">
+      <div class="sh sh-row"><div class="back-btn" onclick="goV('s-v-home')">←</div><div><h1>🎨 Brand</h1><p>What customers see in the app</p></div></div>
+      <div class="bp">
+        <div class="card">
+          <div class="card-title">🏷️ Identity</div>
           <div class="field"><label>Truck Name</label><input type="text" id="v-brand-name" placeholder="Your truck name"></div>
-          <div class="field"><label>Tagline</label><input type="text" id="v-brand-tag" placeholder="Your tagline"></div>
+          <div class="field"><label>Tagline</label><input type="text" id="v-brand-tag" placeholder="e.g. Best BBQ on wheels"></div>
         </div>
         <div class="card">
           <div class="card-title">🚚 Icon</div>
-          <div class="ep" id="v-ep"></div>
+          <div id="v-ep" style="display:flex;flex-wrap:wrap;gap:8px"></div>
         </div>
         <div class="card">
           <div class="card-title">🎨 Colors</div>
-          <div style="display:flex;gap:16px;align-items:flex-start;margin-bottom:14px">
+          <div style="display:flex;gap:16px;margin-bottom:14px">
             <div style="display:flex;flex-direction:column;align-items:center;gap:5px">
-              <div class="cdot sel" id="cdot-p" style="background:var(--brand)"><input type="color" value="#FF5A1F" oninput="setBrandCol('p',this.value)"></div>
+              <div id="cdot-p" style="width:44px;height:44px;border-radius:12px;border:2.5px solid white;background:var(--brand);position:relative;overflow:hidden;cursor:pointer">
+                <input type="color" value="#FF5A1F" oninput="setBrandCol('p',this.value)" style="position:absolute;inset:-8px;width:calc(100% + 16px);height:calc(100% + 16px);opacity:0;cursor:pointer">
+              </div>
               <span style="font-size:10px;color:var(--mu)">Primary</span>
             </div>
             <div style="display:flex;flex-direction:column;align-items:center;gap:5px">
-              <div class="cdot" id="cdot-s" style="background:var(--brand2)"><input type="color" value="#F5B800" oninput="setBrandCol('s',this.value)"></div>
+              <div id="cdot-s" style="width:44px;height:44px;border-radius:12px;border:2.5px solid transparent;background:var(--brand2);position:relative;overflow:hidden;cursor:pointer">
+                <input type="color" value="#F5B800" oninput="setBrandCol('s',this.value)" style="position:absolute;inset:-8px;width:calc(100% + 16px);height:calc(100% + 16px);opacity:0;cursor:pointer">
+              </div>
               <span style="font-size:10px;color:var(--mu)">Accent</span>
             </div>
           </div>
           <div style="font-size:11px;color:var(--mu);font-weight:600;text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px">Quick Presets</div>
           <div id="v-presets" style="display:flex;gap:8px;flex-wrap:wrap"></div>
         </div>
-        <button class="btn btn-p" id="v-brand-save-btn" onclick="saveBrand()">Save Brand Changes</button>
+        <button class="btn btn-p" onclick="saveBrand()">Save Brand</button>
       </div>
     </div>
 
-    <!-- ═══ VENDOR: REWARDS ═══ -->
-    <div class="screen" id="s-v-rewards">
-      <div class="sh sh-row"><div class="back-btn" onclick="goV('s-v-home')">←</div><div><h1>🎁 Rewards</h1><p>What customers redeem with points</p></div></div>
-      <div class="bp">
-        <div class="callout co-gn"><div class="co-icon">💡</div><div><div class="co-title">These are live</div><div class="co-desc">Any changes here are immediately visible to your customers in the app.</div></div></div>
-        <div id="v-rewards-list"><div style="text-align:center;padding:24px;color:var(--mu)">Loading rewards...</div></div>
-        <button class="btn btn-s" onclick="openSheet('sh-add-reward')">+ Add Reward</button>
-      </div>
-    </div>
-
-    <!-- ═══ VENDOR: SPIN ═══ -->
-    <div class="screen" id="s-v-spin">
-      <div class="sh sh-row"><div class="back-btn" onclick="goV('s-v-home')">←</div><div><h1>🎰 Spin Wheel</h1><p>Prizes customers win every visit</p></div></div>
-      <div class="bp">
-        <div class="callout co-or"><div class="co-icon">📊</div><div><div class="co-title">Probability tips</div><div class="co-desc">Free items 5–10% · Discounts 15–20% · Bonus points 30–40%</div></div></div>
-        <div id="v-prizes-list"><div style="text-align:center;padding:24px;color:var(--mu)">Loading prizes...</div></div>
-        <button class="btn btn-s" onclick="openSheet('sh-add-prize')">+ Add Prize</button>
-      </div>
-    </div>
-
-    <!-- ═══ VENDOR: TIERS ═══ -->
-    <div class="screen" id="s-v-tiers">
-      <div class="sh sh-row"><div class="back-btn" onclick="goV('s-v-home')">←</div><div><h1>👑 Tiers</h1><p>Name them to match your brand</p></div></div>
-      <div class="bp">
-        <div id="v-tiers-list"><div style="text-align:center;padding:24px;color:var(--mu)">Loading tiers...</div></div>
-      </div>
-    </div>
-
-    <!-- ═══ VENDOR: POINTS ═══ -->
-    <div class="screen" id="s-v-points">
-      <div class="sh sh-row"><div class="back-btn" onclick="goV('s-v-home')">←</div><div><h1>⚡ Points Rules</h1></div></div>
-      <div class="bp">
-        <div class="card">
-          <div class="card-title">Earning Rates</div>
-          <div class="two-col">
-            <div class="field"><label>Points / Visit</label><input type="number" id="pts-visit" value="50" min="1"></div>
-            <div class="field"><label>Spin Bonus</label><input type="number" id="pts-spin" value="25" min="0"></div>
-            <div class="field"><label>Streak Mult ×</label><input type="number" id="pts-streak" value="1.5" min="1" step="0.5"></div>
-            <div class="field"><label>Referral Bonus</label><input type="number" id="pts-ref" value="100" min="0"></div>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-title">Special Rules</div>
-          <div class="tr"><div class="tr-info"><div class="tt">Double Points — First Visit</div><div class="td">2× points to hook new customers</div></div><label class="tog"><input type="checkbox" id="tog-first" checked><div class="tog-track"></div></label></div>
-          <div class="tr"><div class="tr-info"><div class="tt">Streak Multiplier</div><div class="td">Consecutive days earn bonus points</div></div><label class="tog"><input type="checkbox" id="tog-streak" checked><div class="tog-track"></div></label></div>
-          <div class="tr"><div class="tr-info"><div class="tt">Birthday Reward</div><div class="td">Auto free item on customer birthdays</div></div><label class="tog"><input type="checkbox" id="tog-bday"><div class="tog-track"></div></label></div>
-          <div class="tr"><div class="tr-info"><div class="tt">Win-Back (30 days inactive)</div><div class="td">"We miss you — here's 50 bonus points"</div></div><label class="tog"><input type="checkbox" id="tog-winback"><div class="tog-track"></div></label></div>
-        </div>
-        <button class="btn btn-p" onclick="savePointsConfig()">Save Rules</button>
-      </div>
-    </div>
-
-    <!-- ═══ VENDOR: ANALYTICS ═══ -->
+    <!-- VENDOR: ANALYTICS -->
     <div class="screen" id="s-v-analytics">
-      <div class="sh"><h1>📊 Analytics</h1><p>Your loyalty program performance</p></div>
+      <div class="sh"><h1>📊 Analytics</h1><p>Program performance</p></div>
       <div class="bp">
         <div class="stats g2">
-          <div class="sc"><div class="sv" style="color:var(--brand)" id="an-members">–</div><div class="sl">Total Members</div></div>
-          <div class="sc"><div class="sv" style="color:var(--gn)" id="an-retention">68%</div><div class="sl">Retention</div></div>
-          <div class="sc"><div class="sv" style="color:var(--gd)" id="an-visits">–</div><div class="sl">Visits Today</div></div>
-          <div class="sc"><div class="sv" id="an-redemptions">–</div><div class="sl">Redemptions</div></div>
+          <div class="sc"><div class="sv" style="color:var(--brand)" id="an-members">0</div><div class="sl">Members</div></div>
+          <div class="sc"><div class="sv" id="an-visits">0</div><div class="sl">Visits Today</div></div>
+          <div class="sc"><div class="sv" style="color:var(--gd)" id="an-rdm">0</div><div class="sl">Redemptions</div></div>
+          <div class="sc"><div class="sv" style="color:var(--gn)">–</div><div class="sl">Avg Pts/Member</div></div>
         </div>
         <div class="card">
-          <div class="card-title">Key Metrics</div>
-          <div class="trend-row"><div style="font-size:13px;font-weight:500">Members earning points</div><div style="display:flex;align-items:center;gap:8px"><div style="font-family:var(--fd);font-size:16px;font-weight:800" id="an-active">–</div><div class="trend-chg up">↑ Active</div></div></div>
-          <div class="trend-row"><div style="font-size:13px;font-weight:500">At risk (30d inactive)</div><div style="display:flex;align-items:center;gap:8px"><div style="font-family:var(--fd);font-size:16px;font-weight:800;color:var(--rd)">–</div><div class="trend-chg dn">Monitor</div></div></div>
-          <div class="trend-row"><div style="font-size:13px;font-weight:500">Trial ends</div><div style="font-size:13px;color:var(--mu)" id="an-trial">–</div></div>
+          <div class="card-title">📋 Growth Tips</div>
+          <div style="font-size:13px;color:var(--mu);line-height:2">
+            <div>📍 Post your location daily — drives return visits</div>
+            <div>🔥 Award order-based points at the window every time</div>
+            <div>🎁 Rewards reachable in 6–8 visits retain best</div>
+            <div>📲 Ask customers to refer friends for free points</div>
+          </div>
         </div>
-        <div class="callout co-gd"><div class="co-icon">💡</div><div><div class="co-title">Pro tip</div><div class="co-desc">Regulars drive 70% of food truck revenue even though they're only 40% of customers. Focus on turning one-time visitors into 3-visit regulars.</div></div></div>
       </div>
     </div>
 
-    <!-- ═══ VENDOR: CUSTOMERS ═══ -->
-    <div class="screen" id="s-v-customers">
-      <div class="sh"><h1>👥 Members</h1><p id="v-cust-sub">Loading...</p></div>
-      <div class="bp">
-        <div id="v-cust-list"><div style="text-align:center;padding:24px;color:var(--mu)">Loading members...</div></div>
-      </div>
-    </div>
-
-    <!-- ═══ VENDOR: SETTINGS ═══ -->
+    <!-- VENDOR: SETTINGS -->
     <div class="screen" id="s-v-settings">
       <div class="sh"><h1>⚙️ Settings</h1></div>
       <div class="bp">
         <div class="card">
-          <div class="card-title">🔔 SMS Notifications</div>
-          <div class="tr"><div class="tr-info"><div class="tt">Streak Expiry Warning</div><div class="td">1hr before your shift — "Your streak expires today"</div></div><label class="tog"><input type="checkbox" checked><div class="tog-track"></div></label></div>
-          <div class="tr"><div class="tr-info"><div class="tt">Reward Unlocked</div><div class="td">Alert when a customer earns a reward</div></div><label class="tog"><input type="checkbox" checked><div class="tog-track"></div></label></div>
-          <div class="tr"><div class="tr-info"><div class="tt">Tier Upgrade</div><div class="td">Celebrate when customers level up</div></div><label class="tog"><input type="checkbox" checked><div class="tog-track"></div></label></div>
-          <div class="tr"><div class="tr-info"><div class="tt">Win-Back (30d inactive)</div><div class="td">"We miss you — here's 50 bonus points"</div></div><label class="tog"><input type="checkbox"><div class="tog-track"></div></label></div>
-        </div>
-        <div class="card">
-          <div class="card-title">📱 Your QR Code</div>
+          <div class="card-title">📱 Your QR Code & Link</div>
           <div style="text-align:center;margin-bottom:12px">
-            <div class="qr-wrap">
-              <svg width="130" height="130" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg"><rect width="160" height="160" fill="white"/><rect x="10" y="10" width="50" height="50" rx="4" fill="#111"/><rect x="16" y="16" width="38" height="38" rx="2" fill="white"/><rect x="22" y="22" width="26" height="26" rx="1" fill="#111"/><rect x="100" y="10" width="50" height="50" rx="4" fill="#111"/><rect x="106" y="16" width="38" height="38" rx="2" fill="white"/><rect x="112" y="22" width="26" height="26" rx="1" fill="#111"/><rect x="10" y="100" width="50" height="50" rx="4" fill="#111"/><rect x="16" y="106" width="38" height="38" rx="2" fill="white"/><rect x="22" y="112" width="26" height="26" rx="1" fill="#111"/><rect x="70" y="10" width="8" height="8" fill="#111"/><rect x="82" y="22" width="8" height="8" fill="#111"/><rect x="70" y="34" width="8" height="8" fill="#111"/><rect x="82" y="46" width="8" height="8" fill="#111"/><rect x="70" y="58" width="8" height="8" fill="#111"/><rect x="82" y="70" width="8" height="8" fill="#111"/><rect x="100" y="70" width="8" height="8" fill="#111"/><rect x="112" y="82" width="8" height="8" fill="#111"/><rect x="124" y="70" width="8" height="8" fill="#111"/><rect x="136" y="82" width="8" height="8" fill="#111"/><rect x="10" y="70" width="8" height="8" fill="#111"/><rect x="22" y="82" width="8" height="8" fill="#111"/><rect x="34" y="70" width="8" height="8" fill="#111"/><rect x="46" y="82" width="8" height="8" fill="#111"/><rect x="70" y="100" width="8" height="8" fill="#111"/><rect x="82" y="112" width="8" height="8" fill="#111"/><rect x="100" y="100" width="8" height="8" fill="#111"/><rect x="112" y="112" width="8" height="8" fill="#111"/><rect x="124" y="124" width="8" height="8" fill="#111"/><rect x="136" y="136" width="8" height="8" fill="#111"/></svg>
+            <div style="background:white;border-radius:16px;padding:14px;display:inline-block">
+              <svg width="130" height="130" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg"><rect width="160" height="160" fill="white"/><rect x="10" y="10" width="50" height="50" rx="4" fill="#111"/><rect x="16" y="16" width="38" height="38" rx="2" fill="white"/><rect x="22" y="22" width="26" height="26" rx="1" fill="#111"/><rect x="100" y="10" width="50" height="50" rx="4" fill="#111"/><rect x="106" y="16" width="38" height="38" rx="2" fill="white"/><rect x="112" y="22" width="26" height="26" rx="1" fill="#111"/><rect x="10" y="100" width="50" height="50" rx="4" fill="#111"/><rect x="16" y="106" width="38" height="38" rx="2" fill="white"/><rect x="22" y="112" width="26" height="26" rx="1" fill="#111"/><rect x="70" y="10" width="8" height="8" fill="#111"/><rect x="82" y="22" width="8" height="8" fill="#111"/><rect x="70" y="34" width="8" height="8" fill="#111"/><rect x="82" y="70" width="8" height="8" fill="#111"/><rect x="100" y="70" width="8" height="8" fill="#111"/><rect x="70" y="100" width="8" height="8" fill="#111"/><rect x="136" y="136" width="8" height="8" fill="#111"/></svg>
             </div>
           </div>
-          <div style="text-align:center;font-size:13px;color:var(--mu);margin-bottom:12px">truckloyal.com/<span id="v-settings-slug">–</span></div>
-          <div class="btn-row">
-            <button class="btn btn-s btn-sm" style="flex:1" onclick="copyLink()">Copy Link</button>
-            <button class="btn btn-s btn-sm" style="flex:1" onclick="showToast('🖨️ Download coming soon!')">Download PNG</button>
+          <div style="background:var(--s2);border:1px solid var(--b2);border-radius:10px;padding:10px 14px;font-size:12px;color:var(--mu);margin-bottom:12px;word-break:break-all;text-align:center" id="v-qr-url">foodtruckrewards.app/yourtruck</div>
+          <div class="callout co-bl" style="margin-bottom:12px">
+            <div class="co-icon">💡</div>
+            <div><div class="co-title">3 ways to share</div><div class="co-desc">1. Print QR on your menu board or truck<br>2. Text the link to customers at the window<br>3. Post the link in your social bio</div></div>
           </div>
+          <div class="btn-row">
+            <button class="btn btn-s btn-sm" style="flex:1" onclick="copyVendorLink()">📋 Copy Link</button>
+            <button class="btn btn-s btn-sm" style="flex:1" onclick="shareVendorLink()">📤 Share</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">🔔 SMS Notifications</div>
+          <div class="tr"><div class="tr-info"><div class="tt">Reward Unlocked</div><div class="td">Alert customer when they have enough pts to redeem</div></div><label class="tog"><input type="checkbox" checked><div class="tog-track"></div></label></div>
+          <div class="tr"><div class="tr-info"><div class="tt">Tier Upgrade</div><div class="td">Celebrate when a customer levels up</div></div><label class="tog"><input type="checkbox" checked><div class="tog-track"></div></label></div>
+          <div class="tr"><div class="tr-info"><div class="tt">Streak Warning</div><div class="td">Remind customer before their streak expires</div></div><label class="tog"><input type="checkbox" checked><div class="tog-track"></div></label></div>
+          <div class="tr"><div class="tr-info"><div class="tt">New Member Welcome</div><div class="td">Auto-message when someone joins your program</div></div><label class="tog"><input type="checkbox" checked><div class="tog-track"></div></label></div>
         </div>
         <div class="card">
           <div class="card-title">💳 Subscription</div>
-          <div class="sub-row"><div><div class="sub-lbl">Starter Plan</div><div class="sub-sub">Up to 500 members</div></div><div class="tag tag-gn">$29/mo</div></div>
-          <div class="sub-row"><div><div class="sub-lbl">Trial ends</div><div class="sub-sub" id="v-trial-end">–</div></div></div>
-          <button class="btn btn-gd btn-sm" style="width:100%;margin-top:12px;font-family:var(--fd)" onclick="showToast('🚀 Upgrade coming soon!')">Upgrade to Pro →</button>
+          <div class="tr"><div class="tr-info"><div class="tt">Plan</div><div class="td">Starter — up to 500 members</div></div><div class="tag tag-gn">$29/mo</div></div>
+          <div class="tr"><div class="tr-info"><div class="tt">Trial ends</div></div><div style="font-size:13px;color:var(--mu)" id="v-trial-end">–</div></div>
         </div>
         <button class="btn btn-g" style="margin-top:4px;color:var(--rd);border-color:rgba(255,79,79,.25)" onclick="vendorLogout()">Sign Out</button>
       </div>
     </div>
 
-    <!-- ═══ CUSTOMER: WELCOME ═══ -->
-    <div class="screen" id="s-c-welcome">
-      <div class="cw">
-        <div class="cw-glow" id="cw-glow"></div>
-        <div class="cw-emoji" id="c-emoji">🚚</div>
-        <div class="cw-brand" id="c-brand">Stack'd Eats</div>
-        <div class="cw-tag" id="c-tagline">Rewards that hit different</div>
-        <div class="sp-row">
-          <div class="sp-faces">
-            <div class="sp-face" style="background:#FF5A1F">J</div>
-            <div class="sp-face" style="background:#8B5CF6">T</div>
-            <div class="sp-face" style="background:#059669">S</div>
+    <!-- ══════════════════════════════════════
+         CUSTOMER SCREENS
+    ══════════════════════════════════════ -->
+
+    <!-- CUSTOMER SIGNUP — global, not tied to any truck -->
+    <div class="screen" id="s-c-signup">
+      <div class="auth-wrap">
+        <div class="auth-logo">🎰</div>
+        <div class="auth-title">Join Food Truck Rewards</div>
+        <div class="auth-sub">One account works at every food truck in the network. Scan any truck's QR to start earning.</div>
+        <div class="auth-err" id="c-signup-err"></div>
+        <div class="auth-form">
+          <div class="field"><label>Full Name</label><input type="text" id="c-su-name" placeholder="Your name" autocomplete="name"></div>
+          <div class="field"><label>Phone Number</label><input type="tel" id="c-su-phone" placeholder="(555) 000-0000" maxlength="14" oninput="formatPhone(this)" autocomplete="tel"></div>
+          <div class="field"><label>Email Address</label><input type="email" id="c-su-email" placeholder="you@email.com" autocomplete="email"></div>
+          <button class="btn btn-p" id="c-signup-btn" onclick="customerSignup()">Create My Account →</button>
+          <div class="auth-switch">Already have an account? <span onclick="goC('s-c-login')">Sign in</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CUSTOMER LOGIN -->
+    <div class="screen" id="s-c-login">
+      <div class="auth-wrap">
+        <div class="auth-logo">👤</div>
+        <div class="auth-title">Sign In</div>
+        <div class="auth-sub">Welcome back! Sign in to see your points and rewards.</div>
+        <div class="auth-err" id="c-login-err"></div>
+        <div class="auth-form">
+          <div class="field"><label>Phone Number</label><input type="tel" id="c-login-phone" placeholder="(555) 000-0000" maxlength="14" oninput="formatPhone(this)" autocomplete="tel"></div>
+          <div class="field"><label>Email Address</label><input type="email" id="c-login-email" placeholder="you@email.com" autocomplete="email"></div>
+          <button class="btn btn-p" id="c-login-btn" onclick="customerLogin()">Sign In</button>
+          <div class="auth-switch">No account? <span onclick="goC('s-c-signup')">Create one free</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CUSTOMER HOME — my trucks list -->
+    <div class="screen" id="s-c-home">
+      <div class="sh">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start">
+          <div>
+            <h1 id="c-home-greeting">My Trucks</h1>
+            <p id="c-home-sub">Scan a QR code to add your first truck</p>
           </div>
-          <span id="c-member-count">Loading members...</span>
+          <div style="font-family:var(--fd);font-size:13px;font-weight:700;color:var(--gd)" id="c-home-total-pts"></div>
         </div>
-        <div class="cw-perks">
-          <h3>Join & Spin Free 🎰</h3>
-          <div class="cw-perk"><div class="cw-pico" id="cpico1">🎰</div>Spin the wheel every visit</div>
-          <div class="cw-perk"><div class="cw-pico" id="cpico2">🔥</div>Build streaks for bonus points</div>
-          <div class="cw-perk"><div class="cw-pico" id="cpico3">👑</div>Reach VIP — free food awaits</div>
-          <div class="cw-perk"><div class="cw-pico" id="cpico4">🔗</div>Refer friends, earn bonus points</div>
+      </div>
+      <div class="bp">
+        <!-- Empty state -->
+        <div id="c-no-trucks" style="text-align:center;padding:40px 20px">
+          <div style="font-size:52px;margin-bottom:12px">🚚</div>
+          <div style="font-family:var(--fd);font-size:20px;font-weight:800;margin-bottom:8px">No trucks yet</div>
+          <div style="font-size:14px;color:var(--mu);margin-bottom:24px;line-height:1.6">Scan a food truck's QR code to join their loyalty program and start earning points.</div>
+          <button class="btn btn-p" onclick="goC('s-c-scan')">📷 Scan a Truck QR Code</button>
         </div>
-        <div style="width:100%">
-          <div class="field"><label>Your Phone Number</label><input type="tel" id="c-phone" placeholder="(555) 000-0000" maxlength="14"></div>
-          <button class="btn btn-p" id="c-join-btn" onclick="customerJoin()">GET MY FREE SPIN →</button>
-          <button class="btn btn-g" style="margin-top:10px" onclick="skipToCustomerDash()">Already a member? Sign in</button>
+
+        <!-- Trucks list -->
+        <div id="c-trucks-list"></div>
+
+        <!-- Scan button when trucks exist -->
+        <div id="c-scan-more" style="display:none;margin-top:4px">
+          <button class="btn btn-s" onclick="goC('s-c-scan')">📷 Scan Another Truck</button>
         </div>
       </div>
     </div>
 
-    <!-- ═══ CUSTOMER: SPIN ═══ -->
-    <div class="screen" id="s-c-spin">
-      <div class="spin-wrap">
-        <div class="spin-title">🎰 SPIN TO WIN</div>
-        <div class="spin-sub">You earned a free spin — let's go!</div>
-        <div class="wheel-area">
-          <div class="wheel-ptr">▼</div>
-          <canvas id="spin-canvas" width="300" height="300"></canvas>
+    <!-- CUSTOMER: SCAN QR / JOIN TRUCK -->
+    <div class="screen" id="s-c-scan">
+      <div class="sh sh-row"><div class="back-btn" onclick="goC('s-c-home')">←</div><div><h1>📷 Join a Truck</h1><p>Scan or enter a truck's code</p></div></div>
+      <div class="bp">
+        <div class="callout co-or">
+          <div class="co-icon">📷</div>
+          <div><div class="co-title">How to scan</div><div class="co-desc">Ask the food truck for their QR code — it's on their truck, menu board, or they can show it from their phone. Point your camera at it.</div></div>
         </div>
-        <button class="btn btn-p" id="spin-btn" style="max-width:300px" onclick="doSpin()">SPIN THE WHEEL</button>
-        <p style="font-size:12px;color:var(--mu);margin-top:12px;letter-spacing:1px;text-transform:uppercase">+<span id="spin-bonus-pts">25</span> bonus points just for spinning</p>
+        <div style="background:var(--s2);border:1.5px dashed var(--b2);border-radius:14px;padding:40px 20px;text-align:center;margin-bottom:14px;cursor:pointer" onclick="startCustomerQRScan()">
+          <div style="font-size:40px;margin-bottom:8px">📷</div>
+          <div style="font-size:14px;font-weight:600;margin-bottom:4px">Tap to scan QR code</div>
+          <div style="font-size:12px;color:var(--mu)">Opens your camera</div>
+        </div>
+        <div style="text-align:center;font-size:13px;color:var(--mu);margin:14px 0">— or enter the truck's code manually —</div>
+        <div class="field">
+          <label>Truck Code</label>
+          <input type="text" id="c-truck-code-input" placeholder="e.g. flavoronwheels" autocomplete="off" style="text-transform:lowercase">
+        </div>
+        <button class="btn btn-p" onclick="joinTruckByCode()">Join This Truck →</button>
+
+        <!-- Demo mode for testing -->
+        <div style="margin-top:20px;text-align:center">
+          <div style="font-size:12px;color:var(--fa);margin-bottom:8px">— demo —</div>
+          <button class="btn btn-g btn-sm" onclick="joinDemoTruck()">Join Demo Truck (Testing)</button>
+        </div>
       </div>
     </div>
 
-    <!-- ═══ CUSTOMER: DASHBOARD ═══ -->
-    <div class="screen" id="s-c-dash">
-      <div class="cd-hdr">
-        <div class="cd-greet">Welcome back</div>
-        <div class="cd-name" id="c-dash-name">–</div>
-        <div class="cd-tier" id="c-tier-badge">🔥 <span id="c-tier-name">–</span></div>
+    <!-- CUSTOMER: PER-TRUCK DASHBOARD -->
+    <div class="screen" id="s-c-truck">
+      <!-- Truck header with brand colors -->
+      <div id="c-truck-header" style="padding:20px 20px 16px;border-bottom:1px solid var(--b1);background:linear-gradient(180deg,rgba(255,90,31,.08) 0%,transparent 100%)">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+          <div class="back-btn" onclick="goC('s-c-home')">←</div>
+          <div>
+            <div style="font-size:11px;color:var(--mu);letter-spacing:1px;margin-bottom:2px" id="ct-tagline">–</div>
+            <div style="font-family:var(--fd);font-size:22px;font-weight:900;line-height:1" id="ct-name">–</div>
+          </div>
+          <div style="margin-left:auto;font-size:32px" id="ct-emoji">🚚</div>
+        </div>
+        <!-- Location today -->
+        <div id="ct-location-bar" style="background:rgba(79,158,255,.08);border:1px solid rgba(79,158,255,.18);border-radius:10px;padding:8px 12px;font-size:12px;color:var(--bl);margin-bottom:12px;display:none">
+          📍 <span id="ct-location-text">–</span>
+        </div>
         <div class="stats g3">
-          <div class="sc"><div class="sv" id="c-pts-val" style="color:var(--brand)">–</div><div class="sl">Points</div></div>
-          <div class="sc"><div class="sv" id="c-visits-val">–</div><div class="sl">Visits</div></div>
-          <div class="sc"><div class="sv" style="color:var(--gn)" id="c-saved-val">$0</div><div class="sl">Saved</div></div>
+          <div class="sc"><div class="sv" id="ct-pts" style="color:var(--brand)">0</div><div class="sl">Points</div></div>
+          <div class="sc"><div class="sv" id="ct-visits">0</div><div class="sl">Visits</div></div>
+          <div class="sc"><div class="sv" style="color:var(--gn)" id="ct-saved">$0</div><div class="sl">Saved</div></div>
         </div>
       </div>
       <div style="padding:14px 20px 80px">
-        <div class="sk-card">
-          <div class="sk-top"><div class="sk-lbl">🔥 Visit Streak</div><div class="sk-cnt" id="c-streak-cnt">– days</div></div>
-          <div class="sk-days" id="c-streak-days"></div>
-          <div class="sk-tip" id="c-streak-tip"></div>
-        </div>
-        <div class="card" style="margin-top:4px">
-          <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:10px">
-            <div><div style="font-size:11px;color:var(--mu);text-transform:uppercase;letter-spacing:.8px;margin-bottom:3px">Progress to next tier</div><div style="font-family:var(--fd);font-size:16px;font-weight:800" id="c-next-tier">–</div></div>
-            <div style="font-size:12px;color:var(--mu)" id="c-pts-away">–</div>
+        <!-- Tier badge & progress -->
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+            <div>
+              <div style="font-size:11px;color:var(--mu);text-transform:uppercase;letter-spacing:.8px;margin-bottom:3px">Your tier</div>
+              <div style="font-family:var(--fd);font-size:18px;font-weight:800" id="ct-tier">🌱 Starter</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:12px;color:var(--mu)" id="ct-next-tier-lbl">Next: 🔥 Regular</div>
+              <div style="font-size:11px;color:var(--mu)" id="ct-pts-away">200 pts away</div>
+            </div>
           </div>
-          <div class="pbar"><div class="pfill" id="c-prog-fill" style="width:0%"></div></div>
-          <div style="font-size:11px;color:var(--mu);text-align:right;margin-top:5px" id="c-prog-label">–</div>
+          <div class="pbar"><div class="pfill" id="ct-prog-fill" style="width:0%"></div></div>
         </div>
-        <div style="margin-top:14px">
-          <div style="font-family:var(--fd);font-size:15px;font-weight:800;margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px">Your Rewards</div>
-          <div id="c-rewards-list"><div style="text-align:center;padding:16px;color:var(--mu)">Loading rewards...</div></div>
+
+        <!-- Streak -->
+        <div class="sk-card">
+          <div class="sk-top"><div class="sk-lbl">🔥 Visit Streak</div><div class="sk-cnt" id="ct-streak">0 days</div></div>
+          <div class="sk-days" id="ct-streak-days"></div>
+          <div style="font-size:11px;color:var(--gd);margin-top:8px" id="ct-streak-tip">Visit today to start your streak!</div>
         </div>
-        <div class="callout co-or" style="margin-top:8px">
-          <div class="co-icon">📲</div>
-          <div><div class="co-title">Share & earn bonus points</div><div class="co-desc">Post about us on social and earn extra points!</div>
-          <div class="share-row">
-            <button class="share-btn" onclick="socialShare('Instagram')"><span class="sb-ico">📸</span>Instagram</button>
-            <button class="share-btn" onclick="socialShare('TikTok')"><span class="sb-ico">🎵</span>TikTok</button>
-            <button class="share-btn" onclick="socialShare('Facebook')"><span class="sb-ico">📘</span>Facebook</button>
-          </div></div>
-        </div>
-        <div style="margin-top:10px">
-          <button class="btn btn-p" onclick="goC('s-c-spin')">📱 Check In / Visit Again</button>
-        </div>
+
+        <!-- Check in button -->
+        <button class="btn btn-p" style="margin-bottom:12px" onclick="checkInAtTruck()">⚡ Check In & Spin the Wheel</button>
+
+        <!-- Rewards for THIS truck -->
+        <div style="font-family:var(--fd);font-size:15px;font-weight:800;margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px">Redeem Points</div>
+        <div style="font-size:12px;color:var(--mu);margin-bottom:12px;line-height:1.5">Show the redemption code to the cashier before ordering. They'll enter it to confirm.</div>
+        <div id="ct-rewards-list"></div>
       </div>
     </div>
 
-    <!-- ═══ CUSTOMER: HISTORY ═══ -->
-    <div class="screen" id="s-c-history">
-      <div class="sh"><h1>📋 History</h1><p>Your visits and earnings</p></div>
-      <div class="bp" id="c-hist-list"><div style="text-align:center;padding:24px;color:var(--mu)">Loading history...</div></div>
+    <!-- CUSTOMER: SPIN (after check-in at a specific truck) -->
+    <div class="screen" id="s-c-spin">
+      <div class="spin-wrap">
+        <div class="spin-title">🎰 Spin for Bonus Points!</div>
+        <div class="spin-sub">Checked in at <strong id="spin-truck-name">–</strong> · +<span id="spin-visit-pts">50</span> pts earned</div>
+        <div style="font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--mu);margin-bottom:8px;width:100%;text-align:left">What you could win:</div>
+        <div class="spp-grid" id="spp-grid"></div>
+        <div style="font-size:11px;color:var(--fa);margin-bottom:14px;text-align:center">Every spin wins something · Points added automatically</div>
+        <div class="wheel-area">
+          <div class="wheel-ptr">▼</div>
+          <canvas id="spin-canvas" width="280" height="280"></canvas>
+        </div>
+        <button class="btn btn-p" id="spin-btn" style="max-width:280px" onclick="doSpin()">SPIN THE WHEEL</button>
+        <p style="font-size:12px;color:var(--mu);margin-top:10px;line-height:1.6;text-align:center">Points are added to your balance.<br>Use them to redeem rewards from the truck's page.</p>
+      </div>
     </div>
 
-    <!-- ═══ CUSTOMER: PROFILE ═══ -->
+    <!-- CUSTOMER: MY QR CODE -->
+    <div class="screen" id="s-c-qr">
+      <div class="sh sh-row"><div class="back-btn" onclick="goC('s-c-profile')">←</div><div><h1>My Rewards QR</h1><p>Show this at any truck to earn or redeem points</p></div></div>
+      <div class="bp">
+        <div class="callout co-or">
+          <div class="co-icon">💡</div>
+          <div><div class="co-title">Two ways to use this</div><div class="co-desc">1. Show to vendor to earn points for your purchase<br>2. Show when redeeming a reward so they can confirm it</div></div>
+        </div>
+        <div style="text-align:center;padding:20px 0">
+          <div class="my-qr-wrap" style="margin:0 auto">
+            <!-- Dynamic QR based on customer ID -->
+            <svg id="customer-qr-svg" width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+              <rect width="200" height="200" fill="white"/>
+              <rect x="15" y="15" width="60" height="60" rx="5" fill="#111"/><rect x="21" y="21" width="48" height="48" rx="3" fill="white"/><rect x="27" y="27" width="36" height="36" rx="2" fill="#111"/>
+              <rect x="125" y="15" width="60" height="60" rx="5" fill="#111"/><rect x="131" y="21" width="48" height="48" rx="3" fill="white"/><rect x="137" y="27" width="36" height="36" rx="2" fill="#111"/>
+              <rect x="15" y="125" width="60" height="60" rx="5" fill="#111"/><rect x="21" y="131" width="48" height="48" rx="3" fill="white"/><rect x="27" y="137" width="36" height="36" rx="2" fill="#111"/>
+              <rect x="95" y="15" width="10" height="10" fill="#111"/><rect x="110" y="28" width="10" height="10" fill="#111"/>
+              <rect x="95" y="42" width="10" height="10" fill="#111"/><rect x="110" y="55" width="10" height="10" fill="#111"/>
+              <rect x="95" y="95" width="10" height="10" fill="#111"/><rect x="108" y="108" width="10" height="10" fill="#111"/>
+              <rect x="125" y="95" width="10" height="10" fill="#111"/><rect x="140" y="108" width="10" height="10" fill="#111"/>
+              <rect x="155" y="95" width="10" height="10" fill="#111"/><rect x="168" y="108" width="10" height="10" fill="#111"/>
+              <rect x="95" y="125" width="10" height="10" fill="#111"/><rect x="108" y="140" width="10" height="10" fill="#111"/>
+              <rect x="125" y="155" width="10" height="10" fill="#111"/><rect x="155" y="168" width="10" height="10" fill="#111"/>
+            </svg>
+            <div class="my-qr-id" id="c-qr-id">FTR-000000</div>
+            <div style="font-size:11px;color:#888;margin-top:2px">Your Rewards ID</div>
+          </div>
+        </div>
+        <button class="btn btn-s" onclick="shareMyQR()">📤 Share My Rewards ID</button>
+      </div>
+    </div>
+
+    <!-- CUSTOMER: PROFILE -->
     <div class="screen" id="s-c-profile">
       <div class="sh"><h1>👤 Profile</h1></div>
       <div class="bp">
         <div style="text-align:center;padding:14px 0 22px">
-          <div style="width:76px;height:76px;border-radius:50%;background:rgba(255,90,31,.15);color:var(--brand);display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-size:30px;font-weight:900;margin:0 auto 10px" id="c-prof-av">–</div>
-          <div style="font-family:var(--fd);font-size:22px;font-weight:900;margin-bottom:4px" id="c-prof-name">–</div>
-          <div style="font-size:13px;color:var(--mu)" id="c-prof-phone">–</div>
+          <div style="width:76px;height:76px;border-radius:50%;background:rgba(255,90,31,.15);color:var(--brand);display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-size:30px;font-weight:900;margin:0 auto 10px" id="c-prof-av">?</div>
+          <div style="font-family:var(--fd);font-size:22px;font-weight:900;margin-bottom:2px" id="c-prof-name">Member</div>
+          <div style="font-size:13px;color:var(--mu);margin-bottom:4px" id="c-prof-phone">–</div>
+          <div style="font-size:13px;color:var(--mu)" id="c-prof-email">–</div>
         </div>
+
+        <!-- My QR code shortcut -->
+        <button class="btn btn-gd" style="margin-bottom:14px" onclick="goC('s-c-qr')">📱 Show My Rewards QR Code</button>
+
         <div class="card">
-          <div class="card-title">🏆 My Stats</div>
-          <div class="sub-row"><div><div class="sub-lbl">Total Points Earned</div></div><div style="font-family:var(--fd);font-size:18px;font-weight:800;color:var(--gd)" id="c-total-pts">–</div></div>
-          <div class="sub-row"><div><div class="sub-lbl">Total Visits</div></div><div style="font-family:var(--fd);font-size:18px;font-weight:800" id="c-total-visits">–</div></div>
-          <div class="sub-row"><div><div class="sub-lbl">Money Saved</div></div><div style="font-family:var(--fd);font-size:18px;font-weight:800;color:var(--gd)" id="c-total-saved">$0</div></div>
-          <div class="sub-row"><div><div class="sub-lbl">Current Tier</div></div><div class="tag tag-or" id="c-prof-tier">–</div></div>
+          <div class="card-title">🏆 All-Time Stats</div>
+          <div class="tr"><div class="tr-info"><div class="tt">Total Points Earned</div></div><div style="font-family:var(--fd);font-size:18px;font-weight:800;color:var(--gd)" id="c-total-pts">0</div></div>
+          <div class="tr"><div class="tr-info"><div class="tt">Total Visits</div></div><div style="font-family:var(--fd);font-size:18px;font-weight:800" id="c-total-visits">0</div></div>
+          <div class="tr"><div class="tr-info"><div class="tt">Trucks Joined</div></div><div style="font-family:var(--fd);font-size:18px;font-weight:800" id="c-trucks-count">0</div></div>
+          <div class="tr"><div class="tr-info"><div class="tt">Money Saved</div></div><div style="font-family:var(--fd);font-size:18px;font-weight:800;color:var(--gd)" id="c-total-saved">$0.00</div></div>
         </div>
+
         <div class="card">
-          <div class="card-title">🔗 Refer & Earn</div>
-          <div style="font-size:13px;color:var(--mu);margin-bottom:12px;line-height:1.6">Earn <strong style="color:var(--gd)">100 bonus points</strong> for every friend you bring in.</div>
-          <div class="ref-code-box">
-            <div class="ref-code-val" id="c-ref-code">–</div>
-            <div class="ref-code-hint">Your personal referral code</div>
-          </div>
-          <div class="share-row">
-            <button class="share-btn" onclick="copyRefLink()"><span class="sb-ico">🔗</span>Copy Link</button>
-            <button class="share-btn" onclick="showToast('📱 Sharing...')"><span class="sb-ico">📲</span>Share</button>
-          </div>
+          <div class="card-title">🎂 Birthday (optional)</div>
+          <div style="font-size:13px;color:var(--mu);margin-bottom:12px;line-height:1.6">Add your birthday to get a special points surprise from each truck you visit on your big day!</div>
+          <div class="field"><input type="date" id="c-birthday" style="background:var(--s2);border:1.5px solid var(--b2);border-radius:12px;padding:12px 14px;color:var(--tx);font-size:16px;width:100%;font-family:var(--fb);outline:none"></div>
+          <button class="btn btn-s btn-sm" style="width:100%" onclick="saveBirthday()">Save Birthday</button>
         </div>
+
+        <div class="card">
+          <div class="card-title">🔗 Refer a Friend</div>
+          <div style="font-size:13px;color:var(--mu);margin-bottom:12px;line-height:1.6">Share your referral link. When a friend joins and makes their first purchase at any truck, <strong style="color:var(--gd)">you both earn 100 bonus points</strong> at that truck.</div>
+          <div style="background:var(--s2);border:1px solid var(--b2);border-radius:10px;padding:10px 14px;font-size:13px;color:var(--mu);margin-bottom:12px;word-break:break-all" id="c-ref-link">Create an account to get your link</div>
+          <button class="btn btn-p btn-sm" style="width:100%" onclick="shareReferral()">📤 Share Referral Link</button>
+        </div>
+
         <button class="btn btn-g" style="margin-top:4px" onclick="customerLogout()">Sign Out</button>
+      </div>
+    </div>
+
+    <!-- CUSTOMER: HISTORY -->
+    <div class="screen" id="s-c-history">
+      <div class="sh"><h1>📋 History</h1><p>All visits and earnings across all trucks</p></div>
+      <div class="bp" id="c-hist-body">
+        <div style="text-align:center;padding:32px 0;color:var(--mu)">No visits yet — scan a truck's QR code to start!</div>
       </div>
     </div>
 
@@ -592,16 +872,16 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
   <div class="bnav" id="bnav"></div>
 </div>
 
-<!-- SHEETS -->
+<!-- BOTTOM SHEETS -->
 <div class="overlay" id="sh-add-reward" onclick="closeSheet('sh-add-reward')">
   <div class="sheet" onclick="event.stopPropagation()">
     <div class="sheet-handle"></div>
     <div class="sheet-title">Add Reward</div>
     <div class="two-col">
-      <div class="field"><label>Emoji</label><input type="text" id="nr-e" placeholder="🍔" maxlength="4" style="text-align:center;font-size:24px"></div>
-      <div class="field"><label>Points Required</label><input type="number" id="nr-p" placeholder="500" min="1"></div>
+      <div class="field"><label>Emoji</label><input type="text" id="nr-e" placeholder="🌮" maxlength="4" style="text-align:center;font-size:24px"></div>
+      <div class="field"><label>Points Required</label><input type="number" id="nr-p" placeholder="350" min="1"></div>
     </div>
-    <div class="field"><label>Item Name</label><input type="text" id="nr-n" placeholder="e.g. Free Taco"></div>
+    <div class="field"><label>Item Name (from your menu)</label><input type="text" id="nr-n" placeholder="e.g. Free Drink"></div>
     <button class="btn btn-p" onclick="addReward()">Add Reward</button>
   </div>
 </div>
@@ -610,1126 +890,1168 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
   <div class="sheet" onclick="event.stopPropagation()">
     <div class="sheet-handle"></div>
     <div class="sheet-title">Add Prize Slot</div>
-    <div class="two-col">
-      <div class="field"><label>Emoji</label><input type="text" id="np-e" placeholder="🎁" maxlength="4" style="text-align:center;font-size:24px"></div>
-      <div class="field"><label>Probability %</label><input type="number" id="np-p" placeholder="10" min="1" max="100"></div>
+    <div class="callout co-gd" style="margin-bottom:14px">
+      <div class="co-icon">💡</div>
+      <div><div class="co-desc">All prizes = bonus points. Probability is how often this slot wins relative to others. Totals don't need to add to 100.</div></div>
     </div>
-    <div class="field"><label>Prize Label</label><input type="text" id="np-n" placeholder="e.g. Free Drink"></div>
+    <div class="two-col">
+      <div class="field"><label>Emoji</label><input type="text" id="np-e" placeholder="⚡" maxlength="4" style="text-align:center;font-size:24px"></div>
+      <div class="field"><label>Probability Weight</label><input type="number" id="np-p" placeholder="30" min="1"></div>
+    </div>
+    <div class="two-col">
+      <div class="field"><label>Points Won</label><input type="number" id="np-pts" placeholder="50" min="1"></div>
+      <div class="field"><label>Label</label><input type="text" id="np-n" placeholder="+50 Points"></div>
+    </div>
     <button class="btn btn-p" onclick="addPrize()">Add Prize</button>
   </div>
 </div>
 
+<!-- WIN SHEET -->
 <div class="overlay" id="sh-win">
   <div class="sheet">
     <div class="sheet-handle"></div>
-    <div class="sheet-title" style="text-align:center;color:var(--gd)">🎉 YOU WON!</div>
-    <div class="win-box">
-      <div class="win-emo" id="win-emo">🥤</div>
-      <div class="win-name" id="win-name">Free Drink</div>
-      <div class="win-code" id="win-code">Code: STK-0000</div>
+    <div style="text-align:center;font-family:var(--fd);font-size:22px;font-weight:800;color:var(--gd);margin-bottom:16px">🎉 You Won!</div>
+    <div style="background:linear-gradient(135deg,#FFFDE7,#FFF3E0);border:2px solid #FFE082;border-radius:18px;padding:22px;text-align:center;margin-bottom:14px;box-shadow:0 4px 16px rgba(249,168,37,.15)">
+      <div style="font-family:var(--fd);font-size:54px;color:#E65100;line-height:1;margin-bottom:4px" id="win-pts-big">+50</div>
+      <div style="font-size:13px;color:var(--mu);text-transform:uppercase;letter-spacing:1px;font-weight:700">Bonus Points</div>
     </div>
-    <p style="font-size:12px;color:var(--mu);text-align:center;margin-bottom:16px">Show this to the cashier before ordering</p>
-    <button class="btn btn-p" onclick="closeSheet('sh-win');loadCustomerDash()">View My Dashboard</button>
+    <div style="background:var(--s2);border:2px solid var(--b2);border-radius:12px;padding:14px;margin-bottom:16px">
+      <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+        <div style="font-size:13px;color:var(--mu)">Visit + order pts</div>
+        <div style="font-family:var(--fd);font-weight:800;color:var(--gd)" id="win-visit-pts">+50</div>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+        <div style="font-size:13px;color:var(--mu)">Spin bonus</div>
+        <div style="font-family:var(--fd);font-weight:800;color:var(--gd)" id="win-spin-pts">+50</div>
+      </div>
+      <div style="height:1px;background:var(--b1);margin-bottom:8px"></div>
+      <div style="display:flex;justify-content:space-between">
+        <div style="font-size:13px;font-weight:600">New balance at <span id="win-truck-name">–</span></div>
+        <div style="font-family:var(--fd);font-weight:800;color:var(--brand)" id="win-new-balance">100</div>
+      </div>
+    </div>
+    <button class="btn btn-p" onclick="closeSheet('sh-win');goC('s-c-truck')">View My Rewards →</button>
   </div>
 </div>
 
+<!-- REDEEM SHEET -->
 <div class="overlay" id="sh-redeem">
   <div class="sheet">
     <div class="sheet-handle"></div>
     <div class="sheet-title" style="text-align:center">Redeem Reward</div>
-    <div style="text-align:center;font-size:52px;margin-bottom:10px" id="rdm-emo">🥤</div>
-    <div style="text-align:center;font-family:var(--fd);font-size:20px;font-weight:800;margin-bottom:5px" id="rdm-name">Free Drink</div>
-    <div style="text-align:center;font-size:13px;color:var(--mu);margin-bottom:14px">Show this code to the cashier</div>
-    <div class="rdm-code-box">
-      <div class="rdm-code-val" id="rdm-code">STK-0000</div>
-      <div class="rdm-code-hint">One-time use · expires in 24 hrs</div>
+    <div style="text-align:center;font-size:44px;margin-bottom:8px" id="rdm-emo">🎁</div>
+    <div style="text-align:center;font-family:var(--fd);font-size:20px;font-weight:800;margin-bottom:4px" id="rdm-name">Free Item</div>
+    <div style="text-align:center;font-size:12px;color:var(--mu);margin-bottom:16px">at <span id="rdm-truck">–</span> · <span id="rdm-pts-cost" style="color:var(--rd)">–400 pts</span></div>
+    <div class="code-box">
+      <div class="code-val" id="rdm-code">STK-0000</div>
+      <div class="code-sub">Show this code to the cashier before ordering<br>Expires in 24 hours · One-time use</div>
     </div>
-    <button class="btn btn-p" id="rdm-confirm-btn" onclick="confirmRedeem()">Mark as Used ✓</button>
-    <button class="btn btn-g" style="margin-top:10px" onclick="closeSheet('sh-redeem')">Cancel</button>
+    <div style="background:var(--s1);border:1px solid var(--b2);border-radius:12px;padding:14px;margin-bottom:16px">
+      <div class="rdm-step"><div class="rdm-step-num">1</div><div>Show this screen to the cashier <strong>before you order</strong></div></div>
+      <div class="rdm-step"><div class="rdm-step-num">2</div><div>Cashier enters code <strong id="rdm-code-inline">STK-0000</strong> in their Vendor app to confirm</div></div>
+      <div class="rdm-step"><div class="rdm-step-num">3</div><div>Points deducted once cashier confirms — you get your free item!</div></div>
+    </div>
+    <button class="btn btn-s" onclick="closeSheet('sh-redeem')">Done — cashier has the code</button>
   </div>
 </div>
 
-<div class="loading-overlay" id="loading-overlay">
-  <div class="lspinner"></div>
-  <div class="ltxt" id="loading-txt">Loading...</div>
-</div>
-
 <div class="cc-wrap" id="cc"></div>
+<div class="load-over" id="load-over"><div class="lspin"></div><div class="ltxt" id="load-txt">Loading...</div></div>
 <div class="toast" id="toast"></div>
 
 <script>
-/* ═══════════════════════════════════════
+/* ════════════════════════════════════
    CONFIG
-═══════════════════════════════════════ */
+════════════════════════════════════ */
 const API = 'https://truckloyal-api.onrender.com';
 
-/* ═══════════════════════════════════════
+/* ════════════════════════════════════
    STATE
-═══════════════════════════════════════ */
+════════════════════════════════════ */
 const S = {
   mode: 'vendor',
   vScreen: 's-v-login',
-  cScreen: 's-c-welcome',
+  cScreen: 's-c-signup',
+  // Vendor
   vendorToken: localStorage.getItem('tl_vendor_token') || null,
   vendor: JSON.parse(localStorage.getItem('tl_vendor') || 'null'),
+  // Customer
   customer: JSON.parse(localStorage.getItem('tl_customer') || 'null'),
-  truckConfig: null,   // loaded from /api/truck/:slug for customer side
+  // Active truck being viewed by customer
+  activeTruck: JSON.parse(localStorage.getItem('tl_active_truck') || 'null'),
+  activeTruckPoints: JSON.parse(localStorage.getItem('tl_active_truck_pts') || 'null'),
+  // All trucks customer has joined
+  myTrucks: JSON.parse(localStorage.getItem('tl_my_trucks') || '[]'),
+  // Rewards and prizes for active truck
   rewards: [],
   prizes: [],
-  tiers: [],
-  currentRdmRewardId: null,
+  // Spin state
   spinAngle: 0,
   spinning: false,
-  selectedEmoji: '🚚',
+  // Pending win from server
+  pendingWin: null,
+  visitPtsEarned: 0,
+  // Vendor award flow
+  awardCustomer: null,
+  // Vendor confirm flow
+  confirmRedemption: null,
+  // Current redemption being made by customer
+  currentRdm: null,
 };
 
+/* Defaults */
+const DEFAULT_PRIZES = [
+  { emoji:'⚡', name:'+25 Points',  pts:25,  probability:35 },
+  { emoji:'💰', name:'+50 Points',  pts:50,  probability:30 },
+  { emoji:'🌟', name:'+75 Points',  pts:75,  probability:15 },
+  { emoji:'🔥', name:'+100 Points', pts:100, probability:12 },
+  { emoji:'💎', name:'+150 Points', pts:150, probability:5  },
+  { emoji:'👑', name:'+200 Points', pts:200, probability:3  },
+];
+const DEFAULT_REWARDS = [
+  { emoji:'🥤', name:'Free Drink',    pts_required:350 },
+  { emoji:'🍟', name:'Free Side',     pts_required:500 },
+  { emoji:'🍔', name:'Free Entrée',   pts_required:750 },
+];
+const DEFAULT_TIERS = [
+  { icon:'🌱', name:'Starter', pts_threshold:0   },
+  { icon:'🔥', name:'Regular', pts_threshold:300 },
+  { icon:'⭐', name:'VIP',     pts_threshold:700 },
+  { icon:'👑', name:'Legend',  pts_threshold:1500},
+];
 const EMOJIS = ['🚚','🌮','🍔','🍕','🥩','🍜','🫔','🥗','🍦','☕','🌯','🧆'];
-const PRESETS = [
-  ['#FF5A1F','#F5B800'],['#8B5CF6','#EC4899'],['#059669','#34D399'],
-  ['#0EA5E9','#38BDF8'],['#DC2626','#F97316'],['#1D4ED8','#FBBF24'],
-];
+const PRESETS = [['#FF5A1F','#F5B800'],['#8B5CF6','#EC4899'],['#059669','#34D399'],['#0EA5E9','#38BDF8'],['#DC2626','#F97316'],['#1D4ED8','#FBBF24']];
+const VNAV = [{id:'s-v-home',icon:'🏠',label:'Home'},{id:'s-v-analytics',icon:'📊',label:'Analytics'},{id:'s-v-customers',icon:'👥',label:'Members'},{id:'s-v-settings',icon:'⚙️',label:'Settings'}];
+const CNAV = [{id:'s-c-home',icon:'🚚',label:'My Trucks'},{id:'s-c-history',icon:'📋',label:'History'},{id:'s-c-profile',icon:'👤',label:'Profile'}];
 
-const VNAV = [
-  { id:'s-v-home',      icon:'🏠', label:'Home' },
-  { id:'s-v-analytics', icon:'📊', label:'Analytics' },
-  { id:'s-v-customers', icon:'👥', label:'Members' },
-  { id:'s-v-settings',  icon:'⚙️', label:'Settings' },
-];
-const CNAV = [
-  { id:'s-c-dash',    icon:'🏠', label:'Home' },
-  { id:'s-c-spin',    icon:'🎰', label:'Spin' },
-  { id:'s-c-history', icon:'📋', label:'History' },
-  { id:'s-c-profile', icon:'👤', label:'Profile' },
-];
-
-/* ═══════════════════════════════════════
+/* ════════════════════════════════════
    API HELPERS
-═══════════════════════════════════════ */
-async function apiFetch(path, opts = {}) {
-  const headers = { 'Content-Type': 'application/json' };
+════════════════════════════════════ */
+async function apiFetch(path, opts={}) {
+  const headers = {'Content-Type':'application/json'};
   if (S.vendorToken) headers['Authorization'] = `Bearer ${S.vendorToken}`;
-  const res = await fetch(API + path, { headers, ...opts });
-  const data = await res.json();
-  return { ok: res.ok, status: res.status, data };
+  if (S.customer?.token) headers['X-Customer-Token'] = S.customer.token;
+  try {
+    const r = await fetch(API+path, {headers,...opts});
+    const d = await r.json();
+    return {ok:r.ok, status:r.status, data:d};
+  } catch(e) {
+    return {ok:false, status:0, data:{error:'Network error'}};
+  }
 }
+const apiGet  = p => apiFetch(p,{method:'GET'});
+const apiPost = (p,b) => apiFetch(p,{method:'POST',body:JSON.stringify(b)});
+const apiPatch= (p,b) => apiFetch(p,{method:'PATCH',body:JSON.stringify(b)});
+const apiDel  = p => apiFetch(p,{method:'DELETE'});
 
-async function apiGet(path) {
-  return apiFetch(path, { method: 'GET' });
-}
+/* ════════════════════════════════════
+   LOADING / TOAST
+════════════════════════════════════ */
+function showLoad(t='Loading...'){document.getElementById('load-over').classList.add('show');document.getElementById('load-txt').textContent=t}
+function hideLoad(){document.getElementById('load-over').classList.remove('show')}
+function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(window._t);window._t=setTimeout(()=>t.classList.remove('show'),3000)}
+function openSheet(id){document.getElementById(id).classList.add('open')}
+function closeSheet(id){document.getElementById(id).classList.remove('open')}
 
-async function apiPost(path, body) {
-  return apiFetch(path, { method: 'POST', body: JSON.stringify(body) });
-}
-
-async function apiPatch(path, body) {
-  return apiFetch(path, { method: 'PATCH', body: JSON.stringify(body) });
-}
-
-async function apiDelete(path) {
-  return apiFetch(path, { method: 'DELETE' });
-}
-
-/* ═══════════════════════════════════════
-   LOADING
-═══════════════════════════════════════ */
-function showLoading(txt = 'Loading...') {
-  document.getElementById('loading-overlay').classList.add('show');
-  document.getElementById('loading-txt').textContent = txt;
-}
-function hideLoading() {
-  document.getElementById('loading-overlay').classList.remove('show');
-}
-
-function setBtnLoading(btnId, spinId, loading) {
-  const btn = document.getElementById(btnId);
-  const spin = document.getElementById(spinId);
-  if (!btn || !spin) return;
-  btn.disabled = loading;
-  spin.style.display = loading ? 'block' : 'none';
-  if (btn.querySelector('span')) btn.querySelector('span').style.display = loading ? 'none' : '';
-}
-
-/* ═══════════════════════════════════════
+/* ════════════════════════════════════
    ROUTING
-═══════════════════════════════════════ */
-function show(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('on'));
-  const el = document.getElementById(id);
-  if (el) el.classList.add('on');
-  document.getElementById('scroll').scrollTop = 0;
+════════════════════════════════════ */
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
+  const el=document.getElementById(id);
+  if(el) el.classList.add('on');
+  document.getElementById('scroll').scrollTop=0;
 }
 
-function setMode(mode) {
-  S.mode = mode;
-  document.getElementById('mb-v').classList.toggle('on', mode === 'vendor');
-  document.getElementById('mb-c').classList.toggle('on', mode === 'customer');
-
-  if (mode === 'vendor') {
-    if (S.vendorToken && S.vendor) {
-      show(S.vScreen === 's-v-login' || S.vScreen === 's-v-signup' ? 's-v-home' : S.vScreen);
-      S.vScreen = S.vScreen === 's-v-login' || S.vScreen === 's-v-signup' ? 's-v-home' : S.vScreen;
-      renderNav(VNAV, S.vScreen);
-      loadVendorData();
+function setMode(mode){
+  S.mode=mode;
+  document.getElementById('mb-v').classList.toggle('on',mode==='vendor');
+  document.getElementById('mb-c').classList.toggle('on',mode==='customer');
+  if(mode==='vendor'){
+    if(S.vendorToken&&S.vendor){
+      const dest=(S.vScreen==='s-v-login'||S.vScreen==='s-v-signup')?'s-v-home':S.vScreen;
+      S.vScreen=dest; show(dest); renderNav(VNAV,dest); loadVendorHome();
+    } else { show('s-v-login'); S.vScreen='s-v-login'; renderNav([],'')}
+  } else {
+    if(S.customer){
+      const dest=(S.cScreen==='s-c-signup'||S.cScreen==='s-c-login')?'s-c-home':S.cScreen;
+      S.cScreen=dest; show(dest); renderNav(CNAV,dest);
+      if(dest==='s-c-home') renderMyTrucks();
+      if(dest==='s-c-truck') renderTruckDash();
+      if(dest==='s-c-spin'){renderSpinPreview();drawWheel(S.spinAngle)}
     } else {
-      show('s-v-login');
-      S.vScreen = 's-v-login';
-      renderNav([], '');
-    }
-  } else {
-    show(S.cScreen);
-    renderNav(CNAV, S.cScreen);
-    loadCustomerSide();
-    if (S.cScreen === 's-c-spin') drawWheel(S.spinAngle);
+      show('s-c-signup'); S.cScreen='s-c-signup'; renderNav([],'')}
   }
 }
 
-function goV(id) {
-  S.vScreen = id;
-  show(id);
-  if (id !== 's-v-login' && id !== 's-v-signup') {
-    renderNav(VNAV, id);
-  } else {
-    renderNav([], '');
-  }
-  // Load data for specific screens
-  if (id === 's-v-rewards') loadRewards();
-  if (id === 's-v-spin') loadPrizes();
-  if (id === 's-v-tiers') loadTiers();
-  if (id === 's-v-customers') loadCustomers();
-  if (id === 's-v-analytics') loadAnalytics();
-  if (id === 's-v-settings') renderSettings();
-  if (id === 's-v-brand') populateBrandForm();
-  if (id === 's-v-points') populatePointsForm();
+function goV(id){
+  S.vScreen=id; show(id);
+  if(id!=='s-v-login'&&id!=='s-v-signup') renderNav(VNAV,id); else renderNav([],''  );
+  if(id==='s-v-home')     loadVendorHome();
+  if(id==='s-v-rewards')  loadVRewards();
+  if(id==='s-v-spin')     loadVPrizes();
+  if(id==='s-v-analytics')loadAnalytics();
+  if(id==='s-v-settings') renderVSettings();
+  if(id==='s-v-brand')    populateBrandForm();
+  if(id==='s-v-points')   populatePointsForm();
+  if(id==='s-v-award')    resetAwardForm();
+  if(id==='s-v-confirm')  resetConfirmForm();
+  if(id==='s-v-customers') loadCustomers();
 }
 
-function goC(id) {
-  S.cScreen = id;
-  show(id);
-  renderNav(CNAV, id);
-  if (id === 's-c-spin') drawWheel(S.spinAngle);
-  if (id === 's-c-history') loadHistory();
+function goC(id){
+  S.cScreen=id; show(id); renderNav(CNAV,id);
+  if(id==='s-c-home')    renderMyTrucks();
+  if(id==='s-c-truck')   renderTruckDash();
+  if(id==='s-c-spin')    {renderSpinPreview();drawWheel(S.spinAngle)}
+  if(id==='s-c-history') renderHistory();
+  if(id==='s-c-profile') renderProfile();
+  if(id==='s-c-qr')      renderMyQR();
 }
 
-function renderNav(tabs, activeId) {
-  const nav = document.getElementById('bnav');
-  if (!tabs.length) { nav.innerHTML = ''; return; }
-  nav.innerHTML = tabs.map(t => `
-    <button class="ni ${t.id === activeId ? 'on' : ''}"
-      onclick="${S.mode === 'vendor' ? `goV('${t.id}')` : `goC('${t.id}')`}">
-      <span class="ni-icon">${t.icon}</span>
-      <span>${t.label}</span>
-      <div class="ni-pip"></div>
+function renderNav(tabs,activeId){
+  const nav=document.getElementById('bnav');
+  if(!tabs.length){nav.innerHTML='';return}
+  nav.innerHTML=tabs.map(t=>`
+    <button class="ni ${t.id===activeId?'on':''}"
+      onclick="${S.mode==='vendor'?`goV('${t.id}')`:`goC('${t.id}')`}">
+      <span class="ni-icon">${t.icon}</span><span>${t.label}</span><div class="ni-pip"></div>
     </button>`).join('');
 }
 
-/* ═══════════════════════════════════════
+/* ════════════════════════════════════
    VENDOR AUTH
-═══════════════════════════════════════ */
-async function vendorLogin() {
-  const email = document.getElementById('v-login-email').value.trim();
-  const pass  = document.getElementById('v-login-pass').value;
-  const errEl = document.getElementById('v-login-err');
+════════════════════════════════════ */
+async function vendorLogin(){
+  const email=document.getElementById('v-login-email').value.trim();
+  const pass=document.getElementById('v-login-pass').value;
+  const errEl=document.getElementById('v-login-err');
   errEl.classList.remove('show');
-
-  if (!email || !pass) { showErr(errEl, 'Please fill in all fields'); return; }
-
-  setBtnLoading('v-login-btn', 'v-login-spin', true);
-  const res = await apiPost('/api/vendor/login', { email, password: pass });
-  setBtnLoading('v-login-btn', 'v-login-spin', false);
-
-  if (!res.ok) { showErr(errEl, res.data.error || 'Login failed'); return; }
-
-  S.vendorToken = res.data.data.token;
-  S.vendor = res.data.data.vendor;
-  localStorage.setItem('tl_vendor_token', S.vendorToken);
-  localStorage.setItem('tl_vendor', JSON.stringify(S.vendor));
-
-  S.vScreen = 's-v-home';
-  show('s-v-home');
-  renderNav(VNAV, 's-v-home');
-  loadVendorData();
-  showToast('👋 Welcome back, ' + S.vendor.truck_name + '!');
+  if(!email||!pass){showErr(errEl,'Please fill in all fields');return}
+  showLoad('Signing in...');
+  const r=await apiPost('/api/vendor/login',{email,password:pass});
+  hideLoad();
+  if(!r.ok){showErr(errEl,r.data.error||'Invalid email or password');return}
+  S.vendorToken=r.data.data.token; S.vendor=r.data.data.vendor;
+  localStorage.setItem('tl_vendor_token',S.vendorToken);
+  localStorage.setItem('tl_vendor',JSON.stringify(S.vendor));
+  S.vScreen='s-v-home'; show('s-v-home'); renderNav(VNAV,'s-v-home');
+  loadVendorHome();
+  showToast('👋 Welcome back, '+S.vendor.truck_name+'!');
 }
 
-async function vendorSignup() {
-  const name  = document.getElementById('v-su-name').value.trim();
-  const email = document.getElementById('v-su-email').value.trim();
-  const pass  = document.getElementById('v-su-pass').value;
-  const errEl = document.getElementById('v-signup-err');
+async function vendorSignup(){
+  const name=document.getElementById('v-su-name').value.trim();
+  const owner=document.getElementById('v-su-owner').value.trim();
+  const email=document.getElementById('v-su-email').value.trim();
+  const pass=document.getElementById('v-su-pass').value;
+  const errEl=document.getElementById('v-signup-err');
   errEl.classList.remove('show');
-
-  if (!name || !email || !pass) { showErr(errEl, 'Please fill in all fields'); return; }
-  if (pass.length < 8) { showErr(errEl, 'Password must be at least 8 characters'); return; }
-
-  setBtnLoading('v-signup-btn', 'v-signup-spin', true);
-  const res = await apiPost('/api/vendor/signup', { email, password: pass, truck_name: name });
-  setBtnLoading('v-signup-btn', 'v-signup-spin', false);
-
-  if (!res.ok) { showErr(errEl, res.data.error || 'Signup failed'); return; }
-
-  S.vendorToken = res.data.data.token;
-  S.vendor = res.data.data.vendor;
-  localStorage.setItem('tl_vendor_token', S.vendorToken);
-  localStorage.setItem('tl_vendor', JSON.stringify(S.vendor));
-
-  S.vScreen = 's-v-home';
-  show('s-v-home');
-  renderNav(VNAV, 's-v-home');
-  loadVendorData();
-  showToast('🎉 Welcome to TruckLoyal!');
+  if(!name||!owner||!email||!pass){showErr(errEl,'Please fill in all fields');return}
+  if(pass.length<8){showErr(errEl,'Password must be at least 8 characters');return}
+  showLoad('Creating your account...');
+  const r=await apiPost('/api/vendor/signup',{email,password:pass,truck_name:name,owner_name:owner});
+  hideLoad();
+  if(!r.ok){showErr(errEl,r.data.error||'Signup failed');return}
+  S.vendorToken=r.data.data.token; S.vendor=r.data.data.vendor;
+  localStorage.setItem('tl_vendor_token',S.vendorToken);
+  localStorage.setItem('tl_vendor',JSON.stringify(S.vendor));
+  S.prizes=[...DEFAULT_PRIZES]; S.rewards=[...DEFAULT_REWARDS];
+  S.vScreen='s-v-home'; show('s-v-home'); renderNav(VNAV,'s-v-home');
+  loadVendorHome();
+  showToast('🎉 Welcome! Your program is live.');
 }
 
-function vendorLogout() {
-  S.vendorToken = null;
-  S.vendor = null;
-  localStorage.removeItem('tl_vendor_token');
-  localStorage.removeItem('tl_vendor');
-  S.vScreen = 's-v-login';
-  show('s-v-login');
-  renderNav([], '');
+function vendorLogout(){
+  S.vendorToken=null; S.vendor=null;
+  localStorage.removeItem('tl_vendor_token'); localStorage.removeItem('tl_vendor');
+  S.vScreen='s-v-login'; show('s-v-login'); renderNav([],'' );
   showToast('Signed out');
 }
 
-function showErr(el, msg) {
-  el.textContent = msg;
-  el.classList.add('show');
-}
-
-/* ═══════════════════════════════════════
-   VENDOR DATA LOADING
-═══════════════════════════════════════ */
-async function loadVendorData() {
-  if (!S.vendorToken) return;
-  // Load vendor profile fresh
-  const res = await apiGet('/api/vendor/me');
-  if (res.ok) {
-    S.vendor = res.data.data;
-    localStorage.setItem('tl_vendor', JSON.stringify(S.vendor));
+/* ════════════════════════════════════
+   VENDOR HOME
+════════════════════════════════════ */
+async function loadVendorHome(){
+  if(!S.vendor) return;
+  setText('v-hero-name',S.vendor.truck_name+' '+(S.vendor.emoji||'🚚'));
+  const saved=localStorage.getItem('tl_location')||'';
+  const el=document.getElementById('v-location-input');
+  if(el) el.value=saved;
+  const r=await apiGet('/api/vendor/stats');
+  if(r.ok){
+    const d=r.data.data;
+    setText('v-stat-visits',d.visits_today||0);
+    setText('v-stat-members',d.total_members||0);
+    setText('v-stat-rdm',d.total_redemptions||0);
+    setText('v-hero-members',d.total_members||0);
   }
-  renderVendorHome();
-  syncBrandColors();
+  S.prizes=[...DEFAULT_PRIZES]; S.rewards=[...DEFAULT_REWARDS];
 }
 
-function renderVendorHome() {
-  if (!S.vendor) return;
-  const v = S.vendor;
-  setText('v-hero-name', v.truck_name + ' ' + (v.emoji || '🚚'));
-  // Load stats
-  loadStats();
+function debounceSaveLocation(){clearTimeout(window._locTimer);window._locTimer=setTimeout(saveLocation,1000)}
+function saveLocation(){
+  const v=document.getElementById('v-location-input')?.value||'';
+  localStorage.setItem('tl_location',v);
+  if(v) showToast('📍 Location saved');
 }
 
-async function loadStats() {
-  const res = await apiGet('/api/vendor/stats');
-  if (res.ok) {
-    const d = res.data.data;
-    setText('v-stat-visits', d.visits_today);
-    setText('v-stat-members', d.total_members);
-    setText('v-stat-redemptions', d.total_redemptions);
-    setText('v-hero-members', d.total_members);
-  }
+async function loadVRewards(){
+  const r=await apiGet('/api/vendor/rewards');
+  if(r.ok&&r.data.data?.length) S.rewards=r.data.data;
+  else S.rewards=[...DEFAULT_REWARDS];
+  renderVRewards();
 }
 
-async function loadRewards() {
-  const res = await apiGet('/api/vendor/rewards');
-  if (res.ok) {
-    S.rewards = res.data.data;
-    renderVRewards();
-  }
+async function loadVPrizes(){
+  const r=await apiGet('/api/vendor/prizes');
+  if(r.ok&&r.data.data?.length) S.prizes=r.data.data.map(p=>({...p,pts:p.pts||parseInt(p.prize_value)||50}));
+  else S.prizes=[...DEFAULT_PRIZES];
+  renderVPrizes(); renderSpinPreview(); drawWheel(S.spinAngle);
 }
 
-async function loadPrizes() {
-  const res = await apiGet('/api/vendor/prizes');
-  if (res.ok) {
-    S.prizes = res.data.data;
-    renderVPrizes();
-  }
-}
-
-async function loadTiers() {
-  const res = await apiGet('/api/vendor/tiers');
-  if (res.ok) {
-    S.tiers = res.data.data;
-    renderVTiers();
-  }
-}
-
-async function loadAnalytics() {
-  const res = await apiGet('/api/vendor/stats');
-  if (res.ok) {
-    const d = res.data.data;
-    setText('an-members', d.total_members);
-    setText('an-visits', d.visits_today);
-    setText('an-redemptions', d.total_redemptions);
-    setText('an-active', d.total_members);
-    if (S.vendor?.trial_ends_at) {
-      const trialEnd = new Date(S.vendor.trial_ends_at);
-      setText('an-trial', trialEnd.toLocaleDateString());
-    }
-  }
-}
-
-async function loadCustomers() {
-  const res = await apiGet('/api/vendor/stats');
-  const el = document.getElementById('v-cust-list');
-  if (!el) return;
-  // Placeholder — will be replaced with real customer list endpoint
-  setText('v-cust-sub', 'Your loyalty members');
-  el.innerHTML = `
-    <div class="callout co-gd">
-      <div class="co-icon">👥</div>
-      <div><div class="co-title">Members list</div><div class="co-desc">Full member directory with visit history coming in the next update. Your members are being tracked in real-time.</div></div>
-    </div>`;
-}
-
-/* ═══════════════════════════════════════
-   VENDOR RENDERS
-═══════════════════════════════════════ */
-function renderVRewards() {
-  const el = document.getElementById('v-rewards-list');
-  if (!el) return;
-  if (!S.rewards.length) { el.innerHTML = '<div style="text-align:center;padding:16px;color:var(--mu)">No rewards yet — add one!</div>'; return; }
-  el.innerHTML = S.rewards.map(r => `
+function renderVRewards(){
+  const el=document.getElementById('v-rewards-list');
+  if(!el) return;
+  if(!S.rewards.length){el.innerHTML='<div style="text-align:center;padding:20px;color:var(--mu)">No rewards yet</div>';return}
+  el.innerHTML=S.rewards.map((r,i)=>`
     <div class="li">
       <div class="li-icon">${r.emoji}</div>
-      <div class="li-info"><div class="li-name">${r.name}</div><div class="li-sub">${r.pts_required} points to redeem</div></div>
-      ${r.is_default ? '<div class="tag tag-gn">Default</div>' : ''}
-      <div class="li-act"><button class="iBtn" onclick="deleteReward('${r.id}')">✕</button></div>
+      <div class="li-info"><div class="li-name">${r.name}</div><div class="li-sub">${r.pts_required||r.pts} pts to redeem</div></div>
+      <div class="li-act"><button class="iBtn" onclick="removeReward(${i})">✕</button></div>
     </div>`).join('');
 }
 
-function renderVPrizes() {
-  const el = document.getElementById('v-prizes-list');
-  if (!el) return;
-  if (!S.prizes.length) { el.innerHTML = '<div style="text-align:center;padding:16px;color:var(--mu)">No prizes yet — add one!</div>'; return; }
-  el.innerHTML = S.prizes.map(p => `
+function renderVPrizes(){
+  const el=document.getElementById('v-prizes-list');
+  if(!el) return;
+  if(!S.prizes.length){el.innerHTML='<div style="text-align:center;padding:20px;color:var(--mu)">No prizes yet</div>';return}
+  el.innerHTML=S.prizes.map((p,i)=>`
     <div class="li">
       <div class="li-icon">${p.emoji}</div>
-      <div class="li-info"><div class="li-name">${p.name}</div><div class="li-sub">${p.probability}% chance</div></div>
-      <div class="li-act"><button class="iBtn" onclick="deletePrize('${p.id}')">✕</button></div>
+      <div class="li-info"><div class="li-name">${p.name}</div><div class="li-sub">Weight: ${p.probability||1} · +${p.pts||0} pts</div></div>
+      <div class="li-act"><button class="iBtn" onclick="removePrize(${i})">✕</button></div>
     </div>`).join('');
-  drawWheel(S.spinAngle);
 }
 
-function renderVTiers() {
-  const el = document.getElementById('v-tiers-list');
-  if (!el) return;
-  el.innerHTML = S.tiers.map(t => `
-    <div class="card" style="margin-bottom:10px">
-      <div style="display:flex;align-items:center;gap:12px">
-        <div style="font-size:32px">${t.icon}</div>
-        <div style="flex:1">
-          <div style="font-family:var(--fd);font-weight:800;font-size:17px;margin-bottom:4px">${t.name}</div>
-          <div style="font-size:12px;color:var(--mu)">${t.pts_threshold === 0 ? 'Entry level' : t.pts_threshold + '+ points'}</div>
-          <div style="font-size:12px;color:var(--gd);margin-top:2px">${t.perks || ''}</div>
+async function addReward(){
+  const e=document.getElementById('nr-e').value.trim()||'🎁';
+  const n=document.getElementById('nr-n').value.trim();
+  const p=parseInt(document.getElementById('nr-p').value)||0;
+  if(!n||!p){showToast('Fill in name and points cost');return}
+  showLoad('Adding...');
+  const r=await apiPost('/api/vendor/rewards',{emoji:e,name:n,pts_required:p});
+  hideLoad();
+  if(r.ok){closeSheet('sh-add-reward');['nr-e','nr-n','nr-p'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=''});await loadVRewards();showToast('✅ Reward added!')}
+  else showToast('❌ Error');
+}
+
+function removeReward(i){
+  if(S.rewards[i]?.id) apiDel(`/api/vendor/rewards/${S.rewards[i].id}`).then(()=>loadVRewards());
+  else{S.rewards.splice(i,1);renderVRewards()}
+}
+
+async function addPrize(){
+  const e=document.getElementById('np-e').value.trim()||'⚡';
+  const n=document.getElementById('np-n').value.trim();
+  const p=parseInt(document.getElementById('np-p').value)||0;
+  const pts=parseInt(document.getElementById('np-pts').value)||0;
+  if(!n||!p||!pts){showToast('Fill in all fields');return}
+  showLoad('Adding...');
+  const r=await apiPost('/api/vendor/prizes',{emoji:e,name:n,probability:p,prize_type:'points',prize_value:String(pts)});
+  hideLoad();
+  if(r.ok){closeSheet('sh-add-prize');['np-e','np-n','np-p','np-pts'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=''});await loadVPrizes();showToast('✅ Prize added!')}
+  else showToast('❌ Error');
+}
+
+function removePrize(i){
+  if(S.prizes[i]?.id) apiDel(`/api/vendor/prizes/${S.prizes[i].id}`).then(()=>loadVPrizes());
+  else{S.prizes.splice(i,1);renderVPrizes();renderSpinPreview();drawWheel(S.spinAngle)}
+}
+
+/* ════════════════════════════════════
+   VENDOR: AWARD POINTS FLOW
+════════════════════════════════════ */
+function switchAwardTab(method){
+  document.querySelectorAll('.award-tab').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.award-method').forEach(m=>m.classList.remove('on'));
+  const tabIndex={'phone':0,'id':1,'qr':2};
+  document.querySelectorAll('.award-tab')[tabIndex[method]].classList.add('on');
+  document.getElementById('award-'+method).classList.add('on');
+}
+
+function formatAwardPhone(el){
+  let v=el.value.replace(/\D/g,'');
+  if(v.length>=6) v='('+v.slice(0,3)+') '+v.slice(3,6)+'-'+v.slice(6,10);
+  else if(v.length>=3) v='('+v.slice(0,3)+') '+v.slice(3);
+  el.value=v;
+}
+
+async function lookupByPhone(){
+  const ph=document.getElementById('award-phone-input').value.replace(/\D/g,'');
+  if(ph.length<10){showToast('Enter a valid phone number');return}
+  await findAwardCustomer({phone:ph});
+}
+
+async function lookupByID(){
+  const id=document.getElementById('award-id-input').value.trim();
+  if(!id){showToast('Enter a rewards ID');return}
+  await findAwardCustomer({rewards_id:id});
+}
+
+async function lookupByQRManual(){
+  const id=document.getElementById('award-qr-manual').value.trim();
+  if(!id){showToast('Enter the customer ID');return}
+  await findAwardCustomer({rewards_id:id});
+}
+
+async function findAwardCustomer(query){
+  showLoad('Looking up customer...');
+  const r=await apiPost('/api/vendor/find-customer',{...query,vendor_id:S.vendor?.id});
+  hideLoad();
+  if(!r.ok||!r.data.data){showToast('❌ Customer not found — ask them to sign up first');return}
+  S.awardCustomer=r.data.data;
+  showAwardCustomer(r.data.data);
+}
+
+function showAwardCustomer(c){
+  const found=document.getElementById('award-customer-found');
+  if(!found) return;
+  found.style.display='block';
+  setText('award-cust-av',(c.name||'?')[0].toUpperCase());
+  setText('award-cust-name',c.name||'Customer');
+  const pts=c.vendor_points?.[S.vendor?.id]||c.points_balance||0;
+  setText('award-cust-sub',(c.rewards_id||'–')+' · '+pts+' pts at this truck');
+  const tier=DEFAULT_TIERS.slice().reverse().find(t=>pts>=t.pts_threshold)||DEFAULT_TIERS[0];
+  setText('award-cust-tier',tier.icon+' '+tier.name);
+  const rate=S.vendor?.pts_per_dollar||10;
+  setText('award-rate-label',rate+' pts per $1');
+  document.getElementById('award-order-total').value='';
+  calcAwardPts();
+}
+
+function calcAwardPts(){
+  const total=parseFloat(document.getElementById('award-order-total')?.value)||0;
+  const rate=S.vendor?.pts_per_dollar||10;
+  const base=S.vendor?.pts_per_visit||50;
+  const orderPts=Math.floor(total*rate);
+  const totalPts=base+orderPts;
+  setText('award-pts-calc','+'+orderPts+' pts');
+  setText('award-visit-pts','+'+base+' pts');
+  setText('award-total-pts','+'+totalPts+' pts');
+}
+
+async function awardPoints(){
+  if(!S.awardCustomer||!S.vendor){showToast('No customer selected');return}
+  const total=parseFloat(document.getElementById('award-order-total')?.value)||0;
+  const base=S.vendor?.pts_per_visit||50;
+  const rate=S.vendor?.pts_per_dollar||10;
+  const orderPts=Math.floor(total*rate);
+  const totalPts=base+orderPts;
+  showLoad('Awarding points...');
+  const r=await apiPost('/api/vendor/award-points',{
+    vendor_id:S.vendor.id,
+    customer_id:S.awardCustomer.id,
+    order_total:total,
+    pts_awarded:totalPts,
+  });
+  hideLoad();
+  if(r.ok){
+    confetti();
+    showToast(`✅ ${totalPts} pts awarded to ${S.awardCustomer.name||'customer'}!`);
+    resetAwardForm();
+  } else {
+    showToast('❌ '+(r.data.error||'Error awarding points'));
+  }
+}
+
+function resetAwardForm(){
+  S.awardCustomer=null;
+  const found=document.getElementById('award-customer-found');
+  if(found) found.style.display='none';
+  ['award-phone-input','award-id-input','award-qr-manual','award-order-total'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.value='';
+  });
+}
+
+function startQRScan(){showToast('📷 QR scan requires device camera — use phone app')}
+
+/* ════════════════════════════════════
+   VENDOR: CONFIRM REDEMPTION
+════════════════════════════════════ */
+async function lookupRedemptionCode(){
+  const code=document.getElementById('confirm-code-input').value.trim();
+  if(code.length<4){showToast('Enter the full redemption code');return}
+  showLoad('Looking up code...');
+  const r=await apiGet(`/api/vendor/redemption/${code}?vendor_id=${S.vendor?.id}`);
+  hideLoad();
+  document.getElementById('confirm-found').style.display='none';
+  document.getElementById('confirm-notfound').style.display='none';
+  if(!r.ok||!r.data.data){
+    document.getElementById('confirm-notfound').style.display='block';
+    return;
+  }
+  S.confirmRedemption=r.data.data;
+  const d=r.data.data;
+  setText('confirm-reward-emo',d.reward_emoji||'🎁');
+  setText('confirm-reward-name',d.reward_name||'Reward');
+  setText('confirm-customer-name',d.customer_name||'Customer');
+  setText('confirm-pts-cost','–'+d.pts_cost+' points will be deducted');
+  setText('confirm-code-display',code);
+  document.getElementById('confirm-found').style.display='block';
+}
+
+async function confirmRedemption(){
+  if(!S.confirmRedemption){return}
+  showLoad('Confirming...');
+  const r=await apiPost('/api/vendor/confirm-redemption',{
+    redemption_code:document.getElementById('confirm-code-input').value.trim(),
+    vendor_id:S.vendor?.id,
+  });
+  hideLoad();
+  if(r.ok){
+    confetti();
+    showToast('✅ Reward confirmed! Customer\'s points have been deducted.');
+    resetConfirmForm();
+  } else {
+    showToast('❌ '+(r.data.error||'Error confirming'));
+  }
+}
+
+function resetConfirmForm(){
+  S.confirmRedemption=null;
+  const inp=document.getElementById('confirm-code-input');
+  if(inp) inp.value='';
+  document.getElementById('confirm-found').style.display='none';
+  document.getElementById('confirm-notfound').style.display='none';
+}
+
+/* ════════════════════════════════════
+   VENDOR: BRAND / SETTINGS / POINTS
+════════════════════════════════════ */
+function populateBrandForm(){
+  if(!S.vendor) return;
+  setVal('v-brand-name',S.vendor.truck_name||'');
+  setVal('v-brand-tag',S.vendor.tagline||'');
+  S.selectedEmoji=S.vendor.emoji||'🚚';
+  renderVEP(); renderVPresets();
+}
+
+function renderVEP(){
+  const el=document.getElementById('v-ep');
+  if(!el) return;
+  el.innerHTML=EMOJIS.map(e=>`<div style="width:48px;height:48px;background:${e===S.selectedEmoji?'rgba(255,90,31,.1)':'var(--s2)'};border:2px solid ${e===S.selectedEmoji?'var(--brand)':'var(--b2)'};border-radius:12px;font-size:22px;display:flex;align-items:center;justify-content:center;cursor:pointer" onclick="S.selectedEmoji='${e}';renderVEP()">${e}</div>`).join('');
+}
+
+function renderVPresets(){
+  const el=document.getElementById('v-presets');
+  if(!el) return;
+  el.innerHTML=PRESETS.map(p=>`<div style="width:42px;height:42px;border-radius:11px;cursor:pointer;background:linear-gradient(135deg,${p[0]},${p[1]})" onclick="applyPreset('${p[0]}','${p[1]}')"></div>`).join('');
+}
+
+function setBrandCol(w,v){
+  if(w==='p'){document.getElementById('cdot-p').style.background=v}
+  else{document.getElementById('cdot-s').style.background=v}
+}
+
+function applyPreset(p,s){
+  document.getElementById('cdot-p').style.background=p;
+  document.getElementById('cdot-s').style.background=s;
+  document.getElementById('cdot-p').querySelector('input').value=p;
+  document.getElementById('cdot-s').querySelector('input').value=s;
+  showToast('✅ Preset applied');
+}
+
+async function saveBrand(){
+  const name=document.getElementById('v-brand-name')?.value.trim();
+  const tag=document.getElementById('v-brand-tag')?.value.trim();
+  const p=document.getElementById('cdot-p')?.querySelector('input').value;
+  const s=document.getElementById('cdot-s')?.querySelector('input').value;
+  showLoad('Saving...');
+  const r=await apiPatch('/api/vendor/brand',{truck_name:name,tagline:tag,emoji:S.selectedEmoji,color_primary:p,color_secondary:s});
+  hideLoad();
+  if(r.ok){
+    S.vendor=r.data.data; localStorage.setItem('tl_vendor',JSON.stringify(S.vendor));
+    showToast('✅ Brand saved!');
+  } else showToast('❌ Error saving');
+}
+
+function populatePointsForm(){
+  if(!S.vendor) return;
+  setVal('pts-per-dollar',S.vendor.pts_per_dollar||10);
+  setVal('pts-per-visit',S.vendor.pts_per_visit||50);
+  setCheck('tog-first',S.vendor.double_first_visit!==false);
+  setCheck('tog-streak',S.vendor.streak_bonus!==false);
+  setCheck('tog-bday',!!S.vendor.birthday_reward);
+  setCheck('tog-ref',S.vendor.referral_bonus!==false);
+  setCheck('tog-winback',!!S.vendor.winback_enabled);
+  updatePtsExample();
+}
+
+function updatePtsExample(){
+  const rate=parseInt(document.getElementById('pts-per-dollar')?.value)||10;
+  const base=parseInt(document.getElementById('pts-per-visit')?.value)||50;
+  setText('pts-example',(base+Math.floor(15*rate))+' pts');
+}
+document.getElementById('pts-per-dollar')?.addEventListener('input',updatePtsExample);
+document.getElementById('pts-per-visit')?.addEventListener('input',updatePtsExample);
+
+async function savePointsConfig(){
+  showLoad('Saving...');
+  const r=await apiPatch('/api/vendor/points-config',{
+    pts_per_dollar:parseInt(document.getElementById('pts-per-dollar').value),
+    pts_per_visit:parseInt(document.getElementById('pts-per-visit').value),
+    double_first_visit:document.getElementById('tog-first').checked,
+    streak_bonus:document.getElementById('tog-streak').checked,
+    birthday_reward:document.getElementById('tog-bday').checked,
+    referral_bonus:document.getElementById('tog-ref').checked,
+    winback_enabled:document.getElementById('tog-winback').checked,
+  });
+  hideLoad();
+  if(r.ok){S.vendor=r.data.data;localStorage.setItem('tl_vendor',JSON.stringify(S.vendor));showToast('✅ Saved!')}
+  else showToast('❌ Error');
+}
+
+async function loadAnalytics(){
+  const r=await apiGet('/api/vendor/stats');
+  if(r.ok){
+    const d=r.data.data;
+    setText('an-members',d.total_members||0);
+    setText('an-visits',d.visits_today||0);
+    setText('an-rdm',d.total_redemptions||0);
+  }
+}
+
+async function loadCustomers(){
+  setText('v-cust-sub','Your loyalty members');
+}
+
+function renderVSettings(){
+  if(!S.vendor) return;
+  const slug=S.vendor.slug||'yourtruck';
+  setText('v-qr-url','foodtruckrewards.app/'+slug);
+  if(S.vendor.trial_ends_at) setText('v-trial-end',new Date(S.vendor.trial_ends_at).toLocaleDateString());
+}
+
+function copyVendorLink(){
+  const slug=S.vendor?.slug||'yourtruck';
+  const url='https://foodtruckrewards.app/'+slug;
+  navigator.clipboard?.writeText(url).then(()=>showToast('📋 Link copied!'));
+}
+
+function shareVendorLink(){
+  const slug=S.vendor?.slug||'yourtruck';
+  const url='https://foodtruckrewards.app/'+slug;
+  const name=S.vendor?.truck_name||'our truck';
+  if(navigator.share){
+    navigator.share({title:'Join '+name+' Rewards',text:`Join ${name}'s loyalty program and earn free food! 🚚`,url});
+  } else {
+    copyVendorLink();
+  }
+}
+
+/* ════════════════════════════════════
+   CUSTOMER AUTH
+════════════════════════════════════ */
+async function customerSignup(){
+  const name=document.getElementById('c-su-name').value.trim();
+  const phone=document.getElementById('c-su-phone').value.replace(/\D/g,'');
+  const email=document.getElementById('c-su-email').value.trim();
+  const errEl=document.getElementById('c-signup-err');
+  errEl.classList.remove('show');
+  if(!name){showErr(errEl,'Please enter your name');return}
+  if(phone.length<10){showErr(errEl,'Please enter a valid phone number');return}
+  if(!email||!email.includes('@')){showErr(errEl,'Please enter a valid email address');return}
+  showLoad('Creating your account...');
+  const r=await apiPost('/api/customer/signup',{name,phone,email});
+  hideLoad();
+  if(!r.ok){showErr(errEl,r.data.error||'Signup failed');return}
+  S.customer=r.data.data.customer;
+  localStorage.setItem('tl_customer',JSON.stringify(S.customer));
+  S.cScreen='s-c-home'; show('s-c-home'); renderNav(CNAV,'s-c-home');
+  renderMyTrucks();
+  showToast('🎉 Account created! Scan a food truck QR to start earning.');
+}
+
+async function customerLogin(){
+  const phone=document.getElementById('c-login-phone').value.replace(/\D/g,'');
+  const email=document.getElementById('c-login-email').value.trim();
+  const errEl=document.getElementById('c-login-err');
+  errEl.classList.remove('show');
+  if(phone.length<10&&!email){showErr(errEl,'Enter your phone number or email');return}
+  showLoad('Signing in...');
+  const r=await apiPost('/api/customer/login',{phone:phone||undefined,email:email||undefined});
+  hideLoad();
+  if(!r.ok){showErr(errEl,r.data.error||'Account not found — please sign up');return}
+  S.customer=r.data.data.customer;
+  localStorage.setItem('tl_customer',JSON.stringify(S.customer));
+  S.myTrucks=r.data.data.trucks||[];
+  localStorage.setItem('tl_my_trucks',JSON.stringify(S.myTrucks));
+  S.cScreen='s-c-home'; show('s-c-home'); renderNav(CNAV,'s-c-home');
+  renderMyTrucks();
+  showToast('👋 Welcome back, '+S.customer.name+'!');
+}
+
+function customerLogout(){
+  S.customer=null; S.myTrucks=[]; S.activeTruck=null;
+  ['tl_customer','tl_my_trucks','tl_active_truck','tl_active_truck_pts'].forEach(k=>localStorage.removeItem(k));
+  S.cScreen='s-c-signup'; show('s-c-signup'); renderNav([],'' );
+  showToast('Signed out');
+}
+
+/* ════════════════════════════════════
+   CUSTOMER: MY TRUCKS
+════════════════════════════════════ */
+function renderMyTrucks(){
+  if(!S.customer) return;
+  setText('c-home-greeting',S.customer.name?S.customer.name.split(' ')[0]+"'s Trucks":'My Trucks');
+  setText('c-home-sub',S.myTrucks.length?S.myTrucks.length+' truck'+(S.myTrucks.length!==1?'s':'')+'  joined':'Scan a QR code to join your first truck');
+  const noTrucks=document.getElementById('c-no-trucks');
+  const trucksList=document.getElementById('c-trucks-list');
+  const scanMore=document.getElementById('c-scan-more');
+  if(!S.myTrucks.length){
+    if(noTrucks) noTrucks.style.display='block';
+    if(trucksList) trucksList.innerHTML='';
+    if(scanMore) scanMore.style.display='none';
+    return;
+  }
+  if(noTrucks) noTrucks.style.display='none';
+  if(scanMore) scanMore.style.display='block';
+  if(!trucksList) return;
+  trucksList.innerHTML=S.myTrucks.map((t,i)=>{
+    const pts=t.points_balance||0;
+    const tier=DEFAULT_TIERS.slice().reverse().find(tr=>pts>=tr.pts_threshold)||DEFAULT_TIERS[0];
+    const p=t.color_primary||'#FF5A1F';
+    const loc=localStorage.getItem('tl_location_'+t.id)||'';
+    return `
+    <div class="truck-card" onclick="openTruck(${i})">
+      <div class="tc-top">
+        <div class="tc-icon" style="background:rgba(${hexRGB(p)},.15)">${t.emoji||'🚚'}</div>
+        <div>
+          <div class="tc-name">${t.truck_name||'Food Truck'}</div>
+          <div class="tc-sub">${tier.icon} ${tier.name}${loc?' · 📍 '+loc:''}</div>
         </div>
-        <button class="btn btn-sm btn-s" onclick="editTier('${t.id}','${t.name}')" style="width:auto;padding:6px 12px;font-size:12px">Edit</button>
+        <div class="tag tag-or" style="margin-left:auto">${pts} pts</div>
       </div>
-    </div>`).join('');
-}
-
-function renderSettings() {
-  if (!S.vendor) return;
-  setText('v-settings-slug', S.vendor.slug || '–');
-  if (S.vendor.trial_ends_at) {
-    const d = new Date(S.vendor.trial_ends_at);
-    setText('v-trial-end', d.toLocaleDateString());
-  }
-}
-
-/* ═══════════════════════════════════════
-   VENDOR ACTIONS
-═══════════════════════════════════════ */
-function populateBrandForm() {
-  if (!S.vendor) return;
-  const ni = document.getElementById('v-brand-name');
-  const ti = document.getElementById('v-brand-tag');
-  if (ni) ni.value = S.vendor.truck_name || '';
-  if (ti) ti.value = S.vendor.tagline || '';
-  S.selectedEmoji = S.vendor.emoji || '🚚';
-  renderVEP();
-  renderVPresets();
-}
-
-function renderVEP() {
-  const el = document.getElementById('v-ep');
-  if (!el) return;
-  el.innerHTML = EMOJIS.map(e => `
-    <div class="eopt ${e === S.selectedEmoji ? 'sel' : ''}" onclick="setVEmoji('${e}')">${e}</div>`).join('');
-}
-
-function renderVPresets() {
-  const el = document.getElementById('v-presets');
-  if (!el) return;
-  el.innerHTML = PRESETS.map(p => `
-    <div style="width:42px;height:42px;border-radius:11px;cursor:pointer;background:linear-gradient(135deg,${p[0]},${p[1]});flex-shrink:0"
-      onclick="applyPreset('${p[0]}','${p[1]}')"></div>`).join('');
-}
-
-function setVEmoji(e) {
-  S.selectedEmoji = e;
-  renderVEP();
-}
-
-function setBrandCol(which, val) {
-  if (which === 'p') {
-    document.getElementById('cdot-p').style.background = val;
-    document.documentElement.style.setProperty('--brand', val);
-  } else {
-    document.getElementById('cdot-s').style.background = val;
-    document.documentElement.style.setProperty('--brand2', val);
-  }
-  syncBrandColors();
-}
-
-function applyPreset(p, s) {
-  document.getElementById('cdot-p').style.background = p;
-  document.getElementById('cdot-s').style.background = s;
-  document.getElementById('cdot-p').querySelector('input').value = p;
-  document.getElementById('cdot-s').querySelector('input').value = s;
-  document.documentElement.style.setProperty('--brand', p);
-  document.documentElement.style.setProperty('--brand2', s);
-  syncBrandColors();
-  showToast('✅ Color preset applied!');
-}
-
-function syncBrandColors() {
-  const brand = getComputedStyle(document.documentElement).getPropertyValue('--brand').trim() || '#FF5A1F';
-  const brand2 = getComputedStyle(document.documentElement).getPropertyValue('--brand2').trim() || '#F5B800';
-  const rgb = hexRGB(brand);
-  setStyle('c-brand', 'color', brand);
-  setStyle('c-pts-val', 'color', brand);
-  setStyle('c-join-btn', 'background', brand);
-  setStyle('cw-glow', 'background', brand);
-  setStyle('c-prog-fill', 'background', `linear-gradient(90deg,${brand},${brand2})`);
-  ['cpico1','cpico2','cpico3','cpico4'].forEach(id => setStyle(id, 'background', `rgba(${rgb},.12)`));
-  const tb = document.getElementById('c-tier-badge');
-  if (tb) tb.style.cssText = `background:rgba(${rgb},.12);border:1px solid rgba(${rgb},.28);color:${brand}`;
-}
-
-async function saveBrand() {
-  const name  = document.getElementById('v-brand-name').value.trim();
-  const tag   = document.getElementById('v-brand-tag').value.trim();
-  const primary   = document.getElementById('cdot-p').querySelector('input').value;
-  const secondary = document.getElementById('cdot-s').querySelector('input').value;
-
-  showLoading('Saving brand...');
-  const res = await apiPatch('/api/vendor/brand', {
-    truck_name: name, tagline: tag,
-    emoji: S.selectedEmoji,
-    color_primary: primary, color_secondary: secondary
-  });
-  hideLoading();
-
-  if (res.ok) {
-    S.vendor = res.data.data;
-    localStorage.setItem('tl_vendor', JSON.stringify(S.vendor));
-    showToast('✅ Brand saved — customers see this live!');
-    renderVendorHome();
-  } else {
-    showToast('❌ Error saving brand');
-  }
-}
-
-async function addReward() {
-  const e = document.getElementById('nr-e').value.trim() || '🎁';
-  const n = document.getElementById('nr-n').value.trim();
-  const p = parseInt(document.getElementById('nr-p').value) || 0;
-  if (!n || !p) { showToast('Fill in all fields'); return; }
-
-  showLoading('Adding reward...');
-  const res = await apiPost('/api/vendor/rewards', { emoji: e, name: n, pts_required: p });
-  hideLoading();
-
-  if (res.ok) {
-    ['nr-e','nr-n','nr-p'].forEach(id => document.getElementById(id).value = '');
-    closeSheet('sh-add-reward');
-    await loadRewards();
-    showToast('✅ Reward added!');
-  } else {
-    showToast('❌ Error adding reward');
-  }
-}
-
-async function deleteReward(id) {
-  showLoading('Removing...');
-  await apiDelete(`/api/vendor/rewards/${id}`);
-  hideLoading();
-  await loadRewards();
-  showToast('Reward removed');
-}
-
-async function addPrize() {
-  const e = document.getElementById('np-e').value.trim() || '🎁';
-  const n = document.getElementById('np-n').value.trim();
-  const p = parseInt(document.getElementById('np-p').value) || 0;
-  if (!n || !p) { showToast('Fill in all fields'); return; }
-
-  showLoading('Adding prize...');
-  const res = await apiPost('/api/vendor/prizes', { emoji: e, name: n, probability: p });
-  hideLoading();
-
-  if (res.ok) {
-    ['np-e','np-n','np-p'].forEach(id => document.getElementById(id).value = '');
-    closeSheet('sh-add-prize');
-    await loadPrizes();
-    showToast('✅ Prize added!');
-  } else {
-    showToast('❌ Error adding prize');
-  }
-}
-
-async function deletePrize(id) {
-  showLoading('Removing...');
-  await apiDelete(`/api/vendor/prizes/${id}`);
-  hideLoading();
-  await loadPrizes();
-  showToast('Prize removed');
-}
-
-function editTier(id, currentName) {
-  const newName = prompt('Enter new tier name:', currentName);
-  if (newName && newName.trim()) updateTier(id, newName.trim());
-}
-
-async function updateTier(id, name) {
-  showLoading('Updating tier...');
-  await apiPatch(`/api/vendor/tiers/${id}`, { name });
-  hideLoading();
-  await loadTiers();
-  showToast('✅ Tier updated!');
-}
-
-function populatePointsForm() {
-  if (!S.vendor) return;
-  const v = S.vendor;
-  setVal('pts-visit', v.pts_per_visit || 50);
-  setVal('pts-spin', v.pts_spin_bonus || 25);
-  setVal('pts-streak', v.pts_streak_mult || 1.5);
-  setVal('pts-ref', v.pts_referral || 100);
-  setCheck('tog-first', v.double_first_visit);
-  setCheck('tog-streak', v.streak_bonus);
-  setCheck('tog-bday', v.birthday_reward);
-  setCheck('tog-winback', v.winback_enabled);
-}
-
-async function savePointsConfig() {
-  showLoading('Saving...');
-  const res = await apiPatch('/api/vendor/points-config', {
-    pts_per_visit:     parseInt(document.getElementById('pts-visit').value),
-    pts_spin_bonus:    parseInt(document.getElementById('pts-spin').value),
-    pts_streak_mult:   parseFloat(document.getElementById('pts-streak').value),
-    pts_referral:      parseInt(document.getElementById('pts-ref').value),
-    double_first_visit: document.getElementById('tog-first').checked,
-    streak_bonus:      document.getElementById('tog-streak').checked,
-    birthday_reward:   document.getElementById('tog-bday').checked,
-    winback_enabled:   document.getElementById('tog-winback').checked,
-  });
-  hideLoading();
-  if (res.ok) {
-    S.vendor = res.data.data;
-    localStorage.setItem('tl_vendor', JSON.stringify(S.vendor));
-    showToast('✅ Points rules saved!');
-  } else {
-    showToast('❌ Error saving rules');
-  }
-}
-
-function sendWinback() { showToast('📱 Win-back SMS sent to inactive customers!'); }
-
-function copyLink() {
-  const slug = S.vendor?.slug || '';
-  navigator.clipboard?.writeText(`https://truckloyal.com/${slug}`)
-    .then(() => showToast('📋 Link copied!'))
-    .catch(() => showToast('📋 truckloyal.com/' + slug));
-}
-
-/* ═══════════════════════════════════════
-   CUSTOMER SIDE
-═══════════════════════════════════════ */
-async function loadCustomerSide() {
-  // Load the vendor's public config to show customer-side branding
-  if (S.vendor && S.vendor.slug) {
-    const res = await apiGet(`/api/truck/${S.vendor.slug}`);
-    if (res.ok) {
-      S.truckConfig = res.data.data;
-      S.rewards = res.data.data.rewards || [];
-      S.prizes  = res.data.data.prizes  || [];
-      S.tiers   = res.data.data.tiers   || [];
-      applyTruckBranding(res.data.data.vendor);
-      setText('c-member-count', `${S.rewards.length > 0 ? '100+' : 'Be the first'} members earning rewards`);
-    }
-  }
-  if (S.customer) {
-    loadCustomerDash();
-  }
-}
-
-function applyTruckBranding(vendor) {
-  if (!vendor) return;
-  const p = vendor.color_primary || '#FF5A1F';
-  const s = vendor.color_secondary || '#F5B800';
-  const rgb = hexRGB(p);
-
-  setText('c-brand', vendor.truck_name || 'TruckLoyal');
-  setText('c-tagline', vendor.tagline || 'Rewards that hit different');
-  setText('c-emoji', vendor.emoji || '🚚');
-  setStyle('c-brand', 'color', p);
-  setStyle('c-pts-val', 'color', p);
-  setStyle('c-join-btn', 'background', p);
-  setStyle('cw-glow', 'background', p);
-  setStyle('c-prog-fill', 'background', `linear-gradient(90deg,${p},${s})`);
-  ['cpico1','cpico2','cpico3','cpico4'].forEach(id => setStyle(id, 'background', `rgba(${rgb},.12)`));
-  const tb = document.getElementById('c-tier-badge');
-  if (tb) tb.style.cssText = `background:rgba(${rgb},.12);border:1px solid rgba(${rgb},.28);color:${p}`;
-  document.documentElement.style.setProperty('--brand', p);
-  document.documentElement.style.setProperty('--brand2', s);
-}
-
-async function customerJoin() {
-  const ph = document.getElementById('c-phone').value.replace(/\D/g, '');
-  if (ph.length < 10) { showToast('Enter a valid phone number'); return; }
-
-  if (!S.vendor) { showToast('No vendor loaded — use the Vendor tab first'); return; }
-
-  showLoading('Joining loyalty program...');
-  const res = await apiPost('/api/customer/join', {
-    phone: ph,
-    vendor_id: S.vendor.id,
-  });
-  hideLoading();
-
-  if (!res.ok) { showToast('❌ ' + (res.data.error || 'Error joining')); return; }
-
-  S.customer = res.data.data.customer;
-  localStorage.setItem('tl_customer', JSON.stringify(S.customer));
-
-  const isNew = res.data.data.is_new;
-  showToast(isNew ? '🎉 Welcome! Time to spin!' : '👋 Welcome back!');
-
-  // Record the visit and trigger spin
-  await recordVisit();
-}
-
-async function recordVisit() {
-  if (!S.customer || !S.vendor) return;
-  showLoading('Checking in...');
-  const res = await apiPost('/api/customer/visit', {
-    customer_id: S.customer.id,
-    vendor_id: S.vendor.id,
-  });
-  hideLoading();
-
-  if (!res.ok) {
-    if (res.status === 409) {
-      showToast('✅ Already checked in today! Come back tomorrow 🔥');
-      goC('s-c-dash');
-      loadCustomerDash();
-      return;
-    }
-    showToast('❌ ' + (res.data.error || 'Check-in error'));
-    return;
-  }
-
-  const visitData = res.data.data;
-
-  // Update prizes from visit response spin result
-  if (visitData.spin_result) {
-    // Pre-load the win for after spin animation
-    window._pendingWin = visitData.spin_result;
-  }
-
-  // Update customer state
-  S.customer.points_balance = visitData.new_balance;
-  S.customer.current_streak = visitData.new_streak;
-  localStorage.setItem('tl_customer', JSON.stringify(S.customer));
-
-  if (visitData.tier_upgraded) {
-    showToast('🎉 Tier upgrade! You leveled up!');
-  }
-
-  showToast(`+${visitData.pts_earned} points earned!`);
-  goC('s-c-spin');
-  drawWheel(S.spinAngle);
-}
-
-function skipToCustomerDash() {
-  if (!S.customer) {
-    showToast('Enter your phone number to sign in');
-    return;
-  }
-  goC('s-c-dash');
-  loadCustomerDash();
-}
-
-async function loadCustomerDash() {
-  if (!S.customer) return;
-  const c = S.customer;
-
-  // Refresh customer data
-  const hist = await apiGet(`/api/customer/${c.id}/history`);
-
-  setText('c-dash-name', (c.name || 'Friend') + ' 👋');
-  setText('c-pts-val', c.points_balance || 0);
-  setText('c-visits-val', c.visit_count || 0);
-  setText('c-saved-val', '$' + (parseFloat(c.total_saved || 0)).toFixed(0));
-
-  // Streak
-  const streak = c.current_streak || 0;
-  setText('c-streak-cnt', streak + ' day' + (streak !== 1 ? 's' : ''));
-  renderStreakDays(streak);
-  setText('c-streak-tip', streak > 0 ? '💡 Come back tomorrow to keep your streak going!' : '🔥 Start your streak — visit today!');
-
-  // Tier progress
-  renderTierProgress(c.points_total || 0);
-
-  // Rewards
-  renderCustomerRewards(c.points_balance || 0);
-
-  // Profile
-  setText('c-prof-av', (c.name || 'F')[0].toUpperCase());
-  setText('c-prof-name', c.name || 'Friend');
-  setText('c-prof-phone', formatPhone(c.phone || ''));
-  setText('c-total-pts', c.points_total || 0);
-  setText('c-total-visits', c.visit_count || 0);
-  setText('c-total-saved', '$' + parseFloat(c.total_saved || 0).toFixed(2));
-  setText('c-ref-code', (c.referral_code || '').toUpperCase());
-
-  const tierName = S.tiers.find(t => t.id === c.current_tier_id)?.name || S.tiers[0]?.name || 'Starter';
-  const tierIcon = S.tiers.find(t => t.id === c.current_tier_id)?.icon || '🌱';
-  setText('c-tier-name', tierName);
-  setText('c-prof-tier', tierIcon + ' ' + tierName);
-}
-
-function renderStreakDays(streak) {
-  const el = document.getElementById('c-streak-days');
-  if (!el) return;
-  const days = ['M','T','W','T','F','S','S'];
-  const today = new Date().getDay(); // 0=Sun
-  const todayIdx = today === 0 ? 6 : today - 1; // Mon=0
-  el.innerHTML = days.map((d, i) => {
-    let cls = 'future';
-    if (i < todayIdx && i >= todayIdx - streak + 1) cls = 'done';
-    if (i === todayIdx) cls = 'today';
-    return `<div class="sd ${cls}">${d}</div>`;
+      <div class="tc-stats">
+        <div class="tc-stat"><div class="tc-stat-val" style="color:${p}">${pts}</div><div class="tc-stat-lbl">Points</div></div>
+        <div class="tc-stat"><div class="tc-stat-val">${t.visit_count||0}</div><div class="tc-stat-lbl">Visits</div></div>
+        <div class="tc-stat"><div class="tc-stat-val" style="color:var(--gn)">$${(t.total_saved||0).toFixed(0)}</div><div class="tc-stat-lbl">Saved</div></div>
+      </div>
+    </div>`;
   }).join('');
 }
 
-function renderTierProgress(totalPts) {
-  if (!S.tiers.length) return;
-  const sorted = [...S.tiers].sort((a, b) => a.pts_threshold - b.pts_threshold);
-  let currentTier = sorted[0];
-  let nextTier = null;
-  for (let i = 0; i < sorted.length; i++) {
-    if (totalPts >= sorted[i].pts_threshold) currentTier = sorted[i];
-    if (totalPts < sorted[i].pts_threshold && !nextTier) nextTier = sorted[i];
+function openTruck(i){
+  S.activeTruck=S.myTrucks[i];
+  localStorage.setItem('tl_active_truck',JSON.stringify(S.activeTruck));
+  S.rewards=[...DEFAULT_REWARDS]; S.prizes=[...DEFAULT_PRIZES];
+  // Load truck's prizes and rewards
+  if(S.activeTruck.id){
+    apiGet('/api/truck/'+S.activeTruck.slug+'/config').then(r=>{
+      if(r.ok&&r.data.data){
+        if(r.data.data.rewards?.length) S.rewards=r.data.data.rewards;
+        if(r.data.data.prizes?.length) S.prizes=r.data.data.prizes;
+        renderTruckRewards();
+      }
+    });
   }
-
-  if (nextTier) {
-    const progress = ((totalPts - currentTier.pts_threshold) / (nextTier.pts_threshold - currentTier.pts_threshold)) * 100;
-    setText('c-next-tier', nextTier.icon + ' ' + nextTier.name);
-    setText('c-pts-away', (nextTier.pts_threshold - totalPts) + ' pts away');
-    setText('c-prog-label', `${totalPts} / ${nextTier.pts_threshold} pts`);
-    const fill = document.getElementById('c-prog-fill');
-    if (fill) fill.style.width = Math.min(progress, 100) + '%';
-  } else {
-    setText('c-next-tier', '👑 Max Tier Reached!');
-    setText('c-pts-away', '');
-    setText('c-prog-label', totalPts + ' pts total');
-    const fill = document.getElementById('c-prog-fill');
-    if (fill) fill.style.width = '100%';
-  }
+  goC('s-c-truck');
 }
 
-function renderCustomerRewards(balance) {
-  const el = document.getElementById('c-rewards-list');
-  if (!el) return;
-  if (!S.rewards.length) {
-    el.innerHTML = '<div style="text-align:center;padding:16px;color:var(--mu)">No rewards set up yet</div>';
-    return;
+/* ════════════════════════════════════
+   CUSTOMER: JOIN TRUCK
+════════════════════════════════════ */
+async function joinTruckByCode(){
+  const code=document.getElementById('c-truck-code-input')?.value.trim().toLowerCase();
+  if(!code){showToast('Enter a truck code');return}
+  showLoad('Finding truck...');
+  const r=await apiPost('/api/customer/join-truck',{slug:code,customer_id:S.customer?.id});
+  hideLoad();
+  if(!r.ok){showToast('❌ '+(r.data.error||'Truck not found'));return}
+  const truck=r.data.data.truck;
+  if(!S.myTrucks.find(t=>t.id===truck.id)){
+    S.myTrucks.push(truck);
+    localStorage.setItem('tl_my_trucks',JSON.stringify(S.myTrucks));
   }
-  el.innerHTML = S.rewards.map(r => {
-    const unlocked = balance >= r.pts_required;
+  S.activeTruck=truck;
+  localStorage.setItem('tl_active_truck',JSON.stringify(truck));
+  S.rewards=[...DEFAULT_REWARDS]; S.prizes=[...DEFAULT_PRIZES];
+  showToast('🎉 Joined '+truck.truck_name+'!');
+  goC('s-c-truck');
+}
+
+function joinDemoTruck(){
+  // Demo mode for testing without live API
+  const demo={id:'demo',slug:'demo',truck_name:'Flavor on Wheels',tagline:'Best burgers on wheels',emoji:'🍔',color_primary:'#E8641A',color_secondary:'#F5B800',points_balance:125,visit_count:3,total_saved:0};
+  if(!S.myTrucks.find(t=>t.id==='demo')) S.myTrucks.push(demo);
+  localStorage.setItem('tl_my_trucks',JSON.stringify(S.myTrucks));
+  S.activeTruck=demo; localStorage.setItem('tl_active_truck',JSON.stringify(demo));
+  S.rewards=[...DEFAULT_REWARDS]; S.prizes=[...DEFAULT_PRIZES];
+  showToast('🎉 Joined demo truck!');
+  goC('s-c-truck');
+}
+
+function startCustomerQRScan(){showToast('📷 QR scan requires device camera — enter truck code manually for now')}
+
+/* ════════════════════════════════════
+   CUSTOMER: TRUCK DASHBOARD
+════════════════════════════════════ */
+function renderTruckDash(){
+  const t=S.activeTruck;
+  if(!t) return;
+  const p=t.color_primary||'#FF5A1F';
+  const pts=t.points_balance||0;
+  // Apply truck brand colors to this screen
+  document.getElementById('c-truck-header').style.background=`linear-gradient(180deg,rgba(${hexRGB(p)},.12) 0%,transparent 100%)`;
+  setText('ct-name',t.truck_name||'Food Truck');
+  setText('ct-tagline',t.tagline||'');
+  setText('ct-emoji',t.emoji||'🚚');
+  setText('ct-pts',pts);
+  setText('ct-visits',t.visit_count||0);
+  setText('ct-saved','$'+(t.total_saved||0).toFixed(0));
+  // Location
+  const loc=localStorage.getItem('tl_location'+(t.id==='demo'?'':('_'+t.id)))||'';
+  const locBar=document.getElementById('ct-location-bar');
+  if(locBar){locBar.style.display=loc?'block':'none';setText('ct-location-text',loc)}
+  // Tier
+  const tier=DEFAULT_TIERS.slice().reverse().find(tr=>pts>=tr.pts_threshold)||DEFAULT_TIERS[0];
+  const nextTier=DEFAULT_TIERS.find(tr=>pts<tr.pts_threshold);
+  setText('ct-tier',tier.icon+' '+tier.name);
+  setText('ct-next-tier-lbl',nextTier?'Next: '+nextTier.icon+' '+nextTier.name:'👑 Max Tier!');
+  if(nextTier){
+    const pct=((pts-tier.pts_threshold)/(nextTier.pts_threshold-tier.pts_threshold))*100;
+    setText('ct-pts-away',(nextTier.pts_threshold-pts)+' pts away');
+    const fill=document.getElementById('ct-prog-fill');
+    if(fill){fill.style.width=Math.min(pct,100)+'%';fill.style.background=`linear-gradient(90deg,${p},${t.color_secondary||'#F5B800'})`}
+  }
+  // Streak
+  const streak=t.current_streak||0;
+  setText('ct-streak',streak+' day'+(streak!==1?'s':''));
+  renderStreakDays('ct-streak-days',streak);
+  setText('ct-streak-tip',streak>0?`💡 Come back tomorrow to keep your ${streak}-day streak!`:'Visit today to start your streak!');
+  // Rewards
+  renderTruckRewards();
+}
+
+function renderTruckRewards(){
+  const el=document.getElementById('ct-rewards-list');
+  if(!el) return;
+  const t=S.activeTruck;
+  const pts=t?.points_balance||0;
+  const rewards=S.rewards.length?S.rewards:DEFAULT_REWARDS;
+  if(!rewards.length){el.innerHTML='<div style="text-align:center;padding:16px;color:var(--mu)">No rewards set up yet.</div>';return}
+  el.innerHTML=rewards.map((r,i)=>{
+    const cost=r.pts_required||r.pts||0;
+    const unlocked=pts>=cost;
     return `
-    <div class="rrow ${unlocked ? 'unlocked' : ''}">
+    <div class="rrow ${unlocked?'unlocked':''}">
       <div class="rico">${r.emoji}</div>
       <div class="rinfo">
         <div class="rname">${r.name}</div>
-        <div class="rpts">${unlocked ? 'Ready to redeem ✓' : r.pts_required + ' points required'}</div>
+        <div class="rpts">${unlocked?'✓ You can redeem this now!':Math.max(0,cost-pts)+' more pts needed (you have '+pts+')'}</div>
       </div>
-      <button class="rdm-btn ${unlocked ? 'ready' : 'locked'}"
-        onclick="${unlocked ? `openRedeem('${r.id}','${r.emoji}','${r.name}')` : `showToast('Need ${r.pts_required} pts — keep visiting!')`}">
-        ${unlocked ? 'REDEEM' : '🔒'}
+      <button class="rdm-btn ${unlocked?'ready':'locked'}"
+        onclick="${unlocked?`openRedeem(${i})`:`showToast('Need ${Math.max(0,cost-pts)} more pts!')`}">
+        ${unlocked?'REDEEM':'🔒'}
       </button>
     </div>`;
   }).join('');
 }
 
-function openRedeem(rewardId, emoji, name) {
-  S.currentRdmRewardId = rewardId;
-  setText('rdm-emo', emoji);
-  setText('rdm-name', name);
-  document.getElementById('rdm-code').textContent = 'STK-' + Math.floor(1000 + Math.random() * 9000);
+async function checkInAtTruck(){
+  if(!S.customer){showToast('Please sign in first');return}
+  if(!S.activeTruck){showToast('No truck selected');return}
+  if(S.activeTruck.id==='demo'){
+    // Demo mode
+    S.visitPtsEarned=50;
+    S.pendingWin=null;
+    goC('s-c-spin');
+    return;
+  }
+  showLoad('Checking in...');
+  const r=await apiPost('/api/customer/visit',{customer_id:S.customer.id,vendor_id:S.activeTruck.id});
+  hideLoad();
+  if(!r.ok){
+    if(r.status===409){showToast('✅ Already checked in today! Come back tomorrow.');return}
+    showToast('❌ '+(r.data.error||'Check-in error'));return;
+  }
+  const d=r.data.data;
+  S.visitPtsEarned=d.pts_earned||50;
+  S.pendingWin=d.spin_result||null;
+  // Update truck in myTrucks
+  const idx=S.myTrucks.findIndex(t=>t.id===S.activeTruck.id);
+  if(idx>=0){S.myTrucks[idx].points_balance=d.new_balance;S.myTrucks[idx].current_streak=d.new_streak}
+  S.activeTruck.points_balance=d.new_balance;
+  S.activeTruck.current_streak=d.new_streak;
+  localStorage.setItem('tl_my_trucks',JSON.stringify(S.myTrucks));
+  localStorage.setItem('tl_active_truck',JSON.stringify(S.activeTruck));
+  if(d.tier_upgraded) showToast('🎉 You leveled up!');
+  goC('s-c-spin');
+}
+
+/* ════════════════════════════════════
+   CUSTOMER: REDEEM
+════════════════════════════════════ */
+function openRedeem(i){
+  const r=S.rewards[i];
+  const code='STK-'+Math.floor(1000+Math.random()*9000);
+  S.currentRdm={reward:r,code,idx:i};
+  setText('rdm-emo',r.emoji);
+  setText('rdm-name',r.name);
+  setText('rdm-truck',S.activeTruck?.truck_name||'this truck');
+  setText('rdm-pts-cost','–'+(r.pts_required||r.pts||0)+' pts');
+  setText('rdm-code',code);
+  setText('rdm-code-inline',code);
   openSheet('sh-redeem');
 }
 
-async function confirmRedeem() {
-  if (!S.currentRdmRewardId || !S.customer) return;
-
-  const btnEl = document.getElementById('rdm-confirm-btn');
-  if (btnEl) btnEl.disabled = true;
-
-  const res = await apiPost('/api/customer/redeem', {
-    customer_id: S.currentRdmRewardId ? S.customer.id : null,
-    reward_id: S.currentRdmRewardId,
-  });
-
-  if (btnEl) btnEl.disabled = false;
-
-  if (!res.ok) {
-    showToast('❌ ' + (res.data.error || 'Redemption failed'));
-    return;
+/* ════════════════════════════════════
+   CUSTOMER: PROFILE / QR
+════════════════════════════════════ */
+function renderProfile(){
+  const c=S.customer;
+  if(!c){show('s-c-signup');return}
+  setText('c-prof-av',(c.name||'?')[0].toUpperCase());
+  setText('c-prof-name',c.name||'Member');
+  setText('c-prof-phone',formatPhoneDisplay(c.phone||''));
+  setText('c-prof-email',c.email||'');
+  // All-time stats across all trucks
+  const totalPts=S.myTrucks.reduce((s,t)=>s+(t.points_total||t.points_balance||0),0);
+  const totalVisits=S.myTrucks.reduce((s,t)=>s+(t.visit_count||0),0);
+  const totalSaved=S.myTrucks.reduce((s,t)=>s+(t.total_saved||0),0);
+  setText('c-total-pts',totalPts);
+  setText('c-total-visits',totalVisits);
+  setText('c-trucks-count',S.myTrucks.length);
+  setText('c-total-saved','$'+totalSaved.toFixed(2));
+  // Referral link
+  if(c.referral_code){
+    setText('c-ref-link','foodtruckrewards.app/join?ref='+c.referral_code);
   }
-
-  // Update customer balance
-  const redeemed = S.rewards.find(r => r.id === S.currentRdmRewardId);
-  if (redeemed && S.customer) {
-    S.customer.points_balance = Math.max(0, (S.customer.points_balance || 0) - redeemed.pts_required);
-    localStorage.setItem('tl_customer', JSON.stringify(S.customer));
-  }
-
-  S.currentRdmRewardId = null;
-  closeSheet('sh-redeem');
-  confetti();
-  showToast('✅ Reward redeemed! Enjoy!');
-  loadCustomerDash();
 }
 
-async function loadHistory() {
-  if (!S.customer) return;
-  const el = document.getElementById('c-hist-list');
-  if (!el) return;
-  el.innerHTML = '<div style="text-align:center;padding:24px;color:var(--mu)">Loading...</div>';
+function renderMyQR(){
+  const c=S.customer;
+  if(!c) return;
+  const rid=c.rewards_id||'FTR-'+String(c.id||'000000').padStart(6,'0');
+  setText('c-qr-id',rid);
+}
 
-  const res = await apiGet(`/api/customer/${S.customer.id}/history`);
-  if (!res.ok) { el.innerHTML = '<div style="padding:16px;color:var(--mu)">No history yet</div>'; return; }
-
-  const visits = res.data.data.visits || [];
-  const redemptions = res.data.data.redemptions || [];
-
-  if (!visits.length && !redemptions.length) {
-    el.innerHTML = '<div style="text-align:center;padding:24px;color:var(--mu)">No visits yet — come back after your first check-in!</div>';
-    return;
+function shareMyQR(){
+  const c=S.customer;
+  if(!c) return;
+  const rid=c.rewards_id||'FTR-000000';
+  if(navigator.share){
+    navigator.share({title:'My Food Truck Rewards ID',text:'My rewards ID is '+rid+'. Scan it to give me points!',url:'https://foodtruckrewards.app'});
+  } else {
+    navigator.clipboard?.writeText(rid).then(()=>showToast('📋 Rewards ID copied: '+rid));
   }
+}
 
-  const visitRows = visits.map(v => `
+function shareReferral(){
+  const c=S.customer;
+  if(!c){showToast('Sign in first');return}
+  const url='https://foodtruckrewards.app/join?ref='+(c.referral_code||'');
+  if(navigator.share){
+    navigator.share({title:'Join Food Truck Rewards',text:'Join me on Food Truck Rewards — earn free food at local food trucks! We both get 100 bonus points when you join. 🚚🎰',url});
+  } else {
+    navigator.clipboard?.writeText(url).then(()=>showToast('📋 Referral link copied!'));
+  }
+}
+
+function saveBirthday(){
+  const v=document.getElementById('c-birthday')?.value;
+  if(!v){showToast('Pick your birthday first');return}
+  showToast('🎂 Birthday saved! You\'ll get a surprise on your day.');
+}
+
+/* ════════════════════════════════════
+   CUSTOMER: HISTORY
+════════════════════════════════════ */
+function renderHistory(){
+  const el=document.getElementById('c-hist-body');
+  if(!el) return;
+  if(!S.customer){el.innerHTML='<div style="text-align:center;padding:32px 0;color:var(--mu)">Sign in to see your history</div>';return}
+  if(!S.myTrucks.length){el.innerHTML='<div style="text-align:center;padding:32px 0;color:var(--mu)">No visits yet — scan a truck QR to start!</div>';return}
+  el.innerHTML='<div style="text-align:center;padding:20px;color:var(--mu)">Loading...</div>';
+  // In live app this would fetch from API
+  // For now show trucks summary
+  const rows=S.myTrucks.map(t=>`
     <div class="hist-item">
       <div class="hist-left">
-        <div class="hist-ico">📍</div>
-        <div><div class="hist-desc">Visit${v.spin_result_id ? ' + Spin' : ''} · Streak day ${v.streak_day}</div><div class="hist-date">${fmtDate(v.created_at)}</div></div>
+        <div class="hist-ico">${t.emoji||'🚚'}</div>
+        <div><div class="hist-desc">${t.truck_name}</div><div class="hist-date">${t.visit_count||0} total visits</div></div>
       </div>
-      <div class="hist-pts" style="color:var(--gd)">+${v.pts_earned}</div>
+      <div class="hist-pts" style="color:var(--gd)">${t.points_balance||0} pts</div>
     </div>`).join('');
-
-  const rdmRows = redemptions.map(r => `
-    <div class="hist-item">
-      <div class="hist-left">
-        <div class="hist-ico">🎁</div>
-        <div><div class="hist-desc">Redeemed · ${r.status}</div><div class="hist-date">${fmtDate(r.created_at)}</div></div>
-      </div>
-      <div class="hist-pts" style="color:var(--mu)">–${r.pts_spent}pts</div>
-    </div>`).join('');
-
-  el.innerHTML = visitRows + rdmRows;
+  el.innerHTML=rows||'<div style="text-align:center;padding:32px 0;color:var(--mu)">No history yet</div>';
 }
 
-function customerLogout() {
-  S.customer = null;
-  localStorage.removeItem('tl_customer');
-  goC('s-c-welcome');
-  showToast('Signed out');
-}
-
-function socialShare(platform) {
-  showToast(`📲 +15pts bonus! Thanks for sharing on ${platform}!`);
-}
-
-function copyRefLink() {
-  const code = S.customer?.referral_code || '';
-  const url = `https://truckloyal.com/${S.vendor?.slug || ''}?ref=${code}`;
-  navigator.clipboard?.writeText(url)
-    .then(() => showToast('📋 Referral link copied!'))
-    .catch(() => showToast('📋 Link: ' + url));
-}
-
-/* ═══════════════════════════════════════
+/* ════════════════════════════════════
    SPIN WHEEL
-═══════════════════════════════════════ */
-function drawWheel(angle) {
-  const canvas = document.getElementById('spin-canvas');
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  const cx=150, cy=150, r=142;
-  const segs = S.prizes.length ? S.prizes : [
-    { emoji:'💰', name:'+50 Points', probability:30 },
-    { emoji:'✨', name:'+25 Points', probability:25 },
-    { emoji:'🏷️', name:'10% Off',   probability:20 },
-    { emoji:'⚡', name:'2× Points', probability:10 },
-    { emoji:'🥤', name:'Free Drink', probability:8 },
-    { emoji:'👑', name:'Free Meal',  probability:7 },
-  ];
-  const n = segs.length, arc = (Math.PI*2)/n;
-  const cols = ['#FF5A1F','#CC4510','#FF7040','#E04800','#FF6530','#F5B800','#CC9800','#FF8050'];
-  ctx.clearRect(0,0,300,300);
-  segs.forEach((seg, i) => {
-    const a = angle + i*arc - Math.PI/2;
-    ctx.beginPath(); ctx.moveTo(cx,cy);
-    ctx.arc(cx,cy,r,a,a+arc); ctx.closePath();
-    ctx.fillStyle=cols[i%cols.length]; ctx.fill();
-    ctx.strokeStyle='rgba(0,0,0,.2)'; ctx.lineWidth=1.5; ctx.stroke();
-    ctx.save(); ctx.translate(cx,cy); ctx.rotate(a+arc/2);
+════════════════════════════════════ */
+function renderSpinPreview(){
+  const el=document.getElementById('spp-grid');
+  if(!el) return;
+  const prizes=S.prizes.length?S.prizes:DEFAULT_PRIZES;
+  const sorted=[...prizes].sort((a,b)=>(b.pts||0)-(a.pts||0));
+  const maxPts=Math.max(...prizes.map(p=>p.pts||0));
+  el.innerHTML=sorted.slice(0,6).map(p=>{
+    const pts=p.pts||0;
+    return `<div class="spp-item ${pts===maxPts?'jackpot':''}">
+      <div style="font-size:18px;margin-bottom:3px">${p.emoji}</div>
+      <div class="spp-pts">+${pts}</div>
+      <div class="spp-lbl">pts${pts===maxPts?' 🏆':''}</div>
+    </div>`;
+  }).join('');
+  setText('spin-truck-name',S.activeTruck?.truck_name||'this truck');
+  setText('spin-visit-pts',S.visitPtsEarned||50);
+}
+
+function drawWheel(angle){
+  const canvas=document.getElementById('spin-canvas');
+  if(!canvas) return;
+  const ctx=canvas.getContext('2d');
+  const cx=140,cy=140,r=132;
+  const segs=S.prizes.length?S.prizes:DEFAULT_PRIZES;
+  const n=segs.length, arc=(Math.PI*2)/n;
+  const cols=['#FF5A1F','#CC4510','#FF7040','#E04800','#FF6530','#F5B800','#CC9800','#FF8050'];
+  ctx.clearRect(0,0,280,280);
+  segs.forEach((seg,i)=>{
+    const a=angle+i*arc-Math.PI/2;
+    ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,a,a+arc);ctx.closePath();
+    ctx.fillStyle=cols[i%cols.length];ctx.fill();
+    ctx.strokeStyle='rgba(0,0,0,.2)';ctx.lineWidth=1.5;ctx.stroke();
+    ctx.save();ctx.translate(cx,cy);ctx.rotate(a+arc/2);
     ctx.textAlign='right';
-    ctx.fillStyle='rgba(255,255,255,.92)';
-    ctx.font='bold 11px "DM Sans",sans-serif';
-    ctx.fillText(seg.name, r-10, 4);
-    ctx.font='15px serif'; ctx.fillText(seg.emoji, r-58, 5);
+    ctx.fillStyle='rgba(255,255,255,.95)';
+    ctx.font='bold 12px "DM Sans",sans-serif';
+    ctx.fillText('+'+(seg.pts||0)+' pts',r-10,3);
+    ctx.font='16px serif';ctx.fillText(seg.emoji,r-62,5);
     ctx.restore();
   });
-  ctx.beginPath(); ctx.arc(cx,cy,18,0,Math.PI*2);
-  ctx.fillStyle='#0A0A08'; ctx.fill();
-  ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--brand').trim() || '#FF5A1F';
-  ctx.lineWidth=2.5; ctx.stroke();
-  ctx.font='13px serif'; ctx.textAlign='center'; ctx.fillText('🔥',cx,cy+5);
+  ctx.beginPath();ctx.arc(cx,cy,18,0,Math.PI*2);
+  ctx.fillStyle='#FFF8F0';ctx.fill();
+  ctx.strokeStyle=S.activeTruck?.color_primary||'#FF5A1F';ctx.lineWidth=2.5;ctx.stroke();
+  ctx.font='13px serif';ctx.textAlign='center';ctx.fillText('🔥',cx,cy+5);
 }
 
-function doSpin() {
-  if (S.spinning) return;
-  S.spinning = true;
-  const btn = document.getElementById('spin-btn');
-  btn.textContent='SPINNING...'; btn.disabled=true;
-
-  // Use server-determined win if we have it, otherwise random
-  const segs = S.prizes.length ? S.prizes : [{emoji:'🎁',name:'Try Again',probability:100}];
+function doSpin(){
+  if(S.spinning) return;
+  S.spinning=true;
+  const btn=document.getElementById('spin-btn');
+  btn.textContent='SPINNING...';btn.disabled=true;
+  const segs=S.prizes.length?S.prizes:DEFAULT_PRIZES;
   let winIdx;
-
-  if (window._pendingWin) {
-    const pendingName = window._pendingWin.prize_name;
-    winIdx = segs.findIndex(s => s.name === pendingName);
-    if (winIdx < 0) winIdx = Math.floor(Math.random() * segs.length);
+  if(S.pendingWin){
+    const pName=S.pendingWin.prize_name;
+    winIdx=segs.findIndex(s=>s.name===pName);
+    if(winIdx<0) winIdx=weightedRandom(segs);
   } else {
-    winIdx = Math.floor(Math.random() * segs.length);
+    winIdx=weightedRandom(segs);
   }
-
-  const n = segs.length, arc = (Math.PI*2)/n;
-  const target = (Math.PI*2*6) + (Math.PI*2 - winIdx*arc) - arc/2;
-  const dur = 4200, start = performance.now(), startAngle = S.spinAngle;
-
-  function tick(now) {
-    const t = Math.min((now-start)/dur, 1);
-    const ease = 1 - Math.pow(1-t, 4);
-    S.spinAngle = startAngle + target * ease;
+  const arc=(Math.PI*2)/segs.length;
+  const target=(Math.PI*2*6)+((Math.PI*2)-winIdx*arc)-arc/2;
+  const dur=4500,start=performance.now(),startAngle=S.spinAngle;
+  function tick(now){
+    const t=Math.min((now-start)/dur,1);
+    const ease=1-Math.pow(1-t,4);
+    S.spinAngle=startAngle+target*ease;
     drawWheel(S.spinAngle);
-    if (t < 1) { requestAnimationFrame(tick); }
-    else {
-      S.spinning = false;
-      btn.textContent='SPIN THE WHEEL'; btn.disabled=false;
-      const won = segs[winIdx];
-      const winData = window._pendingWin || {};
-      window._pendingWin = null;
-      setText('win-emo', won.emoji || '🎁');
-      setText('win-name', won.name || 'Reward');
-      setText('win-code', winData.prize_value ? `Code: STK-${Math.floor(1000+Math.random()*9000)}` : 'Points added to your balance!');
-      confetti();
-      openSheet('sh-win');
+    if(t<1){requestAnimationFrame(tick)}
+    else{
+      S.spinning=false;btn.textContent='SPIN THE WHEEL';btn.disabled=false;
+      const won=segs[winIdx];
+      const wonPts=won.pts||0;
+      const visitPts=S.visitPtsEarned||50;
+      const newBal=(S.activeTruck?.points_balance||0);
+      S.pendingWin=null;
+      setText('win-pts-big','+'+wonPts);
+      setText('win-visit-pts','+'+visitPts);
+      setText('win-spin-pts','+'+wonPts);
+      setText('win-truck-name',S.activeTruck?.truck_name||'this truck');
+      setText('win-new-balance',newBal+' pts');
+      confetti();openSheet('sh-win');
     }
   }
   requestAnimationFrame(tick);
 }
 
-/* ═══════════════════════════════════════
-   UTILITIES
-═══════════════════════════════════════ */
-function setText(id, val) { const e=document.getElementById(id); if(e) e.textContent=val; }
-function setStyle(id, prop, val) { const e=document.getElementById(id); if(e) e.style[prop]=val; }
-function setVal(id, val) { const e=document.getElementById(id); if(e) e.value=val; }
-function setCheck(id, val) { const e=document.getElementById(id); if(e) e.checked=!!val; }
-
-function hexRGB(hex) {
-  if (!hex || hex.length < 7) return '255,90,31';
-  const r=parseInt(hex.slice(1,3),16), g=parseInt(hex.slice(3,5),16), b=parseInt(hex.slice(5,7),16);
-  return `${r},${g},${b}`;
+function weightedRandom(segs){
+  const total=segs.reduce((s,p)=>s+(p.probability||1),0);
+  let r=Math.random()*total,cum=0;
+  for(let i=0;i<segs.length;i++){cum+=segs[i].probability||1;if(r<=cum)return i}
+  return segs.length-1;
 }
 
-function formatPhone(ph) {
-  const d = ph.replace(/\D/g,'');
-  if (d.length >= 10) return `(${d.slice(0,3)}) ${d.slice(3,6)}-${d.slice(6,10)}`;
-  return ph;
+/* ════════════════════════════════════
+   STREAK DAYS
+════════════════════════════════════ */
+function renderStreakDays(elId,streak){
+  const el=document.getElementById(elId);
+  if(!el) return;
+  const days=['M','T','W','T','F','S','S'];
+  const today=new Date().getDay();
+  const todayIdx=today===0?6:today-1;
+  el.innerHTML=days.map((d,i)=>{
+    let cls='future';
+    if(i<todayIdx&&i>=todayIdx-streak+1) cls='done';
+    if(i===todayIdx) cls=streak>0?'today':'future';
+    return `<div class="sd ${cls}">${d}</div>`;
+  }).join('');
 }
 
-function fmtDate(iso) {
-  if (!iso) return '';
-  const d = new Date(iso);
-  const now = new Date();
-  const diff = Math.floor((now - d) / 86400000);
-  if (diff === 0) return 'Today, ' + d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
-  if (diff === 1) return 'Yesterday';
-  if (diff < 7) return diff + ' days ago';
-  return d.toLocaleDateString();
+/* ════════════════════════════════════
+   UTILS
+════════════════════════════════════ */
+function setText(id,val){const e=document.getElementById(id);if(e)e.textContent=val}
+function setVal(id,v){const e=document.getElementById(id);if(e)e.value=v}
+function setCheck(id,v){const e=document.getElementById(id);if(e)e.checked=!!v}
+function showErr(el,msg){el.textContent=msg;el.classList.add('show')}
+function hexRGB(hex){
+  if(!hex||hex.length<7) return '255,90,31';
+  return `${parseInt(hex.slice(1,3),16)},${parseInt(hex.slice(3,5),16)},${parseInt(hex.slice(5,7),16)}`;
 }
-
-function openSheet(id) { document.getElementById(id).classList.add('open'); }
-function closeSheet(id) { document.getElementById(id).classList.remove('open'); }
-
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  clearTimeout(window._t);
-  window._t = setTimeout(() => t.classList.remove('show'), 2600);
+function formatPhone(el){
+  let v=el.value.replace(/\D/g,'');
+  if(v.length>=6) v='('+v.slice(0,3)+') '+v.slice(3,6)+'-'+v.slice(6,10);
+  else if(v.length>=3) v='('+v.slice(0,3)+') '+v.slice(3);
+  el.value=v;
 }
-
-function confetti() {
-  const c = document.getElementById('cc');
-  c.innerHTML = '';
-  const brand = getComputedStyle(document.documentElement).getPropertyValue('--brand').trim() || '#FF5A1F';
-  const brand2 = getComputedStyle(document.documentElement).getPropertyValue('--brand2').trim() || '#F5B800';
-  const cols = [brand, brand2, '#fff', '#FFE566', '#FF8A65'];
-  for (let i=0; i<70; i++) {
-    const el = document.createElement('div');
-    el.className = 'cp';
-    el.style.cssText = `left:${Math.random()*100}vw;background:${cols[Math.floor(Math.random()*cols.length)]};width:${6+Math.random()*8}px;height:${6+Math.random()*8}px;border-radius:${Math.random()>.5?'50%':'3px'};animation-duration:${1.6+Math.random()*2}s;animation-delay:${Math.random()*.6}s;`;
+function formatPhoneDisplay(ph){
+  const d=ph.replace(/\D/g,'');
+  return d.length>=10?`(${d.slice(0,3)}) ${d.slice(3,6)}-${d.slice(6,10)}`:ph;
+}
+function confetti(){
+  const c=document.getElementById('cc');c.innerHTML='';
+  const p=S.activeTruck?.color_primary||'#FF5A1F';
+  const s=S.activeTruck?.color_secondary||'#F5B800';
+  const cols=[p,s,'#fff','#FFE566','#FF8A65'];
+  for(let i=0;i<70;i++){
+    const el=document.createElement('div');el.className='cp';
+    el.style.cssText=`left:${Math.random()*100}vw;background:${cols[Math.floor(Math.random()*cols.length)]};width:${6+Math.random()*8}px;height:${6+Math.random()*8}px;border-radius:${Math.random()>.5?'50%':'3px'};animation-duration:${1.6+Math.random()*2}s;animation-delay:${Math.random()*.6}s;`;
     c.appendChild(el);
   }
-  setTimeout(() => c.innerHTML = '', 4000);
+  setTimeout(()=>c.innerHTML='',4000);
 }
 
-// Phone formatter
-document.getElementById('c-phone').addEventListener('input', function(e) {
-  let v = e.target.value.replace(/\D/g,'');
-  if (v.length >= 6) v = '('+v.slice(0,3)+') '+v.slice(3,6)+'-'+v.slice(6,10);
-  else if (v.length >= 3) v = '('+v.slice(0,3)+') '+v.slice(3);
-  e.target.value = v;
-});
-
-/* ═══════════════════════════════════════
-   INIT — restore session on load
-═══════════════════════════════════════ */
-(function init() {
-  // Restore vendor session if token exists
-  if (S.vendorToken && S.vendor) {
-    S.vScreen = 's-v-home';
-    show('s-v-home');
-    renderNav(VNAV, 's-v-home');
-    loadVendorData();
+/* ════════════════════════════════════
+   INIT
+════════════════════════════════════ */
+(function init(){
+  S.prizes=[...DEFAULT_PRIZES];
+  S.rewards=[...DEFAULT_REWARDS];
+  // Restore vendor session
+  if(S.vendorToken&&S.vendor){
+    S.vScreen='s-v-home';show('s-v-home');renderNav(VNAV,'s-v-home');loadVendorHome();
   } else {
-    show('s-v-login');
-    renderNav([], '');
+    show('s-v-login');renderNav([],'' );
   }
-
-  // Restore customer session if exists
-  if (S.customer) {
-    S.cScreen = 's-c-dash';
+  // Determine customer start screen
+  if(S.customer){
+    S.cScreen='s-c-home';
+    if(S.activeTruck) S.cScreen='s-c-truck';
   }
-
-  syncBrandColors();
   drawWheel(0);
 })();
 </script>
