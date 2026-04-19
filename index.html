@@ -1690,8 +1690,10 @@ async function customerSignup(){
   const r=await apiPost('/api/customer/signup',{name,phone,email});
   hideLoad();
   if(!r.ok){showErr(errEl,r.data.error||'Signup failed');return}
-  S.customer={...r.data.data.customer, token: r.data.data.token};
-  localStorage.setItem('tl_customer',JSON.stringify(S.customer));
+  const ctoken = r.data.data.token;
+  S.customer={...r.data.data.customer, token: ctoken};
+  localStorage.setItem('tl_customer', JSON.stringify(S.customer));
+  localStorage.setItem('tl_ctoken', ctoken);
   S.cScreen='s-c-home'; show('s-c-home'); renderNav(CNAV,'s-c-home');
   renderMyTrucks();
   showToast('🎉 Account created! Scan a food truck QR to start earning.');
@@ -1707,8 +1709,10 @@ async function customerLogin(){
   const r=await apiPost('/api/customer/login',{phone:phone||undefined,email:email||undefined});
   hideLoad();
   if(!r.ok){showErr(errEl,r.data.error||'Account not found — please sign up');return}
-  S.customer={...r.data.data.customer, token: r.data.data.token};
-  localStorage.setItem('tl_customer',JSON.stringify(S.customer));
+  const ctoken = r.data.data.token;
+  S.customer={...r.data.data.customer, token: ctoken};
+  localStorage.setItem('tl_customer', JSON.stringify(S.customer));
+  localStorage.setItem('tl_ctoken', ctoken);
   S.myTrucks=r.data.data.trucks||[];
   localStorage.setItem('tl_my_trucks',JSON.stringify(S.myTrucks));
   S.cScreen='s-c-home'; show('s-c-home'); renderNav(CNAV,'s-c-home');
@@ -1718,7 +1722,7 @@ async function customerLogin(){
 
 function customerLogout(){
   S.customer=null; S.myTrucks=[]; S.activeTruck=null;
-  ['tl_customer','tl_my_trucks','tl_active_truck','tl_active_truck_pts'].forEach(k=>localStorage.removeItem(k));
+  ['tl_customer','tl_my_trucks','tl_active_truck','tl_active_truck_pts','tl_ctoken'].forEach(k=>localStorage.removeItem(k));
   S.cScreen='s-c-signup'; show('s-c-signup'); renderNav([],'' );
   showToast('Signed out');
 }
@@ -1955,9 +1959,15 @@ function renderProfile(){
       av.style.color='var(--brand)';
     }
   }
-  // Show name — fall back to phone if name is somehow missing
-  const displayName = c.name || (c.phone ? formatPhoneDisplay(c.phone) : 'Member');
-  setText('c-prof-name', displayName);
+  // Show name — if missing show nothing until they set it via Edit Profile
+  setText('c-prof-name', c.name || '');
+  // If no name, hide the name element and show a prompt instead
+  const nameEl = document.getElementById('c-prof-name');
+  if (nameEl) {
+    if (!c.name) {
+      nameEl.innerHTML = '<span style="font-size:14px;color:var(--mu);font-weight:600">Tap Edit Profile to add your name</span>';
+    }
+  }
   setText('c-prof-phone',formatPhoneDisplay(c.phone||''));
   setText('c-prof-email',c.email||'');
   const totalPts=S.myTrucks.reduce((s,t)=>s+(t.points_total||t.points_balance||0),0);
@@ -2288,29 +2298,21 @@ async function handleCustomerPicFile(input) {
   const upEl = document.getElementById('edit-pic-uploading');
   const prev = document.getElementById('edit-prof-preview');
   if (upEl) upEl.style.display = 'block';
+  const token = S.customer?.token || localStorage.getItem('tl_ctoken') || '';
   try {
     const b64 = await resizeImageToBase64(file);
-    // Show preview immediately
     if (prev) prev.innerHTML = `<img src="${b64}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
-    // Upload to API
     const res = await fetch(API + '/api/customer/upload-picture', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-Customer-Token': S.customer?.token || '' },
+      headers: { 'Content-Type': 'application/json', 'X-Customer-Token': token },
       body: JSON.stringify({ image_b64: b64 })
     });
     const data = await res.json();
-    if (res.ok && data.data?.url) {
-      S.customer = { ...S.customer, profile_picture_url: data.data.url };
-      localStorage.setItem('tl_customer', JSON.stringify(S.customer));
-      renderProfile();
-      showToast('✅ Photo updated!');
-    } else {
-      // Save base64 directly as fallback
-      S.customer = { ...S.customer, profile_picture_url: b64 };
-      localStorage.setItem('tl_customer', JSON.stringify(S.customer));
-      renderProfile();
-      showToast('✅ Photo updated!');
-    }
+    const picUrl = (res.ok && data.data?.url) ? data.data.url : b64;
+    S.customer = { ...S.customer, profile_picture_url: picUrl };
+    localStorage.setItem('tl_customer', JSON.stringify(S.customer));
+    renderProfile();
+    showToast('✅ Photo updated!');
   } catch(e) {
     showToast('❌ Upload failed — try a smaller photo');
   } finally {
@@ -2348,19 +2350,25 @@ async function saveCustomerProfile() {
   const phone = document.getElementById('edit-phone')?.value.replace(/\D/g,'');
   const email = document.getElementById('edit-email')?.value.trim();
   if (!name) { showToast('Name is required'); return; }
+
+  // Get token from customer object or fallback key
+  const token = S.customer?.token || localStorage.getItem('tl_ctoken') || '';
+  if (!token) { showToast('❌ Please sign out and sign back in'); return; }
+
   showLoad('Saving...');
+  const body = { name };
+  if (phone && phone.length >= 10) body.phone = phone;
+  if (email && email.includes('@')) body.email = email;
+
   const res = await fetch(API + '/api/customer/profile', {
     method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-Customer-Token': S.customer?.token || ''
-    },
-    body: JSON.stringify({ name, phone: phone||undefined, email: email||undefined })
+    headers: { 'Content-Type': 'application/json', 'X-Customer-Token': token },
+    body: JSON.stringify(body)
   });
   const data = await res.json();
   hideLoad();
   if (res.ok) {
-    S.customer = { ...S.customer, ...data.data };
+    S.customer = { ...S.customer, ...data.data, token };
     localStorage.setItem('tl_customer', JSON.stringify(S.customer));
     closeSheet('sh-edit-profile');
     renderProfile();
@@ -2378,17 +2386,16 @@ function confirmCancelCustomer() {
 }
 
 async function deleteCustomerAccount() {
+  const token = S.customer?.token || localStorage.getItem('tl_ctoken') || '';
   showLoad('Deleting account...');
   const res = await fetch(API + '/api/customer/delete-account', {
     method: 'DELETE',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-Customer-Token': S.customer?.token || ''
-    },
+    headers: { 'Content-Type': 'application/json', 'X-Customer-Token': token },
     body: JSON.stringify({ confirm: 'DELETE' })
   });
   hideLoad();
   if (res.ok) {
+    localStorage.removeItem('tl_ctoken');
     customerLogout();
     showToast('Account deleted. Sorry to see you go!');
   } else {
