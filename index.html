@@ -6,7 +6,6 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>Food Truck Rewards</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<script src="https://js.stripe.com/v3/"></script>
 <style>
 :root {
   /* Warm cream light base */
@@ -250,4 +249,2600 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
 
 /* VENDOR CONFIRM REDEEM */
 .confirm-card{background:#F1F8E9;border:3px solid #A5D6A7;border-radius:18px;padding:20px;text-align:center;margin-bottom:16px;box-shadow:var(--sh2)}
-.confirm-reward-name{font-family:var(--fd);font-weight:900;font-size:22px;col
+.confirm-reward-name{font-family:var(--fd);font-weight:900;font-size:22px;color:var(--tx);margin-bottom:4px}
+.confirm-customer{font-size:14px;color:var(--mu);font-weight:600}
+.confirm-pts{font-size:13px;color:var(--rd);margin-top:6px;font-weight:700}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="topbar">
+    <div class="tl-logo">🔥 Food Truck Rewards</div>
+    <div class="mode-tog">
+      <button class="mb on" id="mb-v" onclick="setMode('vendor')">🏪 Vendor</button>
+      <button class="mb" id="mb-c" onclick="setMode('customer')">👤 Customer</button>
+    </div>
+  </div>
+  <div class="scroll" id="scroll">
+
+    <!-- ══════════════════════════════════════
+         VENDOR SCREENS
+    ══════════════════════════════════════ -->
+
+    <!-- VENDOR LOGIN -->
+    <div class="screen on" id="s-v-login">
+      <div class="auth-wrap">
+        <div class="auth-logo">🚚</div>
+        <div class="auth-title">Vendor Login</div>
+        <div class="auth-sub">Manage your loyalty program, award points, and confirm rewards</div>
+        <div class="auth-err" id="v-login-err"></div>
+        <div class="auth-form">
+          <div class="field"><label>Email</label><input type="email" id="v-login-email" placeholder="you@yourtruck.com" autocomplete="email"></div>
+          <div class="field"><label>Password</label><input type="password" id="v-login-pass" placeholder="••••••••" autocomplete="current-password"></div>
+          <button class="btn btn-p" id="v-login-btn" onclick="vendorLogin()">Sign In</button>
+          <div class="auth-switch">No account? <span onclick="goV('s-v-signup')">Start free 14-day trial →</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VENDOR SIGNUP -->
+    <div class="screen" id="s-v-signup">
+      <div class="auth-wrap">
+        <div class="auth-logo">🚀</div>
+        <div class="auth-title">Start Free Trial</div>
+        <div class="auth-sub">14 days free, then $9.99/mo. Cancel anytime. You'll enter your card on the next step.</div>
+        <div class="auth-err" id="v-signup-err"></div>
+        <div class="auth-form">
+          <div class="field"><label>Truck / Business Name</label><input type="text" id="v-su-name" placeholder="e.g. Flavor on Wheels"></div>
+          <div class="field"><label>Your Name</label><input type="text" id="v-su-owner" placeholder="First and last name"></div>
+          <div class="field"><label>Email</label><input type="email" id="v-su-email" placeholder="you@yourtruck.com" autocomplete="email"></div>
+          <div class="field"><label>Password</label><input type="password" id="v-su-pass" placeholder="8+ characters" autocomplete="new-password"></div>
+          <button class="btn btn-p" id="v-signup-btn" onclick="vendorSignup()">Continue to Payment Setup →</button>
+          <div class="auth-switch">Already have an account? <span onclick="goV('s-v-login')">Sign in</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VENDOR CARD SETUP — step 2 of signup -->
+    <div class="screen" id="s-v-card-setup">
+      <div class="auth-wrap" style="background:linear-gradient(160deg,#FFF3E0 0%,#FFF8F0 100%);padding-bottom:60px">
+        <div class="auth-logo" style="animation:none">💳</div>
+        <div class="auth-title">Set Up Payment</div>
+        <div class="auth-sub">Your 14-day free trial starts today. Your first payment of <strong>$9.99</strong> will be charged on <strong id="trial-end-date">—</strong>. You can cancel before then at no charge.</div>
+
+        <!-- Trial timeline -->
+        <div style="width:100%;background:white;border:2px solid var(--b2);border-radius:16px;padding:16px;margin-bottom:16px;box-shadow:var(--sh1)">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div style="text-align:center;flex:1">
+              <div style="font-size:20px">🎉</div>
+              <div style="font-size:11px;font-weight:800;color:var(--gn);margin-top:2px">Today</div>
+              <div style="font-size:10px;color:var(--mu);font-weight:600">Trial starts<br>No charge</div>
+            </div>
+            <div style="flex:2;height:3px;background:linear-gradient(90deg,var(--gn),var(--brand));border-radius:99px;margin:0 6px;margin-top:-20px"></div>
+            <div style="text-align:center;flex:1">
+              <div style="font-size:20px">💳</div>
+              <div style="font-size:11px;font-weight:800;color:var(--brand);margin-top:2px" id="trial-end-label">Day 14</div>
+              <div style="font-size:10px;color:var(--mu);font-weight:600">$9.99 billed<br>to your card</div>
+            </div>
+            <div style="flex:2;height:3px;background:var(--b2);border-radius:99px;margin:0 6px;margin-top:-20px"></div>
+            <div style="text-align:center;flex:1">
+              <div style="font-size:20px">🔄</div>
+              <div style="font-size:11px;font-weight:800;color:var(--mu);margin-top:2px">Every 30 days</div>
+              <div style="font-size:10px;color:var(--mu);font-weight:600">Auto-renews<br>until cancelled</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- What's included box -->
+        <div style="width:100%;background:#F1F8E9;border:2px solid #A5D6A7;border-radius:14px;padding:14px;margin-bottom:16px">
+          <div style="font-size:12px;font-weight:800;color:#2E7D32;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px">What's included — $9.99/mo</div>
+          <div style="font-size:12px;color:#2D1B0E;font-weight:600;line-height:2">
+            ✅ Unlimited customer check-ins<br>
+            ✅ Loyalty points & rewards system<br>
+            ✅ Spin wheel bonus points<br>
+            ✅ Customer analytics dashboard<br>
+            ✅ Up to 500 loyalty members<br>
+            ✅ Email invoice sent every billing cycle
+          </div>
+        </div>
+
+        <div class="auth-err" id="v-card-err"></div>
+
+        <!-- Stripe card input -->
+        <div style="width:100%;margin-bottom:14px">
+          <div style="font-size:11px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:var(--mu);margin-bottom:8px">Card Details</div>
+          <div id="stripe-card-element" style="background:white;border:2px solid var(--b2);border-radius:12px;padding:16px;transition:border-color .2s"></div>
+          <div id="stripe-card-errors" style="color:var(--rd);font-size:12px;font-weight:700;margin-top:6px;min-height:18px"></div>
+        </div>
+
+        <!-- Security badge -->
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;background:white;border:1.5px solid var(--b1);border-radius:10px;padding:10px 12px">
+          <span style="font-size:18px">🔒</span>
+          <div>
+            <div style="font-size:12px;font-weight:800;color:var(--tx)">256-bit SSL Encrypted</div>
+            <div style="font-size:11px;color:var(--mu);font-weight:600">Payments processed by Stripe. We never store your card number.</div>
+          </div>
+        </div>
+
+        <!-- LEGAL CONSENT — required checkbox -->
+        <div style="width:100%;background:#FFF8F0;border:2px solid var(--b2);border-radius:12px;padding:14px;margin-bottom:14px">
+          <label style="display:flex;align-items:flex-start;gap:12px;cursor:pointer">
+            <input type="checkbox" id="legal-consent" style="width:20px;height:20px;flex-shrink:0;margin-top:1px;accent-color:var(--brand)">
+            <div style="font-size:12px;color:var(--tx);line-height:1.7;font-weight:600">
+              I agree to the <span style="color:var(--brand);text-decoration:underline;cursor:pointer" onclick="goV('s-v-terms')">Terms of Service</span> and <span style="color:var(--brand);text-decoration:underline;cursor:pointer" onclick="goV('s-v-privacy')">Privacy Policy</span>. I authorize Food Truck Rewards to charge my card <strong>$9.99 on <span id="trial-end-consent">—</span></strong> and then every 30 days until I cancel. I understand I can cancel anytime from my Settings page or by emailing <strong>support@foodtruckrewards.app</strong> with no penalty.
+            </div>
+          </label>
+        </div>
+
+        <!-- Cancellation notice — legally required clear disclosure -->
+        <div style="width:100%;background:#FEF3C7;border:2px solid #FDE68A;border-radius:12px;padding:12px 14px;margin-bottom:16px">
+          <div style="font-size:11px;font-weight:800;color:#92400E;margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px">⚠️ Cancellation Policy</div>
+          <div style="font-size:12px;color:#78350F;line-height:1.7;font-weight:600">
+            You may cancel at any time before your trial ends on <strong id="trial-end-cancel">—</strong> and you will not be charged. After billing begins, you may cancel at any time and retain access through the end of your paid period. No refunds are issued for partial months. To cancel: go to Settings → Subscription → Cancel, or email <strong>support@foodtruckrewards.app</strong>.
+          </div>
+        </div>
+
+        <button class="btn btn-p" id="v-card-btn" onclick="submitCardSetup()" style="font-size:16px;padding:17px 20px">
+          🎉 Start My Free 14-Day Trial
+        </button>
+
+        <!-- Billing summary line — clearly shows what happens -->
+        <div style="width:100%;background:white;border:1.5px solid var(--b1);border-radius:10px;padding:12px 14px;margin-top:12px;font-size:12px;color:var(--mu);font-weight:600;line-height:1.8">
+          <div style="display:flex;justify-content:space-between"><span>Trial period</span><span style="color:var(--gn);font-weight:800">FREE — 14 days</span></div>
+          <div style="display:flex;justify-content:space-between"><span>First charge</span><span style="font-weight:800" id="trial-end-summary">—</span></div>
+          <div style="display:flex;justify-content:space-between"><span>Then every</span><span style="font-weight:800">30 days · $9.99</span></div>
+          <div style="display:flex;justify-content:space-between"><span>Invoice sent to</span><span style="font-weight:800" id="billing-email-display">your email</span></div>
+          <div style="display:flex;justify-content:space-between"><span>Cancel anytime</span><span style="color:var(--gn);font-weight:800">No penalty</span></div>
+        </div>
+
+        <div style="margin-top:16px;font-size:11px;color:var(--fa);text-align:center;line-height:1.7">
+          By starting your trial you agree to our Terms of Service.<br>
+          Food Truck Rewards is operated by Samuel McCune.<br>
+          Questions? <span style="color:var(--brand);cursor:pointer;text-decoration:underline" onclick="goV('s-v-terms')">Read our full Terms</span> · <span style="color:var(--brand);cursor:pointer;text-decoration:underline" onclick="goV('s-v-privacy')">Privacy Policy</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- TERMS OF SERVICE -->
+    <div class="screen" id="s-v-terms">
+      <div class="sh sh-row">
+        <div class="back-btn" onclick="history.go(-1)||goV('s-v-card-setup')">←</div>
+        <div><h1>Terms of Service</h1><p>Last updated: April 2026</p></div>
+      </div>
+      <div class="bp" style="font-size:13px;line-height:1.9;color:var(--tx)">
+        <div class="card">
+          <div class="card-title">1. Agreement to Terms</div>
+          <p>By creating a vendor account on Food Truck Rewards ("Service"), you agree to be bound by these Terms of Service ("Terms"). If you do not agree, do not use the Service. These Terms apply to all vendors who sign up for a paid subscription.</p>
+        </div>
+        <div class="card">
+          <div class="card-title">2. Subscription & Billing</div>
+          <p style="margin-bottom:8px"><strong>Free Trial:</strong> New vendor accounts receive a 14-day free trial beginning on the date of account creation. No charge is made during the trial period.</p>
+          <p style="margin-bottom:8px"><strong>Billing Cycle:</strong> After the trial period ends, your payment method will be charged <strong>$9.99 USD</strong> on the same date each month (every 30 days from your first charge date).</p>
+          <p style="margin-bottom:8px"><strong>Automatic Renewal:</strong> Your subscription automatically renews monthly until cancelled. By providing your payment method, you authorize Food Truck Rewards to charge your card on a recurring monthly basis.</p>
+          <p style="margin-bottom:8px"><strong>Invoice:</strong> A receipt/invoice is automatically emailed to your registered email address after each successful payment.</p>
+          <p style="margin-bottom:8px"><strong>Failed Payments:</strong> If your payment fails, you will receive a notification. You have a 5-day grace period to update your payment method before your account is suspended. We will attempt to retry your payment during this period.</p>
+          <p><strong>Price Changes:</strong> We reserve the right to change subscription pricing with at least 30 days written notice sent to your registered email address.</p>
+        </div>
+        <div class="card">
+          <div class="card-title">3. Cancellation Policy</div>
+          <p style="margin-bottom:8px"><strong>How to Cancel:</strong> You may cancel your subscription at any time by (a) going to Settings → Subscription → Cancel My Subscription within the app, or (b) emailing <strong>support@foodtruckrewards.app</strong> with your account email and a request to cancel.</p>
+          <p style="margin-bottom:8px"><strong>Effect of Cancellation:</strong> Upon cancellation, your account remains active through the end of your current paid billing period. You will not be charged for the following month.</p>
+          <p style="margin-bottom:8px"><strong>No Partial Refunds:</strong> We do not issue refunds or credits for partial months of service, unused features, or periods where your account was active but not used.</p>
+          <p><strong>Trial Cancellation:</strong> If you cancel during your 14-day trial, you will not be charged and your account will be deactivated at the end of the trial period.</p>
+        </div>
+        <div class="card">
+          <div class="card-title">4. Refund Policy</div>
+          <p style="margin-bottom:8px">All subscription fees are non-refundable except as required by applicable law. If you believe you were charged in error, contact us within 30 days at <strong>support@foodtruckrewards.app</strong> and we will investigate and issue a refund if the charge was made in error.</p>
+          <p>Chargebacks initiated without contacting us first may result in immediate account suspension.</p>
+        </div>
+        <div class="card">
+          <div class="card-title">5. Service & Data</div>
+          <p style="margin-bottom:8px"><strong>Service Availability:</strong> We strive for 99% uptime but do not guarantee uninterrupted service. Scheduled maintenance will be communicated in advance when possible.</p>
+          <p style="margin-bottom:8px"><strong>Your Data:</strong> You own your customer data. We do not sell your data or your customers' data to third parties. See our Privacy Policy for full details.</p>
+          <p style="margin-bottom:8px"><strong>Data Retention:</strong> Upon account cancellation, your data is retained for 30 days, after which it is permanently deleted. Export your data before cancelling if you need to retain records.</p>
+          <p><strong>Account Termination:</strong> We reserve the right to suspend or terminate accounts that violate these Terms, engage in fraudulent activity, or fail to pay after the grace period expires.</p>
+        </div>
+        <div class="card">
+          <div class="card-title">6. Limitation of Liability</div>
+          <p style="margin-bottom:8px">Food Truck Rewards is provided "as is" without warranties of any kind. To the maximum extent permitted by law, Food Truck Rewards and its operators shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising from your use of the Service.</p>
+          <p>Our total liability to you for any claims arising from these Terms or the Service shall not exceed the amount you paid us in the 12 months preceding the claim.</p>
+        </div>
+        <div class="card">
+          <div class="card-title">7. Governing Law</div>
+          <p>These Terms are governed by the laws of the State of Ohio, United States. Any disputes shall be resolved in the courts of Ohio. If any provision of these Terms is found unenforceable, the remaining provisions remain in full effect.</p>
+        </div>
+        <div class="card">
+          <div class="card-title">8. Contact</div>
+          <p>Food Truck Rewards<br>Operated by Samuel McCune<br>Email: <strong>support@foodtruckrewards.app</strong><br><br>For billing questions, cancellations, or disputes, please email us. We respond within 2 business days.</p>
+        </div>
+        <button class="btn btn-p" onclick="goV('s-v-card-setup')" style="margin-top:8px">← Back to Payment Setup</button>
+      </div>
+    </div>
+
+    <!-- PRIVACY POLICY -->
+    <div class="screen" id="s-v-privacy">
+      <div class="sh sh-row">
+        <div class="back-btn" onclick="goV('s-v-card-setup')">←</div>
+        <div><h1>Privacy Policy</h1><p>Last updated: April 2026</p></div>
+      </div>
+      <div class="bp" style="font-size:13px;line-height:1.9;color:var(--tx)">
+        <div class="card">
+          <div class="card-title">1. Information We Collect</div>
+          <p style="margin-bottom:8px"><strong>Vendor accounts:</strong> Name, business name, email address, password (hashed — never stored in plain text), and payment method (processed and stored securely by Stripe — we never see your full card number).</p>
+          <p><strong>Customer accounts:</strong> Name, phone number, email address, visit history, and points balance. This data is used solely to operate the loyalty program on your behalf.</p>
+        </div>
+        <div class="card">
+          <div class="card-title">2. How We Use Your Information</div>
+          <p style="margin-bottom:8px">We use your information to operate the Service, process payments, send billing receipts, provide customer support, and improve the platform. We do not use your data or your customers' data for advertising.</p>
+          <p>We may send you service-related emails such as payment receipts, trial expiration reminders, and important account notices. You cannot opt out of transactional emails while your account is active.</p>
+        </div>
+        <div class="card">
+          <div class="card-title">3. Data Sharing</div>
+          <p style="margin-bottom:8px">We do not sell, rent, or share your personal information or your customers' personal information with third parties for marketing purposes.</p>
+          <p style="margin-bottom:8px"><strong>Payment processing:</strong> Payment information is shared with Stripe, Inc. for billing purposes. Stripe's privacy policy applies to that data.</p>
+          <p><strong>Infrastructure:</strong> We use Supabase for database hosting and Render for application hosting. These providers process data on our behalf under data processing agreements.</p>
+        </div>
+        <div class="card">
+          <div class="card-title">4. Data Security</div>
+          <p>All data is transmitted over HTTPS (TLS encryption). Passwords are hashed using bcrypt and are never stored in plain text. Payment data is handled entirely by Stripe and subject to PCI-DSS compliance. We perform regular security reviews of our infrastructure.</p>
+        </div>
+        <div class="card">
+          <div class="card-title">5. Data Retention & Deletion</div>
+          <p style="margin-bottom:8px">Active vendor accounts and associated customer data are retained as long as the account is active. Upon cancellation, all data is retained for 30 days then permanently deleted.</p>
+          <p>You may request immediate deletion of your account and data by emailing <strong>support@foodtruckrewards.app</strong>. We will complete deletion within 14 business days.</p>
+        </div>
+        <div class="card">
+          <div class="card-title">6. Your Rights</div>
+          <p style="margin-bottom:8px">You have the right to access, correct, or delete your personal data at any time. Contact us at <strong>support@foodtruckrewards.app</strong> to exercise these rights.</p>
+          <p>If you are in the European Economic Area (EEA), you have additional rights under GDPR including the right to data portability and the right to lodge a complaint with your local data protection authority.</p>
+        </div>
+        <div class="card">
+          <div class="card-title">7. Cookies</div>
+          <p>This application uses browser localStorage to maintain your session and preferences. We do not use third-party tracking cookies or advertising pixels.</p>
+        </div>
+        <div class="card">
+          <div class="card-title">8. Changes to This Policy</div>
+          <p>We may update this Privacy Policy from time to time. We will notify you of significant changes by email at least 14 days before they take effect. Continued use of the Service after changes constitutes acceptance.</p>
+        </div>
+        <div class="card">
+          <div class="card-title">9. Contact</div>
+          <p>Food Truck Rewards — Operated by Samuel McCune<br>Email: <strong>support@foodtruckrewards.app</strong></p>
+        </div>
+        <button class="btn btn-p" onclick="goV('s-v-card-setup')" style="margin-top:8px">← Back to Payment Setup</button>
+      </div>
+    </div>
+
+    <!-- VENDOR HOME -->
+    <div class="screen" id="s-v-home">
+      <div class="vh-hero">
+        <div class="vh-greet">Dashboard</div>
+        <div class="vh-name" id="v-hero-name">My Truck 🚚</div>
+        <div class="live-pill"><div class="ldot"></div> Program Live · <span id="v-hero-members">0</span> members</div>
+      </div>
+      <div style="padding:14px 20px 0">
+        <div class="stats g3">
+          <div class="sc"><div class="sv" style="color:var(--brand)" id="v-stat-visits">0</div><div class="sl">Visits Today</div></div>
+          <div class="sc"><div class="sv" style="color:var(--gn)" id="v-stat-members">0</div><div class="sl">Members</div></div>
+          <div class="sc"><div class="sv" style="color:var(--gd)" id="v-stat-rdm">0</div><div class="sl">Redeemed</div></div>
+        </div>
+      </div>
+      <div class="qa-grid">
+        <!-- PRIMARY ACTION: Award points is #1 — vendors use this at the window every day -->
+        <div class="qa wide accent-gn" onclick="goV('s-v-award')">
+          <div class="qa-ico">⚡</div>
+          <div><div class="qa-lbl" style="color:var(--gn)">Award Points</div><div class="qa-sub">Customer bought something — give them their points</div></div>
+        </div>
+        <!-- SECONDARY ACTION: Confirm a redemption -->
+        <div class="qa wide accent-gd" onclick="goV('s-v-confirm')">
+          <div class="qa-ico">✅</div>
+          <div><div class="qa-lbl" style="color:var(--gd)">Confirm Redemption</div><div class="qa-sub">Customer is claiming a reward — verify their code</div></div>
+        </div>
+        <div class="qa" onclick="goV('s-v-rewards')"><div class="qa-ico">🎁</div><div class="qa-lbl">Rewards</div><div class="qa-sub">What customers earn</div></div>
+        <div class="qa" onclick="goV('s-v-spin')"><div class="qa-ico">🎰</div><div class="qa-lbl">Spin Prizes</div><div class="qa-sub">Bonus points on wheel</div></div>
+        <div class="qa" onclick="goV('s-v-points')"><div class="qa-ico">⚙️</div><div class="qa-lbl">Points Rules</div><div class="qa-sub">Rates & bonuses</div></div>
+        <div class="qa" onclick="goV('s-v-brand')"><div class="qa-ico">🎨</div><div class="qa-lbl">Brand</div><div class="qa-sub">Colors & identity</div></div>
+      </div>
+      <div style="padding:0 20px 20px">
+        <!-- Today's location — posted here, shows on customer dashboard -->
+        <div class="card">
+          <div class="card-title">📍 Today's Location</div>
+          <div style="font-size:12px;color:var(--mu);margin-bottom:10px;line-height:1.5">Post where you're parked today. Your members will see this when they open the app.</div>
+          <div class="field" style="margin-bottom:10px">
+            <input type="text" id="v-location-input" placeholder="e.g. Downtown Market, 5th & Main, 11am–3pm" oninput="debounceSaveLocation()" style="background:var(--s2);border:1.5px solid var(--b2);border-radius:12px;padding:12px 14px;color:var(--tx);font-size:15px;font-family:var(--fb);outline:none;width:100%">
+          </div>
+          <button class="btn btn-sm btn-p" onclick="saveLocation()">Post Location</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- VENDOR: AWARD POINTS (used at the window every day) -->
+    <div class="screen" id="s-v-award">
+      <div class="sh sh-row"><div class="back-btn" onclick="goV('s-v-home')">←</div><div><h1>⚡ Award Points</h1><p>Customer made a purchase — give them their points</p></div></div>
+      <div class="bp">
+        <!-- Three ways to identify the customer -->
+        <div class="award-tabs">
+          <button class="award-tab on" onclick="switchAwardTab('phone')">📱 Phone</button>
+          <button class="award-tab" onclick="switchAwardTab('id')">🔢 Rewards ID</button>
+          <button class="award-tab" onclick="switchAwardTab('qr')">📷 Scan QR</button>
+        </div>
+
+        <!-- Method 1: Phone number lookup -->
+        <div class="award-method on" id="award-phone">
+          <div class="field">
+            <label>Customer Phone Number</label>
+            <input type="tel" id="award-phone-input" placeholder="(555) 000-0000" maxlength="14" oninput="formatAwardPhone(this)" autocomplete="off">
+          </div>
+          <button class="btn btn-s" onclick="lookupByPhone()">Find Customer →</button>
+        </div>
+
+        <!-- Method 2: Rewards ID number -->
+        <div class="award-method" id="award-id">
+          <div class="field">
+            <label>Customer Rewards ID</label>
+            <input type="text" id="award-id-input" placeholder="e.g. FTR-000001" autocomplete="off" style="font-family:monospace;letter-spacing:2px;font-size:18px;text-transform:uppercase">
+          </div>
+          <button class="btn btn-s" onclick="lookupByID()">Find Customer →</button>
+        </div>
+
+        <!-- Method 3: QR code (uses camera) -->
+        <div class="award-method" id="award-qr">
+          <div class="callout co-bl">
+            <div class="co-icon">📷</div>
+            <div><div class="co-title">Scan customer's QR code</div><div class="co-desc">Ask the customer to open their app and show their QR code from the Profile tab. Point your camera at it.</div></div>
+          </div>
+          <div style="background:var(--s2);border:1.5px dashed var(--b2);border-radius:14px;padding:40px 20px;text-align:center;margin-bottom:14px;cursor:pointer" onclick="startQRScan()">
+            <div style="font-size:40px;margin-bottom:8px">📷</div>
+            <div style="font-size:14px;font-weight:600;margin-bottom:4px">Tap to open camera</div>
+            <div style="font-size:12px;color:var(--mu)">Scan the customer's QR code</div>
+          </div>
+          <div style="font-size:12px;color:var(--mu);text-align:center">— or enter their ID manually —</div>
+          <div class="field" style="margin-top:12px">
+            <input type="text" id="award-qr-manual" placeholder="FTR-000001" autocomplete="off" style="font-family:monospace;letter-spacing:2px;text-transform:uppercase;font-size:16px" oninput="this.value=this.value.toUpperCase()">
+          </div>
+          <button class="btn btn-s" onclick="lookupByQRManual()">Find Customer →</button>
+        </div>
+
+        <!-- Customer found — award points form -->
+        <div id="award-customer-found" style="display:none">
+          <div class="card" style="border-color:rgba(46,204,142,.3);background:rgba(46,204,142,.04)">
+            <div style="display:flex;align-items:center;gap:12px">
+              <div style="width:48px;height:48px;border-radius:50%;background:rgba(46,204,142,.15);color:var(--gn);display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-size:20px;font-weight:800;flex-shrink:0" id="award-cust-av">J</div>
+              <div>
+                <div style="font-family:var(--fd);font-size:18px;font-weight:800" id="award-cust-name">Customer Name</div>
+                <div style="font-size:12px;color:var(--mu)" id="award-cust-sub">FTR-000001 · 250 pts</div>
+              </div>
+              <div class="tag tag-gn" id="award-cust-tier">Starter</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">💰 Order Amount</div>
+            <div style="font-size:12px;color:var(--mu);margin-bottom:12px;line-height:1.5">Enter what the customer spent. Points are calculated automatically based on your rate (<span id="award-rate-label">10 pts per $1</span>).</div>
+            <div class="field">
+              <label>Order Total ($)</label>
+              <input type="number" id="award-order-total" placeholder="0.00" min="0" step="0.01" oninput="calcAwardPts()" style="font-size:24px;font-family:var(--fd);font-weight:800;text-align:center">
+            </div>
+            <div style="background:var(--s2);border-radius:12px;padding:14px;margin-bottom:14px">
+              <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+                <div style="font-size:13px;color:var(--mu)">Order points</div>
+                <div style="font-family:var(--fd);font-weight:800;color:var(--gd)" id="award-pts-calc">+0 pts</div>
+              </div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:6px" id="award-visit-bonus-row">
+                <div style="font-size:13px;color:var(--mu)">Visit bonus</div>
+                <div style="font-family:var(--fd);font-weight:800;color:var(--gd)" id="award-visit-pts">+50 pts</div>
+              </div>
+              <div style="height:1px;background:var(--b1);margin-bottom:8px"></div>
+              <div style="display:flex;justify-content:space-between">
+                <div style="font-size:13px;font-weight:600">Total awarded</div>
+                <div style="font-family:var(--fd);font-weight:800;color:var(--brand)" id="award-total-pts">+50 pts</div>
+              </div>
+            </div>
+            <button class="btn btn-gn" onclick="awardPoints()">Award Points ✓</button>
+            <button class="btn btn-g" style="margin-top:10px" onclick="resetAwardForm()">Find Different Customer</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VENDOR: CONFIRM REDEMPTION -->
+    <div class="screen" id="s-v-confirm">
+      <div class="sh sh-row"><div class="back-btn" onclick="goV('s-v-home')">←</div><div><h1>✅ Confirm Reward</h1><p>Customer is claiming a reward</p></div></div>
+      <div class="bp">
+        <div class="callout co-gd">
+          <div class="co-icon">💡</div>
+          <div><div class="co-title">How this works</div><div class="co-desc">The customer shows a 7-character code from their app. Enter it below to verify it's valid, see what reward they earned, and confirm it was given to them.</div></div>
+        </div>
+        <div class="field">
+          <label>Customer's Redemption Code</label>
+          <input type="text" id="confirm-code-input" placeholder="STK-0000" maxlength="8" autocomplete="off" oninput="this.value=this.value.toUpperCase()" style="font-family:monospace;letter-spacing:4px;font-size:24px;text-align:center;text-transform:uppercase">
+        </div>
+        <button class="btn btn-s" onclick="lookupRedemptionCode()">Look Up Code →</button>
+
+        <!-- Found — show details and confirm -->
+        <div id="confirm-found" style="display:none;margin-top:16px">
+          <div class="confirm-card">
+            <div style="font-size:40px;margin-bottom:8px" id="confirm-reward-emo">🎁</div>
+            <div class="confirm-reward-name" id="confirm-reward-name">Free Item</div>
+            <div class="confirm-customer" id="confirm-customer-name">Customer Name</div>
+            <div class="confirm-pts" id="confirm-pts-cost">–400 points will be deducted</div>
+            <div style="margin-top:10px"><div class="tag tag-gd" id="confirm-code-display">STK-0000</div></div>
+          </div>
+          <div class="callout co-or">
+            <div class="co-icon">⚠️</div>
+            <div><div class="co-title">Before you confirm</div><div class="co-desc">Make sure you have given the customer this item. Confirming cannot be undone and will deduct the points from their account.</div></div>
+          </div>
+          <button class="btn btn-gn" onclick="confirmRedemption()">✓ I Gave Them the Item — Confirm</button>
+          <button class="btn btn-g" style="margin-top:10px" onclick="resetConfirmForm()">Cancel</button>
+        </div>
+
+        <!-- Not found -->
+        <div id="confirm-notfound" style="display:none;margin-top:16px">
+          <div class="callout co-or">
+            <div class="co-icon">❌</div>
+            <div><div class="co-title">Code not found</div><div class="co-desc">This code is invalid, already used, or expired. Ask the customer to generate a new code from their app.</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VENDOR: REWARDS -->
+    <div class="screen" id="s-v-rewards">
+      <div class="sh sh-row"><div class="back-btn" onclick="goV('s-v-home')">←</div><div><h1>🎁 Rewards</h1><p>Menu items customers redeem with points</p></div></div>
+      <div class="bp">
+        <div class="callout co-bl">
+          <div class="co-icon">💡</div>
+          <div><div class="co-title">Setting good reward costs</div><div class="co-desc">At 10pts/$1 and $12 avg order: customers earn ~120pts/visit. Set a free drink (~$4) at 350pts = ~3 visits. Set a free entrée (~$10) at 800pts = ~7 visits. Adjust to match your margins.</div></div>
+        </div>
+        <div id="v-rewards-list"></div>
+        <button class="btn btn-s" onclick="openSheet('sh-add-reward')">+ Add Menu Item as Reward</button>
+      </div>
+    </div>
+
+    <!-- VENDOR: SPIN PRIZES -->
+    <div class="screen" id="s-v-spin">
+      <div class="sh sh-row"><div class="back-btn" onclick="goV('s-v-home')">←</div><div><h1>🎰 Spin Prizes</h1><p>Bonus points on the wheel — shown before spinning</p></div></div>
+      <div class="bp">
+        <div class="callout co-gd">
+          <div class="co-icon">🎯</div>
+          <div><div class="co-title">All prizes are bonus points</div><div class="co-desc">Every spin wins something. Customers see all possible prizes before they spin so there's no confusion. Small amounts (25–75pts) should be most common. Jackpots (200+pts) should be rare.</div></div>
+        </div>
+        <div id="v-prizes-list"></div>
+        <button class="btn btn-s" onclick="openSheet('sh-add-prize')">+ Add Prize Slot</button>
+      </div>
+    </div>
+
+    <!-- VENDOR: POINTS RULES -->
+    <div class="screen" id="s-v-points">
+      <div class="sh sh-row"><div class="back-btn" onclick="goV('s-v-home')">←</div><div><h1>⚙️ Points Rules</h1></div></div>
+      <div class="bp">
+        <div class="card">
+          <div class="card-title">💰 Order-Based Earning</div>
+          <div class="field"><label>Points per $1 Spent</label><input type="number" id="pts-per-dollar" value="10" min="1" step="1"></div>
+          <div class="field"><label>Base Visit Points (regardless of order size)</label><input type="number" id="pts-per-visit" value="50" min="0"></div>
+          <div style="font-size:12px;color:var(--mu);line-height:1.6;padding:10px;background:var(--s2);border-radius:10px">
+            Example: Customer spends $15 → <span id="pts-example" style="color:var(--gd)">200 pts</span> (50 base + 150 order)
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">🔥 Bonus Rules</div>
+          <div class="tr"><div class="tr-info"><div class="tt">Double Points — First Visit</div><div class="td">New members get 2× on their first ever check-in</div></div><label class="tog"><input type="checkbox" id="tog-first" checked><div class="tog-track"></div></label></div>
+          <div class="tr"><div class="tr-info"><div class="tt">Streak Multiplier (1.5×)</div><div class="td">Visiting consecutive days earns 1.5× points</div></div><label class="tog"><input type="checkbox" id="tog-streak" checked><div class="tog-track"></div></label></div>
+          <div class="tr"><div class="tr-info"><div class="tt">Birthday Bonus (100pts)</div><div class="td">Auto award on customer's birthday if they've added it</div></div><label class="tog"><input type="checkbox" id="tog-bday"><div class="tog-track"></div></label></div>
+          <div class="tr"><div class="tr-info"><div class="tt">Referral Bonus</div><div class="td">Customer earns 100pts when a referred friend makes their first purchase</div></div><label class="tog"><input type="checkbox" id="tog-ref" checked><div class="tog-track"></div></label></div>
+          <div class="tr"><div class="tr-info"><div class="tt">Win-Back (30 days inactive)</div><div class="td">Auto-send 50pts to customers who haven't visited in 30 days</div></div><label class="tog"><input type="checkbox" id="tog-winback"><div class="tog-track"></div></label></div>
+        </div>
+        <button class="btn btn-p" onclick="savePointsConfig()">Save Rules</button>
+      </div>
+    </div>
+
+    <!-- VENDOR: BRAND -->
+    <div class="screen" id="s-v-brand">
+      <div class="sh sh-row"><div class="back-btn" onclick="goV('s-v-home')">←</div><div><h1>🎨 Brand</h1><p>What customers see in the app</p></div></div>
+      <div class="bp">
+        <div class="card">
+          <div class="card-title">🏷️ Identity</div>
+          <div class="field"><label>Truck Name</label><input type="text" id="v-brand-name" placeholder="Your truck name"></div>
+          <div class="field"><label>Tagline</label><input type="text" id="v-brand-tag" placeholder="e.g. Best BBQ on wheels"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">🚚 Icon</div>
+          <div id="v-ep" style="display:flex;flex-wrap:wrap;gap:8px"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">🎨 Colors</div>
+          <div style="display:flex;gap:16px;margin-bottom:14px">
+            <div style="display:flex;flex-direction:column;align-items:center;gap:5px">
+              <div id="cdot-p" style="width:44px;height:44px;border-radius:12px;border:2.5px solid white;background:var(--brand);position:relative;overflow:hidden;cursor:pointer">
+                <input type="color" value="#FF5A1F" oninput="setBrandCol('p',this.value)" style="position:absolute;inset:-8px;width:calc(100% + 16px);height:calc(100% + 16px);opacity:0;cursor:pointer">
+              </div>
+              <span style="font-size:10px;color:var(--mu)">Primary</span>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:5px">
+              <div id="cdot-s" style="width:44px;height:44px;border-radius:12px;border:2.5px solid transparent;background:var(--brand2);position:relative;overflow:hidden;cursor:pointer">
+                <input type="color" value="#F5B800" oninput="setBrandCol('s',this.value)" style="position:absolute;inset:-8px;width:calc(100% + 16px);height:calc(100% + 16px);opacity:0;cursor:pointer">
+              </div>
+              <span style="font-size:10px;color:var(--mu)">Accent</span>
+            </div>
+          </div>
+          <div style="font-size:11px;color:var(--mu);font-weight:600;text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px">Quick Presets</div>
+          <div id="v-presets" style="display:flex;gap:8px;flex-wrap:wrap"></div>
+        </div>
+        <button class="btn btn-p" onclick="saveBrand()">Save Brand</button>
+      </div>
+    </div>
+
+    <!-- VENDOR: ANALYTICS -->
+    <div class="screen" id="s-v-analytics">
+      <div class="sh"><h1>📊 Analytics</h1><p>Program performance</p></div>
+      <div class="bp">
+        <div class="stats g2">
+          <div class="sc"><div class="sv" style="color:var(--brand)" id="an-members">0</div><div class="sl">Members</div></div>
+          <div class="sc"><div class="sv" id="an-visits">0</div><div class="sl">Visits Today</div></div>
+          <div class="sc"><div class="sv" style="color:var(--gd)" id="an-rdm">0</div><div class="sl">Redemptions</div></div>
+          <div class="sc"><div class="sv" style="color:var(--gn)">–</div><div class="sl">Avg Pts/Member</div></div>
+        </div>
+        <div class="card">
+          <div class="card-title">📋 Growth Tips</div>
+          <div style="font-size:13px;color:var(--mu);line-height:2">
+            <div>📍 Post your location daily — drives return visits</div>
+            <div>🔥 Award order-based points at the window every time</div>
+            <div>🎁 Rewards reachable in 6–8 visits retain best</div>
+            <div>📲 Ask customers to refer friends for free points</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VENDOR: SETTINGS -->
+    <div class="screen" id="s-v-settings">
+      <div class="sh"><h1>⚙️ Settings</h1></div>
+      <div class="bp">
+
+        <!-- Profile Picture -->
+        <div class="card">
+          <div class="card-title">🖼️ Profile Picture</div>
+          <!-- Hidden real file input -->
+          <input type="file" id="v-pic-file" accept="image/*" style="display:none" onchange="handleVendorPicFile(this)">
+          <div style="display:flex;align-items:center;gap:16px;margin-bottom:14px">
+            <div style="position:relative;flex-shrink:0;cursor:pointer" onclick="document.getElementById('v-pic-file').click()">
+              <div style="width:72px;height:72px;border-radius:50%;background:rgba(255,87,34,.12);border:3px solid var(--b2);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:28px" id="v-prof-pic-preview">🚚</div>
+              <div style="position:absolute;bottom:0;right:0;width:24px;height:24px;background:var(--brand);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;border:2px solid white">📷</div>
+            </div>
+            <div style="flex:1">
+              <div style="font-size:13px;font-weight:700;margin-bottom:4px">Truck profile picture</div>
+              <div style="font-size:12px;color:var(--mu);line-height:1.5;margin-bottom:10px">Tap your photo to choose from your camera or gallery.</div>
+              <button class="btn btn-s btn-sm" style="width:100%" onclick="document.getElementById('v-pic-file').click()">📷 Choose Photo</button>
+            </div>
+          </div>
+          <div id="v-pic-uploading" style="display:none;text-align:center;padding:8px;font-size:13px;color:var(--mu);font-weight:600">⏳ Uploading...</div>
+        </div>
+
+        <!-- Vendor Number -->
+        <div class="card">
+          <div class="card-title">🔢 Your Vendor Number</div>
+          <div style="font-size:12px;color:var(--mu);margin-bottom:12px;line-height:1.5">Customers can find your truck by entering this number in the app. Share it at the window or post it on your truck.</div>
+          <div style="background:var(--s2);border:2px solid var(--b2);border-radius:12px;padding:16px;text-align:center;margin-bottom:12px">
+            <div style="font-size:36px;font-weight:900;letter-spacing:4px;color:var(--brand)" id="v-vendor-number">#––––</div>
+            <div style="font-size:11px;color:var(--mu);margin-top:4px;font-weight:700">Your unique truck number</div>
+          </div>
+          <button class="btn btn-s btn-sm" style="width:100%" onclick="copyVendorNumber()">📋 Copy Number</button>
+        </div>
+
+        <!-- QR & Link -->
+        <div class="card">
+          <div class="card-title">📱 QR Code & Link</div>
+          <div style="text-align:center;margin-bottom:12px">
+            <div style="background:white;border-radius:16px;padding:14px;display:inline-block;border:2px solid var(--b1)">
+              <svg width="130" height="130" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg"><rect width="160" height="160" fill="white"/><rect x="10" y="10" width="50" height="50" rx="4" fill="#111"/><rect x="16" y="16" width="38" height="38" rx="2" fill="white"/><rect x="22" y="22" width="26" height="26" rx="1" fill="#111"/><rect x="100" y="10" width="50" height="50" rx="4" fill="#111"/><rect x="106" y="16" width="38" height="38" rx="2" fill="white"/><rect x="112" y="22" width="26" height="26" rx="1" fill="#111"/><rect x="10" y="100" width="50" height="50" rx="4" fill="#111"/><rect x="16" y="106" width="38" height="38" rx="2" fill="white"/><rect x="22" y="112" width="26" height="26" rx="1" fill="#111"/><rect x="70" y="10" width="8" height="8" fill="#111"/><rect x="82" y="22" width="8" height="8" fill="#111"/><rect x="70" y="34" width="8" height="8" fill="#111"/><rect x="82" y="70" width="8" height="8" fill="#111"/><rect x="100" y="70" width="8" height="8" fill="#111"/><rect x="70" y="100" width="8" height="8" fill="#111"/><rect x="136" y="136" width="8" height="8" fill="#111"/></svg>
+            </div>
+          </div>
+          <div style="background:var(--s2);border:1px solid var(--b2);border-radius:10px;padding:10px 14px;font-size:12px;color:var(--mu);margin-bottom:12px;word-break:break-all;text-align:center" id="v-qr-url">foodtruckrewards.app/yourtruck</div>
+          <div class="callout co-bl" style="margin-bottom:12px">
+            <div class="co-icon">💡</div>
+            <div><div class="co-title">3 ways customers find you</div><div class="co-desc">1. Scan this QR code<br>2. Enter your truck number (#<span id="v-num-inline">––––</span>)<br>3. Search by your truck name in the app</div></div>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-s btn-sm" style="flex:1" onclick="copyVendorLink()">📋 Copy Link</button>
+            <button class="btn btn-s btn-sm" style="flex:1" onclick="shareVendorLink()">📤 Share</button>
+          </div>
+        </div>
+
+        <!-- Notifications — removed "New Member Welcome" -->
+        <div class="card">
+          <div class="card-title">🔔 Notifications</div>
+          <div class="callout co-bl" style="margin-bottom:12px">
+            <div class="co-icon">💡</div>
+            <div><div class="co-desc">Notifications are sent via SMS when Twilio is connected. Coming soon — these settings will be live when SMS is enabled.</div></div>
+          </div>
+          <div class="tr"><div class="tr-info"><div class="tt">Reward Unlocked</div><div class="td">Alert when customer has enough points to redeem</div></div><label class="tog"><input type="checkbox" checked><div class="tog-track"></div></label></div>
+          <div class="tr"><div class="tr-info"><div class="tt">Tier Upgrade</div><div class="td">Celebrate when a customer levels up</div></div><label class="tog"><input type="checkbox" checked><div class="tog-track"></div></label></div>
+          <div class="tr"><div class="tr-info"><div class="tt">Streak Warning</div><div class="td">Remind customer before their streak expires</div></div><label class="tog"><input type="checkbox" checked><div class="tog-track"></div></label></div>
+        </div>
+
+        <!-- Subscription + cancel -->
+        <div class="card">
+          <div class="card-title">💳 Subscription</div>
+          <div class="tr"><div class="tr-info"><div class="tt">Plan</div><div class="td">Food Truck Rewards — up to 500 members</div></div><div class="tag tag-gn">$9.99/mo</div></div>
+          <div class="tr"><div class="tr-info"><div class="tt">Status</div></div><div class="tag tag-bl" id="v-plan-status">Trial</div></div>
+          <div class="tr"><div class="tr-info"><div class="tt">Trial ends</div></div><div style="font-size:13px;color:var(--mu)" id="v-trial-end">–</div></div>
+          <div class="callout co-or" style="margin-top:12px;margin-bottom:0">
+            <div class="co-icon">⚠️</div>
+            <div><div class="co-title">Cancel subscription</div><div class="co-desc">You'll keep access until the end of your current billing period. Your customer data is preserved for 30 days if you reactivate.</div>
+            <button class="btn btn-sm" style="margin-top:10px;background:#FEE2E2;color:#B91C1C;border:none;font-weight:700" onclick="cancelSubscription()">Cancel My Subscription</button>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn btn-g" style="margin-top:4px;color:var(--rd);border-color:rgba(255,79,79,.25)" onclick="vendorLogout()">Sign Out</button>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════
+         CUSTOMER SCREENS
+    ══════════════════════════════════════ -->
+
+    <!-- CUSTOMER SIGNUP — global, not tied to any truck -->
+    <div class="screen" id="s-c-signup">
+      <div class="auth-wrap">
+        <div class="auth-logo">🎰</div>
+        <div class="auth-title">Join Food Truck Rewards</div>
+        <div class="auth-sub">One account works at every food truck in the network. Scan any truck's QR to start earning.</div>
+        <div class="auth-err" id="c-signup-err"></div>
+        <div class="auth-form">
+          <div class="field"><label>Full Name</label><input type="text" id="c-su-name" placeholder="Your name" autocomplete="name"></div>
+          <div class="field"><label>Phone Number</label><input type="tel" id="c-su-phone" placeholder="(555) 000-0000" maxlength="14" oninput="formatPhone(this)" autocomplete="tel"></div>
+          <div class="field"><label>Email Address</label><input type="email" id="c-su-email" placeholder="you@email.com" autocomplete="email"></div>
+          <button class="btn btn-p" id="c-signup-btn" onclick="customerSignup()">Create My Account →</button>
+          <div class="auth-switch">Already have an account? <span onclick="goC('s-c-login')">Sign in</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CUSTOMER LOGIN -->
+    <div class="screen" id="s-c-login">
+      <div class="auth-wrap">
+        <div class="auth-logo">👤</div>
+        <div class="auth-title">Sign In</div>
+        <div class="auth-sub">Welcome back! Sign in to see your points and rewards.</div>
+        <div class="auth-err" id="c-login-err"></div>
+        <div class="auth-form">
+          <div class="field"><label>Phone Number</label><input type="tel" id="c-login-phone" placeholder="(555) 000-0000" maxlength="14" oninput="formatPhone(this)" autocomplete="tel"></div>
+          <div class="field"><label>Email Address</label><input type="email" id="c-login-email" placeholder="you@email.com" autocomplete="email"></div>
+          <button class="btn btn-p" id="c-login-btn" onclick="customerLogin()">Sign In</button>
+          <div class="auth-switch">No account? <span onclick="goC('s-c-signup')">Create one free</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CUSTOMER HOME — my trucks list -->
+    <div class="screen" id="s-c-home">
+      <div class="sh">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start">
+          <div>
+            <h1 id="c-home-greeting">My Trucks</h1>
+            <p id="c-home-sub">Scan a QR code to add your first truck</p>
+          </div>
+          <div style="font-family:var(--fd);font-size:13px;font-weight:700;color:var(--gd)" id="c-home-total-pts"></div>
+        </div>
+      </div>
+      <div class="bp">
+        <!-- Empty state -->
+        <div id="c-no-trucks" style="text-align:center;padding:40px 20px">
+          <div style="font-size:52px;margin-bottom:12px">🚚</div>
+          <div style="font-family:var(--fd);font-size:20px;font-weight:800;margin-bottom:8px">No trucks yet</div>
+          <div style="font-size:14px;color:var(--mu);margin-bottom:24px;line-height:1.6">Scan a food truck's QR code to join their loyalty program and start earning points.</div>
+          <button class="btn btn-p" onclick="goC('s-c-scan')">📷 Scan a Truck QR Code</button>
+        </div>
+
+        <!-- Trucks list -->
+        <div id="c-trucks-list"></div>
+
+        <!-- Scan button when trucks exist -->
+        <div id="c-scan-more" style="display:none;margin-top:4px">
+          <button class="btn btn-s" onclick="goC('s-c-scan')">📷 Scan Another Truck</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CUSTOMER: SCAN QR / JOIN TRUCK -->
+    <div class="screen" id="s-c-scan">
+      <div class="sh sh-row"><div class="back-btn" onclick="goC('s-c-home')">←</div><div><h1>🚚 Find a Truck</h1><p>Search, scan, or enter a code</p></div></div>
+      <div class="bp">
+
+        <!-- Search by name -->
+        <div class="card">
+          <div class="card-title">🔍 Search by Truck Name</div>
+          <div style="display:flex;gap:8px">
+            <input type="text" id="c-truck-search" placeholder="e.g. Flavor on Wheels" autocomplete="off"
+              style="flex:1;background:var(--s2);border:2px solid var(--b2);border-radius:12px;padding:12px 14px;color:var(--tx);font-size:15px;font-family:var(--fb);font-weight:600;outline:none"
+              oninput="searchTrucks(this.value)" onkeydown="if(event.key==='Enter')searchTrucks(this.value)">
+            <button class="btn btn-p btn-sm" onclick="searchTrucks(document.getElementById('c-truck-search').value)">Search</button>
+          </div>
+          <div id="c-search-results" style="margin-top:10px"></div>
+        </div>
+
+        <!-- Scan QR -->
+        <div class="card">
+          <div class="card-title">📷 Scan QR Code</div>
+          <div style="background:var(--s2);border:1.5px dashed var(--b2);border-radius:12px;padding:28px 20px;text-align:center;cursor:pointer" onclick="startCustomerQRScan()">
+            <div style="font-size:36px;margin-bottom:6px">📷</div>
+            <div style="font-size:14px;font-weight:700;margin-bottom:3px">Tap to open camera</div>
+            <div style="font-size:12px;color:var(--mu)">Point at the truck's QR code</div>
+          </div>
+        </div>
+
+        <!-- Enter code manually -->
+        <div class="card">
+          <div class="card-title">🔢 Enter Truck Number or Code</div>
+          <div style="font-size:12px;color:var(--mu);margin-bottom:10px;line-height:1.5">Enter the truck's 4-digit number (e.g. 1042) or their short code (e.g. flavoronwheels)</div>
+          <div class="field" style="margin-bottom:10px">
+            <input type="text" id="c-truck-code-input" placeholder="1042 or flavoronwheels" autocomplete="off" style="text-transform:lowercase" onkeydown="if(event.key==='Enter')joinTruckByCode()">
+          </div>
+          <button class="btn btn-p" onclick="joinTruckByCode()">Join This Truck →</button>
+        </div>
+
+        <!-- Demo mode -->
+        <div style="text-align:center;margin-top:4px">
+          <button class="btn btn-g btn-sm" onclick="joinDemoTruck()">Join Demo Truck (Testing)</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CUSTOMER: PER-TRUCK DASHBOARD -->
+    <div class="screen" id="s-c-truck">
+      <!-- Truck header with brand colors -->
+      <div id="c-truck-header" style="padding:20px 20px 16px;border-bottom:1px solid var(--b1);background:linear-gradient(180deg,rgba(255,90,31,.08) 0%,transparent 100%)">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+          <div class="back-btn" onclick="goC('s-c-home')">←</div>
+          <div>
+            <div style="font-size:11px;color:var(--mu);letter-spacing:1px;margin-bottom:2px" id="ct-tagline">–</div>
+            <div style="font-family:var(--fd);font-size:22px;font-weight:900;line-height:1" id="ct-name">–</div>
+          </div>
+          <div style="margin-left:auto;font-size:32px" id="ct-emoji">🚚</div>
+        </div>
+        <!-- Location today -->
+        <div id="ct-location-bar" style="background:rgba(79,158,255,.08);border:1px solid rgba(79,158,255,.18);border-radius:10px;padding:8px 12px;font-size:12px;color:var(--bl);margin-bottom:12px;display:none">
+          📍 <span id="ct-location-text">–</span>
+        </div>
+        <div class="stats g3">
+          <div class="sc"><div class="sv" id="ct-pts" style="color:var(--brand)">0</div><div class="sl">Points</div></div>
+          <div class="sc"><div class="sv" id="ct-visits">0</div><div class="sl">Visits</div></div>
+          <div class="sc"><div class="sv" style="color:var(--gn)" id="ct-saved">$0</div><div class="sl">Saved</div></div>
+        </div>
+      </div>
+      <div style="padding:14px 20px 80px">
+        <!-- Tier badge & progress -->
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+            <div>
+              <div style="font-size:11px;color:var(--mu);text-transform:uppercase;letter-spacing:.8px;margin-bottom:3px">Your tier</div>
+              <div style="font-family:var(--fd);font-size:18px;font-weight:800" id="ct-tier">🌱 Starter</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:12px;color:var(--mu)" id="ct-next-tier-lbl">Next: 🔥 Regular</div>
+              <div style="font-size:11px;color:var(--mu)" id="ct-pts-away">200 pts away</div>
+            </div>
+          </div>
+          <div class="pbar"><div class="pfill" id="ct-prog-fill" style="width:0%"></div></div>
+        </div>
+
+        <!-- Streak -->
+        <div class="sk-card">
+          <div class="sk-top"><div class="sk-lbl">🔥 Visit Streak</div><div class="sk-cnt" id="ct-streak">0 days</div></div>
+          <div class="sk-days" id="ct-streak-days"></div>
+          <div style="font-size:11px;color:var(--gd);margin-top:8px" id="ct-streak-tip">Visit today to start your streak!</div>
+        </div>
+
+        <!-- Check in button -->
+        <button class="btn btn-p" style="margin-bottom:12px" onclick="checkInAtTruck()">⚡ Check In & Spin the Wheel</button>
+
+        <!-- Rewards for THIS truck -->
+        <div style="font-family:var(--fd);font-size:15px;font-weight:800;margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px">Redeem Points</div>
+        <div style="font-size:12px;color:var(--mu);margin-bottom:12px;line-height:1.5">Show the redemption code to the cashier before ordering. They'll enter it to confirm.</div>
+        <div id="ct-rewards-list"></div>
+      </div>
+    </div>
+
+    <!-- CUSTOMER: SPIN (after check-in at a specific truck) -->
+    <div class="screen" id="s-c-spin">
+      <div class="spin-wrap">
+        <div class="spin-title">🎰 Spin for Bonus Points!</div>
+        <div class="spin-sub">Checked in at <strong id="spin-truck-name">–</strong> · +<span id="spin-visit-pts">50</span> pts earned</div>
+        <div style="font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--mu);margin-bottom:8px;width:100%;text-align:left">What you could win:</div>
+        <div class="spp-grid" id="spp-grid"></div>
+        <div style="font-size:11px;color:var(--fa);margin-bottom:14px;text-align:center">Every spin wins something · Points added automatically</div>
+        <div class="wheel-area">
+          <div class="wheel-ptr">▼</div>
+          <canvas id="spin-canvas" width="280" height="280"></canvas>
+        </div>
+        <button class="btn btn-p" id="spin-btn" style="max-width:280px" onclick="doSpin()">SPIN THE WHEEL</button>
+        <p style="font-size:12px;color:var(--mu);margin-top:10px;line-height:1.6;text-align:center">Points are added to your balance.<br>Use them to redeem rewards from the truck's page.</p>
+      </div>
+    </div>
+
+    <!-- CUSTOMER: MY QR CODE -->
+    <div class="screen" id="s-c-qr">
+      <div class="sh sh-row"><div class="back-btn" onclick="goC('s-c-profile')">←</div><div><h1>My Rewards QR</h1><p>Show this at any truck to earn or redeem points</p></div></div>
+      <div class="bp">
+        <div class="callout co-or">
+          <div class="co-icon">💡</div>
+          <div><div class="co-title">Two ways to use this</div><div class="co-desc">1. Show to vendor to earn points for your purchase<br>2. Show when redeeming a reward so they can confirm it</div></div>
+        </div>
+        <div style="text-align:center;padding:20px 0">
+          <div class="my-qr-wrap" style="margin:0 auto">
+            <!-- Dynamic QR based on customer ID -->
+            <svg id="customer-qr-svg" width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+              <rect width="200" height="200" fill="white"/>
+              <rect x="15" y="15" width="60" height="60" rx="5" fill="#111"/><rect x="21" y="21" width="48" height="48" rx="3" fill="white"/><rect x="27" y="27" width="36" height="36" rx="2" fill="#111"/>
+              <rect x="125" y="15" width="60" height="60" rx="5" fill="#111"/><rect x="131" y="21" width="48" height="48" rx="3" fill="white"/><rect x="137" y="27" width="36" height="36" rx="2" fill="#111"/>
+              <rect x="15" y="125" width="60" height="60" rx="5" fill="#111"/><rect x="21" y="131" width="48" height="48" rx="3" fill="white"/><rect x="27" y="137" width="36" height="36" rx="2" fill="#111"/>
+              <rect x="95" y="15" width="10" height="10" fill="#111"/><rect x="110" y="28" width="10" height="10" fill="#111"/>
+              <rect x="95" y="42" width="10" height="10" fill="#111"/><rect x="110" y="55" width="10" height="10" fill="#111"/>
+              <rect x="95" y="95" width="10" height="10" fill="#111"/><rect x="108" y="108" width="10" height="10" fill="#111"/>
+              <rect x="125" y="95" width="10" height="10" fill="#111"/><rect x="140" y="108" width="10" height="10" fill="#111"/>
+              <rect x="155" y="95" width="10" height="10" fill="#111"/><rect x="168" y="108" width="10" height="10" fill="#111"/>
+              <rect x="95" y="125" width="10" height="10" fill="#111"/><rect x="108" y="140" width="10" height="10" fill="#111"/>
+              <rect x="125" y="155" width="10" height="10" fill="#111"/><rect x="155" y="168" width="10" height="10" fill="#111"/>
+            </svg>
+            <div class="my-qr-id" id="c-qr-id">FTR-000000</div>
+            <div style="font-size:11px;color:#888;margin-top:2px">Your Rewards ID</div>
+          </div>
+        </div>
+        <button class="btn btn-s" onclick="shareMyQR()">📤 Share My Rewards ID</button>
+      </div>
+    </div>
+
+    <!-- CUSTOMER: PROFILE -->
+    <div class="screen" id="s-c-profile">
+      <div class="sh"><h1>👤 Profile</h1></div>
+      <div class="bp">
+
+        <!-- Profile picture + name -->
+        <div style="text-align:center;padding:14px 0 18px">
+          <div style="position:relative;width:84px;margin:0 auto 10px">
+            <div style="width:84px;height:84px;border-radius:50%;background:rgba(255,87,34,.12);border:3px solid var(--b2);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:34px;font-weight:900" id="c-prof-av">?</div>
+            <div style="position:absolute;bottom:0;right:0;width:26px;height:26px;background:var(--brand);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;cursor:pointer;border:2px solid white" onclick="openEditProfile()">✏️</div>
+          </div>
+          <div style="font-family:var(--fd);font-size:22px;font-weight:900;margin-bottom:2px" id="c-prof-name">Member</div>
+          <div style="font-size:13px;color:var(--mu);margin-bottom:2px" id="c-prof-phone">–</div>
+          <div style="font-size:13px;color:var(--mu)" id="c-prof-email">–</div>
+          <button class="btn btn-s btn-sm" style="margin-top:10px" onclick="openEditProfile()">✏️ Edit Profile</button>
+        </div>
+
+        <!-- My QR code shortcut -->
+        <button class="btn btn-gd" style="margin-bottom:14px" onclick="goC('s-c-qr')">📱 Show My Rewards QR Code</button>
+
+        <div class="card">
+          <div class="card-title">🏆 All-Time Stats</div>
+          <div class="tr"><div class="tr-info"><div class="tt">Total Points Earned</div></div><div style="font-family:var(--fd);font-size:18px;font-weight:800;color:var(--gd)" id="c-total-pts">0</div></div>
+          <div class="tr"><div class="tr-info"><div class="tt">Total Visits</div></div><div style="font-family:var(--fd);font-size:18px;font-weight:800" id="c-total-visits">0</div></div>
+          <div class="tr"><div class="tr-info"><div class="tt">Trucks Joined</div></div><div style="font-family:var(--fd);font-size:18px;font-weight:800" id="c-trucks-count">0</div></div>
+          <div class="tr"><div class="tr-info"><div class="tt">Money Saved</div></div><div style="font-family:var(--fd);font-size:18px;font-weight:800;color:var(--gd)" id="c-total-saved">$0.00</div></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🎂 Birthday (optional)</div>
+          <div style="font-size:13px;color:var(--mu);margin-bottom:12px;line-height:1.6">Add your birthday to get a special points surprise from each truck you visit on your big day!</div>
+          <div class="field"><input type="date" id="c-birthday" style="background:var(--s2);border:1.5px solid var(--b2);border-radius:12px;padding:12px 14px;color:var(--tx);font-size:16px;width:100%;font-family:var(--fb);outline:none"></div>
+          <button class="btn btn-s btn-sm" style="width:100%" onclick="saveBirthday()">Save Birthday</button>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🔗 Refer a Friend</div>
+          <div style="font-size:13px;color:var(--mu);margin-bottom:12px;line-height:1.6">Share your referral link. When a friend joins and makes their first purchase at any truck, <strong style="color:var(--gd)">you both earn 100 bonus points</strong> at that truck.</div>
+          <div style="background:var(--s2);border:1px solid var(--b2);border-radius:10px;padding:10px 14px;font-size:13px;color:var(--mu);margin-bottom:12px;word-break:break-all" id="c-ref-link">Create an account to get your link</div>
+          <button class="btn btn-p btn-sm" style="width:100%" onclick="shareReferral()">📤 Share Referral Link</button>
+        </div>
+
+        <!-- Cancel membership -->
+        <div class="card">
+          <div class="card-title">⚠️ Cancel Membership</div>
+          <div style="font-size:13px;color:var(--mu);margin-bottom:12px;line-height:1.6">Cancelling removes your account and all points balances permanently. Your visit history cannot be recovered. This cannot be undone.</div>
+          <button class="btn btn-sm" style="width:100%;background:#FEE2E2;color:#B91C1C;border:none;font-weight:700" onclick="confirmCancelCustomer()">Delete My Account</button>
+        </div>
+
+        <button class="btn btn-g" style="margin-top:4px" onclick="customerLogout()">Sign Out</button>
+      </div>
+    </div>
+
+    <!-- CUSTOMER: HISTORY -->
+    <div class="screen" id="s-c-history">
+      <div class="sh"><h1>📋 History</h1><p>All visits and earnings across all trucks</p></div>
+      <div class="bp" id="c-hist-body">
+        <div style="text-align:center;padding:32px 0;color:var(--mu)">No visits yet — scan a truck's QR code to start!</div>
+      </div>
+    </div>
+
+  </div><!-- /scroll -->
+  <div class="bnav" id="bnav"></div>
+</div>
+
+<!-- BOTTOM SHEETS -->
+<div class="overlay" id="sh-add-reward" onclick="closeSheet('sh-add-reward')">
+  <div class="sheet" onclick="event.stopPropagation()">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">Add Reward</div>
+    <div class="two-col">
+      <div class="field"><label>Emoji</label><input type="text" id="nr-e" placeholder="🌮" maxlength="4" style="text-align:center;font-size:24px"></div>
+      <div class="field"><label>Points Required</label><input type="number" id="nr-p" placeholder="350" min="1"></div>
+    </div>
+    <div class="field"><label>Item Name (from your menu)</label><input type="text" id="nr-n" placeholder="e.g. Free Drink"></div>
+    <button class="btn btn-p" onclick="addReward()">Add Reward</button>
+  </div>
+</div>
+
+<div class="overlay" id="sh-add-prize" onclick="closeSheet('sh-add-prize')">
+  <div class="sheet" onclick="event.stopPropagation()">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">Add Prize Slot</div>
+    <div class="callout co-gd" style="margin-bottom:14px">
+      <div class="co-icon">💡</div>
+      <div><div class="co-desc">All prizes = bonus points. Probability is how often this slot wins relative to others. Totals don't need to add to 100.</div></div>
+    </div>
+    <div class="two-col">
+      <div class="field"><label>Emoji</label><input type="text" id="np-e" placeholder="⚡" maxlength="4" style="text-align:center;font-size:24px"></div>
+      <div class="field"><label>Probability Weight</label><input type="number" id="np-p" placeholder="30" min="1"></div>
+    </div>
+    <div class="two-col">
+      <div class="field"><label>Points Won</label><input type="number" id="np-pts" placeholder="50" min="1"></div>
+      <div class="field"><label>Label</label><input type="text" id="np-n" placeholder="+50 Points"></div>
+    </div>
+    <button class="btn btn-p" onclick="addPrize()">Add Prize</button>
+  </div>
+</div>
+
+<!-- WIN SHEET -->
+<div class="overlay" id="sh-win">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div style="text-align:center;font-family:var(--fd);font-size:22px;font-weight:800;color:var(--gd);margin-bottom:16px">🎉 You Won!</div>
+    <div style="background:linear-gradient(135deg,#FFFDE7,#FFF3E0);border:2px solid #FFE082;border-radius:18px;padding:22px;text-align:center;margin-bottom:14px;box-shadow:0 4px 16px rgba(249,168,37,.15)">
+      <div style="font-family:var(--fd);font-size:54px;color:#E65100;line-height:1;margin-bottom:4px" id="win-pts-big">+50</div>
+      <div style="font-size:13px;color:var(--mu);text-transform:uppercase;letter-spacing:1px;font-weight:700">Bonus Points</div>
+    </div>
+    <div style="background:var(--s2);border:2px solid var(--b2);border-radius:12px;padding:14px;margin-bottom:16px">
+      <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+        <div style="font-size:13px;color:var(--mu)">Visit + order pts</div>
+        <div style="font-family:var(--fd);font-weight:800;color:var(--gd)" id="win-visit-pts">+50</div>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+        <div style="font-size:13px;color:var(--mu)">Spin bonus</div>
+        <div style="font-family:var(--fd);font-weight:800;color:var(--gd)" id="win-spin-pts">+50</div>
+      </div>
+      <div style="height:1px;background:var(--b1);margin-bottom:8px"></div>
+      <div style="display:flex;justify-content:space-between">
+        <div style="font-size:13px;font-weight:600">New balance at <span id="win-truck-name">–</span></div>
+        <div style="font-family:var(--fd);font-weight:800;color:var(--brand)" id="win-new-balance">100</div>
+      </div>
+    </div>
+    <button class="btn btn-p" onclick="closeSheet('sh-win');goC('s-c-truck')">View My Rewards →</button>
+  </div>
+</div>
+
+<!-- REDEEM SHEET -->
+<div class="overlay" id="sh-redeem">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title" style="text-align:center">Redeem Reward</div>
+    <div style="text-align:center;font-size:44px;margin-bottom:8px" id="rdm-emo">🎁</div>
+    <div style="text-align:center;font-family:var(--fd);font-size:20px;font-weight:800;margin-bottom:4px" id="rdm-name">Free Item</div>
+    <div style="text-align:center;font-size:12px;color:var(--mu);margin-bottom:16px">at <span id="rdm-truck">–</span> · <span id="rdm-pts-cost" style="color:var(--rd)">–400 pts</span></div>
+    <div class="code-box">
+      <div class="code-val" id="rdm-code">STK-0000</div>
+      <div class="code-sub">Show this code to the cashier before ordering<br>Expires in 24 hours · One-time use</div>
+    </div>
+    <div style="background:var(--s1);border:1px solid var(--b2);border-radius:12px;padding:14px;margin-bottom:16px">
+      <div class="rdm-step"><div class="rdm-step-num">1</div><div>Show this screen to the cashier <strong>before you order</strong></div></div>
+      <div class="rdm-step"><div class="rdm-step-num">2</div><div>Cashier enters code <strong id="rdm-code-inline">STK-0000</strong> in their Vendor app to confirm</div></div>
+      <div class="rdm-step"><div class="rdm-step-num">3</div><div>Points deducted once cashier confirms — you get your free item!</div></div>
+    </div>
+    <button class="btn btn-s" onclick="closeSheet('sh-redeem')">Done — cashier has the code</button>
+  </div>
+</div>
+
+<div class="cc-wrap" id="cc"></div>
+<div class="load-over" id="load-over"><div class="lspin"></div><div class="ltxt" id="load-txt">Loading...</div></div>
+
+<!-- CUSTOMER EDIT PROFILE SHEET -->
+<div class="overlay" id="sh-edit-profile" onclick="closeSheet('sh-edit-profile')">
+  <div class="sheet" onclick="event.stopPropagation()">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">Edit Profile</div>
+    <!-- Hidden real file input - triggers native camera/gallery picker -->
+    <input type="file" id="edit-pic-file" accept="image/*" style="display:none" onchange="handleCustomerPicFile(this)">
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px">
+      <div style="position:relative;cursor:pointer;flex-shrink:0" onclick="document.getElementById('edit-pic-file').click()">
+        <div style="width:64px;height:64px;border-radius:50%;background:rgba(255,87,34,.12);border:2px solid var(--b2);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:900" id="edit-prof-preview">?</div>
+        <div style="position:absolute;bottom:0;right:0;width:22px;height:22px;background:var(--brand);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;border:2px solid white">📷</div>
+      </div>
+      <div style="flex:1">
+        <div style="font-size:13px;font-weight:700;margin-bottom:6px">Profile Photo</div>
+        <button class="btn btn-s btn-sm" style="width:100%" onclick="document.getElementById('edit-pic-file').click()">📷 Choose from Device</button>
+        <div id="edit-pic-uploading" style="display:none;font-size:12px;color:var(--mu);margin-top:6px;font-weight:600">⏳ Uploading...</div>
+      </div>
+    </div>
+    <div class="field"><label>Full Name</label><input type="text" id="edit-name" placeholder="Your name"></div>
+    <div class="field"><label>Phone Number</label><input type="tel" id="edit-phone" placeholder="(555) 000-0000" oninput="formatPhone(this)" maxlength="14"></div>
+    <div class="field"><label>Email Address</label><input type="email" id="edit-email" placeholder="you@email.com"></div>
+    <button class="btn btn-p" onclick="saveCustomerProfile()">Save Changes</button>
+    <button class="btn btn-g" style="margin-top:10px" onclick="closeSheet('sh-edit-profile')">Cancel</button>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ════════════════════════════════════
+   CONFIG
+════════════════════════════════════ */
+const API = 'https://truckloyal-api.onrender.com';
+
+/* ════════════════════════════════════
+   STATE
+════════════════════════════════════ */
+const S = {
+  mode: 'vendor',
+  vScreen: 's-v-login',
+  cScreen: 's-c-signup',
+  // Vendor
+  vendorToken: localStorage.getItem('tl_vendor_token') || null,
+  vendor: JSON.parse(localStorage.getItem('tl_vendor') || 'null'),
+  // Customer
+  customer: JSON.parse(localStorage.getItem('tl_customer') || 'null'),
+  // Active truck being viewed by customer
+  activeTruck: JSON.parse(localStorage.getItem('tl_active_truck') || 'null'),
+  activeTruckPoints: JSON.parse(localStorage.getItem('tl_active_truck_pts') || 'null'),
+  // All trucks customer has joined
+  myTrucks: JSON.parse(localStorage.getItem('tl_my_trucks') || '[]'),
+  // Rewards and prizes for active truck
+  rewards: [],
+  prizes: [],
+  // Spin state
+  spinAngle: 0,
+  spinning: false,
+  // Pending win from server
+  pendingWin: null,
+  visitPtsEarned: 0,
+  // Vendor award flow
+  awardCustomer: null,
+  // Vendor confirm flow
+  confirmRedemption: null,
+  // Current redemption being made by customer
+  currentRdm: null,
+};
+
+/* Defaults */
+const DEFAULT_PRIZES = [
+  { emoji:'⚡', name:'+25 Points',  pts:25,  probability:35 },
+  { emoji:'💰', name:'+50 Points',  pts:50,  probability:30 },
+  { emoji:'🌟', name:'+75 Points',  pts:75,  probability:15 },
+  { emoji:'🔥', name:'+100 Points', pts:100, probability:12 },
+  { emoji:'💎', name:'+150 Points', pts:150, probability:5  },
+  { emoji:'👑', name:'+200 Points', pts:200, probability:3  },
+];
+const DEFAULT_REWARDS = [
+  { emoji:'🥤', name:'Free Drink',    pts_required:350 },
+  { emoji:'🍟', name:'Free Side',     pts_required:500 },
+  { emoji:'🍔', name:'Free Entrée',   pts_required:750 },
+];
+const DEFAULT_TIERS = [
+  { icon:'🌱', name:'Starter', pts_threshold:0   },
+  { icon:'🔥', name:'Regular', pts_threshold:300 },
+  { icon:'⭐', name:'VIP',     pts_threshold:700 },
+  { icon:'👑', name:'Legend',  pts_threshold:1500},
+];
+const EMOJIS = ['🚚','🌮','🍔','🍕','🥩','🍜','🫔','🥗','🍦','☕','🌯','🧆'];
+const PRESETS = [['#FF5A1F','#F5B800'],['#8B5CF6','#EC4899'],['#059669','#34D399'],['#0EA5E9','#38BDF8'],['#DC2626','#F97316'],['#1D4ED8','#FBBF24']];
+const VNAV = [{id:'s-v-home',icon:'🏠',label:'Home'},{id:'s-v-analytics',icon:'📊',label:'Analytics'},{id:'s-v-customers',icon:'👥',label:'Members'},{id:'s-v-settings',icon:'⚙️',label:'Settings'}];
+const CNAV = [{id:'s-c-home',icon:'🚚',label:'My Trucks'},{id:'s-c-history',icon:'📋',label:'History'},{id:'s-c-profile',icon:'👤',label:'Profile'}];
+
+/* ════════════════════════════════════
+   API HELPERS
+════════════════════════════════════ */
+async function apiFetch(path, opts={}) {
+  const headers = {'Content-Type':'application/json'};
+  if (S.vendorToken) headers['Authorization'] = `Bearer ${S.vendorToken}`;
+  if (S.customer?.token) headers['X-Customer-Token'] = S.customer.token;
+  try {
+    const r = await fetch(API+path, {headers,...opts});
+    const d = await r.json();
+    return {ok:r.ok, status:r.status, data:d};
+  } catch(e) {
+    return {ok:false, status:0, data:{error:'Network error'}};
+  }
+}
+const apiGet  = p => apiFetch(p,{method:'GET'});
+const apiPost = (p,b) => apiFetch(p,{method:'POST',body:JSON.stringify(b)});
+const apiPatch= (p,b) => apiFetch(p,{method:'PATCH',body:JSON.stringify(b)});
+const apiDel  = p => apiFetch(p,{method:'DELETE'});
+
+/* ════════════════════════════════════
+   LOADING / TOAST
+════════════════════════════════════ */
+function showLoad(t='Loading...'){document.getElementById('load-over').classList.add('show');document.getElementById('load-txt').textContent=t}
+function hideLoad(){document.getElementById('load-over').classList.remove('show')}
+function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(window._t);window._t=setTimeout(()=>t.classList.remove('show'),3000)}
+function openSheet(id){document.getElementById(id).classList.add('open')}
+function closeSheet(id){document.getElementById(id).classList.remove('open')}
+
+/* ════════════════════════════════════
+   ROUTING
+════════════════════════════════════ */
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
+  const el=document.getElementById(id);
+  if(el) el.classList.add('on');
+  document.getElementById('scroll').scrollTop=0;
+}
+
+function setMode(mode){
+  S.mode=mode;
+  document.getElementById('mb-v').classList.toggle('on',mode==='vendor');
+  document.getElementById('mb-c').classList.toggle('on',mode==='customer');
+  if(mode==='vendor'){
+    if(S.vendorToken&&S.vendor){
+      const dest=(S.vScreen==='s-v-login'||S.vScreen==='s-v-signup')?'s-v-home':S.vScreen;
+      S.vScreen=dest; show(dest); renderNav(VNAV,dest); loadVendorHome();
+    } else { show('s-v-login'); S.vScreen='s-v-login'; renderNav([],'')}
+  } else {
+    if(S.customer){
+      const dest=(S.cScreen==='s-c-signup'||S.cScreen==='s-c-login')?'s-c-home':S.cScreen;
+      S.cScreen=dest; show(dest); renderNav(CNAV,dest);
+      if(dest==='s-c-home') renderMyTrucks();
+      if(dest==='s-c-truck') renderTruckDash();
+      if(dest==='s-c-spin'){renderSpinPreview();drawWheel(S.spinAngle)}
+    } else {
+      show('s-c-signup'); S.cScreen='s-c-signup'; renderNav([],'')}
+  }
+}
+
+function goV(id){
+  S.vScreen=id; show(id);
+  if(id!=='s-v-login'&&id!=='s-v-signup') renderNav(VNAV,id); else renderNav([],''  );
+  if(id==='s-v-home')     loadVendorHome();
+  if(id==='s-v-rewards')  loadVRewards();
+  if(id==='s-v-spin')     loadVPrizes();
+  if(id==='s-v-analytics')loadAnalytics();
+  if(id==='s-v-settings') renderVSettings();
+  if(id==='s-v-brand')    populateBrandForm();
+  if(id==='s-v-points')   populatePointsForm();
+  if(id==='s-v-award')    resetAwardForm();
+  if(id==='s-v-confirm')  resetConfirmForm();
+  if(id==='s-v-customers') loadCustomers();
+}
+
+function goC(id){
+  S.cScreen=id; show(id); renderNav(CNAV,id);
+  if(id==='s-c-home')    renderMyTrucks();
+  if(id==='s-c-truck')   renderTruckDash();
+  if(id==='s-c-spin')    {renderSpinPreview();drawWheel(S.spinAngle)}
+  if(id==='s-c-history') renderHistory();
+  if(id==='s-c-profile') renderProfile();
+  if(id==='s-c-qr')      renderMyQR();
+}
+
+function renderNav(tabs,activeId){
+  const nav=document.getElementById('bnav');
+  if(!tabs.length){nav.innerHTML='';return}
+  nav.innerHTML=tabs.map(t=>`
+    <button class="ni ${t.id===activeId?'on':''}"
+      onclick="${S.mode==='vendor'?`goV('${t.id}')`:`goC('${t.id}')`}">
+      <span class="ni-icon">${t.icon}</span><span>${t.label}</span><div class="ni-pip"></div>
+    </button>`).join('');
+}
+
+/* ════════════════════════════════════
+   VENDOR AUTH
+════════════════════════════════════ */
+async function vendorLogin(){
+  const email=document.getElementById('v-login-email').value.trim();
+  const pass=document.getElementById('v-login-pass').value;
+  const errEl=document.getElementById('v-login-err');
+  errEl.classList.remove('show');
+  if(!email||!pass){showErr(errEl,'Please fill in all fields');return}
+  showLoad('Signing in...');
+  const r=await apiPost('/api/vendor/login',{email,password:pass});
+  hideLoad();
+  if(!r.ok){showErr(errEl,r.data.error||'Invalid email or password');return}
+  S.vendorToken=r.data.data.token; S.vendor=r.data.data.vendor;
+  localStorage.setItem('tl_vendor_token',S.vendorToken);
+  localStorage.setItem('tl_vendor',JSON.stringify(S.vendor));
+  S.vScreen='s-v-home'; show('s-v-home'); renderNav(VNAV,'s-v-home');
+  loadVendorHome();
+  showToast('👋 Welcome back, '+S.vendor.truck_name+'!');
+}
+
+/* ════════════════════════════════════
+   VENDOR SIGNUP + STRIPE CARD SETUP
+════════════════════════════════════ */
+
+// Stripe publishable key — safe to expose in frontend
+const STRIPE_PK = 'pk_live_51SsDt1FZdL8SRWbqdgcAHF0hiAUR6n0MFVvKd3I4zIfgAts6m9X6EGjY0pQcQxHWocWNr1CH1emcxb6Y9Bq0IM1300KdSfZFq3';
+let stripeInstance = null;
+let stripeCardElement = null;
+
+async function vendorSignup(){
+  const name  = document.getElementById('v-su-name').value.trim();
+  const owner = document.getElementById('v-su-owner').value.trim();
+  const email = document.getElementById('v-su-email').value.trim();
+  const pass  = document.getElementById('v-su-pass').value;
+  const errEl = document.getElementById('v-signup-err');
+  errEl.classList.remove('show');
+
+  if(!name||!owner||!email||!pass){showErr(errEl,'Please fill in all fields');return}
+  if(pass.length<8){showErr(errEl,'Password must be at least 8 characters');return}
+
+  showLoad('Creating your account...');
+  const r = await apiPost('/api/vendor/signup',{email,password:pass,truck_name:name,owner_name:owner});
+  hideLoad();
+
+  if(!r.ok){showErr(errEl,r.data.error||'Signup failed');return}
+
+  // Save vendor state
+  S.vendorToken = r.data.data.token;
+  S.vendor      = r.data.data.vendor;
+  localStorage.setItem('tl_vendor_token', S.vendorToken);
+  localStorage.setItem('tl_vendor', JSON.stringify(S.vendor));
+
+  // Show trial end date across all legal disclosure elements
+  const trialEnd = new Date();
+  trialEnd.setDate(trialEnd.getDate() + 14);
+  const trialStr = trialEnd.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+  ['trial-end-date','trial-end-label','trial-end-consent','trial-end-cancel','trial-end-summary'].forEach(id=>{
+    const el = document.getElementById(id);
+    if(el) el.textContent = id === 'trial-end-label' ? trialStr : trialStr;
+  });
+  // Show vendor email in billing summary
+  const emailDisplay = document.getElementById('billing-email-display');
+  if(emailDisplay) emailDisplay.textContent = email;
+
+  // Navigate to card setup
+  show('s-v-card-setup');
+  S.vScreen = 's-v-card-setup';
+  renderNav([], '');
+
+  // Mount Stripe card element
+  initStripeCard();
+}
+
+function initStripeCard(){
+  try {
+    if(!stripeInstance){
+      stripeInstance = Stripe(STRIPE_PK);
+    }
+    const elements = stripeInstance.elements({
+      fonts:[{cssSrc:'https://fonts.googleapis.com/css2?family=Nunito:wght@600&display=swap'}]
+    });
+    stripeCardElement = elements.create('card', {
+      style:{
+        base:{
+          fontFamily:'Nunito, sans-serif',
+          fontSize:'16px',
+          fontWeight:'600',
+          color:'#2D1B0E',
+          '::placeholder':{color:'rgba(45,27,14,0.35)'},
+        },
+        invalid:{color:'#C62828'}
+      },
+      hidePostalCode: false,
+    });
+    stripeCardElement.mount('#stripe-card-element');
+    stripeCardElement.on('change', e=>{
+      const errEl = document.getElementById('stripe-card-errors');
+      if(errEl) errEl.textContent = e.error ? e.error.message : '';
+      // Style border based on validity
+      const cardEl = document.getElementById('stripe-card-element');
+      if(cardEl){
+        cardEl.style.borderColor = e.error ? 'var(--rd)' : e.complete ? '#2E7D32' : 'var(--b2)';
+      }
+    });
+  } catch(e){
+    console.warn('Stripe init failed:', e);
+  }
+}
+
+async function submitCardSetup(){
+  const errEl = document.getElementById('v-card-err');
+  errEl.classList.remove('show');
+
+  // Check legal consent first
+  const consent = document.getElementById('legal-consent');
+  if(!consent?.checked){
+    showErr(errEl, 'Please read and accept the Terms of Service and billing authorization to continue.');
+    return;
+  }
+
+  if(!stripeInstance || !stripeCardElement){
+    landOnDashboard();
+    return;
+  }
+
+  const btn = document.getElementById('v-card-btn');
+  btn.disabled = true;
+  btn.textContent = '⏳ Setting up your trial...';
+
+  try {
+    // 1. Create a SetupIntent on the backend
+    const setupRes = await fetch(API + '/api/vendor/create-setup-intent', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + S.vendorToken
+      }
+    });
+    const setupData = await setupRes.json();
+
+    if(!setupRes.ok || !setupData.data?.client_secret){
+      showErr(errEl, setupData.error || 'Could not reach payment server. Please try again.');
+      btn.disabled = false; btn.textContent = 'Start My Free Trial →';
+      return;
+    }
+
+    // 2. Confirm card setup with Stripe
+    const {setupIntent, error} = await stripeInstance.confirmCardSetup(
+      setupData.data.client_secret,
+      { payment_method: { card: stripeCardElement } }
+    );
+
+    if(error){
+      showErr(errEl, error.message);
+      btn.disabled = false; btn.textContent = 'Start My Free Trial →';
+      return;
+    }
+
+    // 3. Create subscription on backend using the saved payment method
+    const subRes = await fetch(API + '/api/vendor/create-subscription', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + S.vendorToken
+      },
+      body: JSON.stringify({ payment_method_id: setupIntent.payment_method })
+    });
+    const subData = await subRes.json();
+
+    if(!subRes.ok){
+      // Subscription creation failed but card saved — let them in on trial
+      console.warn('Subscription creation failed:', subData.error);
+    } else {
+      S.vendor = { ...S.vendor, plan_active: true };
+      localStorage.setItem('tl_vendor', JSON.stringify(S.vendor));
+    }
+
+    landOnDashboard();
+    showToast('🎉 Welcome! Trial started — first charge on ' + document.getElementById('trial-end-date').textContent);
+
+  } catch(e) {
+    showErr(errEl, 'Something went wrong. Please try again.');
+    btn.disabled = false;
+    btn.textContent = 'Start My Free Trial →';
+  }
+}
+
+function skipCardForNow(){
+  // Allow trial without card — they'll be prompted when trial ends
+  landOnDashboard();
+  showToast('⚠️ Add your card in Settings before your trial ends');
+}
+
+function landOnDashboard(){
+  S.prizes=[...DEFAULT_PRIZES]; S.rewards=[...DEFAULT_REWARDS];
+  S.vScreen='s-v-home'; show('s-v-home'); renderNav(VNAV,'s-v-home');
+  loadVendorHome();
+}
+
+function vendorLogout(){
+  S.vendorToken=null; S.vendor=null;
+  localStorage.removeItem('tl_vendor_token'); localStorage.removeItem('tl_vendor');
+  S.vScreen='s-v-login'; show('s-v-login'); renderNav([],'' );
+  showToast('Signed out');
+}
+
+/* ════════════════════════════════════
+   VENDOR HOME
+════════════════════════════════════ */
+async function loadVendorHome(){
+  if(!S.vendor) return;
+  setText('v-hero-name',S.vendor.truck_name+' '+(S.vendor.emoji||'🚚'));
+  const saved=localStorage.getItem('tl_location')||'';
+  const el=document.getElementById('v-location-input');
+  if(el) el.value=saved;
+  const r=await apiGet('/api/vendor/stats');
+  if(r.ok){
+    const d=r.data.data;
+    setText('v-stat-visits',d.visits_today||0);
+    setText('v-stat-members',d.total_members||0);
+    setText('v-stat-rdm',d.total_redemptions||0);
+    setText('v-hero-members',d.total_members||0);
+  }
+  S.prizes=[...DEFAULT_PRIZES]; S.rewards=[...DEFAULT_REWARDS];
+}
+
+function debounceSaveLocation(){clearTimeout(window._locTimer);window._locTimer=setTimeout(saveLocation,1000)}
+function saveLocation(){
+  const v=document.getElementById('v-location-input')?.value||'';
+  localStorage.setItem('tl_location',v);
+  if(v) showToast('📍 Location saved');
+}
+
+async function loadVRewards(){
+  const r=await apiGet('/api/vendor/rewards');
+  if(r.ok&&r.data.data?.length) S.rewards=r.data.data;
+  else S.rewards=[...DEFAULT_REWARDS];
+  renderVRewards();
+}
+
+async function loadVPrizes(){
+  const r=await apiGet('/api/vendor/prizes');
+  if(r.ok&&r.data.data?.length) S.prizes=r.data.data.map(p=>({...p,pts:p.pts||parseInt(p.prize_value)||50}));
+  else S.prizes=[...DEFAULT_PRIZES];
+  renderVPrizes(); renderSpinPreview(); drawWheel(S.spinAngle);
+}
+
+function renderVRewards(){
+  const el=document.getElementById('v-rewards-list');
+  if(!el) return;
+  if(!S.rewards.length){el.innerHTML='<div style="text-align:center;padding:20px;color:var(--mu)">No rewards yet</div>';return}
+  el.innerHTML=S.rewards.map((r,i)=>`
+    <div class="li">
+      <div class="li-icon">${r.emoji}</div>
+      <div class="li-info"><div class="li-name">${r.name}</div><div class="li-sub">${r.pts_required||r.pts} pts to redeem</div></div>
+      <div class="li-act"><button class="iBtn" onclick="removeReward(${i})">✕</button></div>
+    </div>`).join('');
+}
+
+function renderVPrizes(){
+  const el=document.getElementById('v-prizes-list');
+  if(!el) return;
+  if(!S.prizes.length){el.innerHTML='<div style="text-align:center;padding:20px;color:var(--mu)">No prizes yet</div>';return}
+  el.innerHTML=S.prizes.map((p,i)=>`
+    <div class="li">
+      <div class="li-icon">${p.emoji}</div>
+      <div class="li-info"><div class="li-name">${p.name}</div><div class="li-sub">Weight: ${p.probability||1} · +${p.pts||0} pts</div></div>
+      <div class="li-act"><button class="iBtn" onclick="removePrize(${i})">✕</button></div>
+    </div>`).join('');
+}
+
+async function addReward(){
+  const e=document.getElementById('nr-e').value.trim()||'🎁';
+  const n=document.getElementById('nr-n').value.trim();
+  const p=parseInt(document.getElementById('nr-p').value)||0;
+  if(!n||!p){showToast('Fill in name and points cost');return}
+  showLoad('Adding...');
+  const r=await apiPost('/api/vendor/rewards',{emoji:e,name:n,pts_required:p});
+  hideLoad();
+  if(r.ok){closeSheet('sh-add-reward');['nr-e','nr-n','nr-p'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=''});await loadVRewards();showToast('✅ Reward added!')}
+  else showToast('❌ Error');
+}
+
+function removeReward(i){
+  if(S.rewards[i]?.id) apiDel(`/api/vendor/rewards/${S.rewards[i].id}`).then(()=>loadVRewards());
+  else{S.rewards.splice(i,1);renderVRewards()}
+}
+
+async function addPrize(){
+  const e=document.getElementById('np-e').value.trim()||'⚡';
+  const n=document.getElementById('np-n').value.trim();
+  const p=parseInt(document.getElementById('np-p').value)||0;
+  const pts=parseInt(document.getElementById('np-pts').value)||0;
+  if(!n||!p||!pts){showToast('Fill in all fields');return}
+  showLoad('Adding...');
+  const r=await apiPost('/api/vendor/prizes',{emoji:e,name:n,probability:p,prize_type:'points',prize_value:String(pts)});
+  hideLoad();
+  if(r.ok){closeSheet('sh-add-prize');['np-e','np-n','np-p','np-pts'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=''});await loadVPrizes();showToast('✅ Prize added!')}
+  else showToast('❌ Error');
+}
+
+function removePrize(i){
+  if(S.prizes[i]?.id) apiDel(`/api/vendor/prizes/${S.prizes[i].id}`).then(()=>loadVPrizes());
+  else{S.prizes.splice(i,1);renderVPrizes();renderSpinPreview();drawWheel(S.spinAngle)}
+}
+
+/* ════════════════════════════════════
+   VENDOR: AWARD POINTS FLOW
+════════════════════════════════════ */
+function switchAwardTab(method){
+  document.querySelectorAll('.award-tab').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.award-method').forEach(m=>m.classList.remove('on'));
+  const tabIndex={'phone':0,'id':1,'qr':2};
+  document.querySelectorAll('.award-tab')[tabIndex[method]].classList.add('on');
+  document.getElementById('award-'+method).classList.add('on');
+}
+
+function formatAwardPhone(el){
+  let v=el.value.replace(/\D/g,'');
+  if(v.length>=6) v='('+v.slice(0,3)+') '+v.slice(3,6)+'-'+v.slice(6,10);
+  else if(v.length>=3) v='('+v.slice(0,3)+') '+v.slice(3);
+  el.value=v;
+}
+
+async function lookupByPhone(){
+  const ph=document.getElementById('award-phone-input').value.replace(/\D/g,'');
+  if(ph.length<10){showToast('Enter a valid phone number');return}
+  await findAwardCustomer({phone:ph});
+}
+
+async function lookupByID(){
+  const id=document.getElementById('award-id-input').value.trim();
+  if(!id){showToast('Enter a rewards ID');return}
+  await findAwardCustomer({rewards_id:id});
+}
+
+async function lookupByQRManual(){
+  const id=document.getElementById('award-qr-manual').value.trim();
+  if(!id){showToast('Enter the customer ID');return}
+  await findAwardCustomer({rewards_id:id});
+}
+
+async function findAwardCustomer(query){
+  showLoad('Looking up customer...');
+  const r=await apiPost('/api/vendor/find-customer',{...query,vendor_id:S.vendor?.id});
+  hideLoad();
+  if(!r.ok||!r.data.data){showToast('❌ Customer not found — ask them to sign up first');return}
+  S.awardCustomer=r.data.data;
+  showAwardCustomer(r.data.data);
+}
+
+function showAwardCustomer(c){
+  const found=document.getElementById('award-customer-found');
+  if(!found) return;
+  found.style.display='block';
+  setText('award-cust-av',(c.name||'?')[0].toUpperCase());
+  setText('award-cust-name',c.name||'Customer');
+  const pts=c.vendor_points?.[S.vendor?.id]||c.points_balance||0;
+  setText('award-cust-sub',(c.rewards_id||'–')+' · '+pts+' pts at this truck');
+  const tier=DEFAULT_TIERS.slice().reverse().find(t=>pts>=t.pts_threshold)||DEFAULT_TIERS[0];
+  setText('award-cust-tier',tier.icon+' '+tier.name);
+  const rate=S.vendor?.pts_per_dollar||10;
+  setText('award-rate-label',rate+' pts per $1');
+  document.getElementById('award-order-total').value='';
+  calcAwardPts();
+}
+
+function calcAwardPts(){
+  const total=parseFloat(document.getElementById('award-order-total')?.value)||0;
+  const rate=S.vendor?.pts_per_dollar||10;
+  const base=S.vendor?.pts_per_visit||50;
+  const orderPts=Math.floor(total*rate);
+  const totalPts=base+orderPts;
+  setText('award-pts-calc','+'+orderPts+' pts');
+  setText('award-visit-pts','+'+base+' pts');
+  setText('award-total-pts','+'+totalPts+' pts');
+}
+
+async function awardPoints(){
+  if(!S.awardCustomer||!S.vendor){showToast('No customer selected');return}
+  const total=parseFloat(document.getElementById('award-order-total')?.value)||0;
+  const base=S.vendor?.pts_per_visit||50;
+  const rate=S.vendor?.pts_per_dollar||10;
+  const orderPts=Math.floor(total*rate);
+  const totalPts=base+orderPts;
+  showLoad('Awarding points...');
+  const r=await apiPost('/api/vendor/award-points',{
+    vendor_id:S.vendor.id,
+    customer_id:S.awardCustomer.id,
+    order_total:total,
+    pts_awarded:totalPts,
+  });
+  hideLoad();
+  if(r.ok){
+    confetti();
+    showToast(`✅ ${totalPts} pts awarded to ${S.awardCustomer.name||'customer'}!`);
+    resetAwardForm();
+  } else {
+    showToast('❌ '+(r.data.error||'Error awarding points'));
+  }
+}
+
+function resetAwardForm(){
+  S.awardCustomer=null;
+  const found=document.getElementById('award-customer-found');
+  if(found) found.style.display='none';
+  ['award-phone-input','award-id-input','award-qr-manual','award-order-total'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.value='';
+  });
+}
+
+function startQRScan(){showToast('📷 QR scan requires device camera — use phone app')}
+
+/* ════════════════════════════════════
+   VENDOR: CONFIRM REDEMPTION
+════════════════════════════════════ */
+async function lookupRedemptionCode(){
+  const code=document.getElementById('confirm-code-input').value.trim();
+  if(code.length<4){showToast('Enter the full redemption code');return}
+  showLoad('Looking up code...');
+  const r=await apiGet(`/api/vendor/redemption/${code}?vendor_id=${S.vendor?.id}`);
+  hideLoad();
+  document.getElementById('confirm-found').style.display='none';
+  document.getElementById('confirm-notfound').style.display='none';
+  if(!r.ok||!r.data.data){
+    document.getElementById('confirm-notfound').style.display='block';
+    return;
+  }
+  S.confirmRedemption=r.data.data;
+  const d=r.data.data;
+  setText('confirm-reward-emo',d.reward_emoji||'🎁');
+  setText('confirm-reward-name',d.reward_name||'Reward');
+  setText('confirm-customer-name',d.customer_name||'Customer');
+  setText('confirm-pts-cost','–'+d.pts_cost+' points will be deducted');
+  setText('confirm-code-display',code);
+  document.getElementById('confirm-found').style.display='block';
+}
+
+async function confirmRedemption(){
+  if(!S.confirmRedemption){return}
+  showLoad('Confirming...');
+  const r=await apiPost('/api/vendor/confirm-redemption',{
+    redemption_code:document.getElementById('confirm-code-input').value.trim(),
+    vendor_id:S.vendor?.id,
+  });
+  hideLoad();
+  if(r.ok){
+    confetti();
+    showToast('✅ Reward confirmed! Customer\'s points have been deducted.');
+    resetConfirmForm();
+  } else {
+    showToast('❌ '+(r.data.error||'Error confirming'));
+  }
+}
+
+function resetConfirmForm(){
+  S.confirmRedemption=null;
+  const inp=document.getElementById('confirm-code-input');
+  if(inp) inp.value='';
+  document.getElementById('confirm-found').style.display='none';
+  document.getElementById('confirm-notfound').style.display='none';
+}
+
+/* ════════════════════════════════════
+   VENDOR: BRAND / SETTINGS / POINTS
+════════════════════════════════════ */
+function populateBrandForm(){
+  if(!S.vendor) return;
+  setVal('v-brand-name',S.vendor.truck_name||'');
+  setVal('v-brand-tag',S.vendor.tagline||'');
+  S.selectedEmoji=S.vendor.emoji||'🚚';
+  renderVEP(); renderVPresets();
+}
+
+function renderVEP(){
+  const el=document.getElementById('v-ep');
+  if(!el) return;
+  el.innerHTML=EMOJIS.map(e=>`<div style="width:48px;height:48px;background:${e===S.selectedEmoji?'rgba(255,90,31,.1)':'var(--s2)'};border:2px solid ${e===S.selectedEmoji?'var(--brand)':'var(--b2)'};border-radius:12px;font-size:22px;display:flex;align-items:center;justify-content:center;cursor:pointer" onclick="S.selectedEmoji='${e}';renderVEP()">${e}</div>`).join('');
+}
+
+function renderVPresets(){
+  const el=document.getElementById('v-presets');
+  if(!el) return;
+  el.innerHTML=PRESETS.map(p=>`<div style="width:42px;height:42px;border-radius:11px;cursor:pointer;background:linear-gradient(135deg,${p[0]},${p[1]})" onclick="applyPreset('${p[0]}','${p[1]}')"></div>`).join('');
+}
+
+function setBrandCol(w,v){
+  if(w==='p'){document.getElementById('cdot-p').style.background=v}
+  else{document.getElementById('cdot-s').style.background=v}
+}
+
+function applyPreset(p,s){
+  document.getElementById('cdot-p').style.background=p;
+  document.getElementById('cdot-s').style.background=s;
+  document.getElementById('cdot-p').querySelector('input').value=p;
+  document.getElementById('cdot-s').querySelector('input').value=s;
+  showToast('✅ Preset applied');
+}
+
+async function saveBrand(){
+  const name=document.getElementById('v-brand-name')?.value.trim();
+  const tag=document.getElementById('v-brand-tag')?.value.trim();
+  const p=document.getElementById('cdot-p')?.querySelector('input').value;
+  const s=document.getElementById('cdot-s')?.querySelector('input').value;
+  showLoad('Saving...');
+  const r=await apiPatch('/api/vendor/brand',{truck_name:name,tagline:tag,emoji:S.selectedEmoji,color_primary:p,color_secondary:s});
+  hideLoad();
+  if(r.ok){
+    S.vendor=r.data.data; localStorage.setItem('tl_vendor',JSON.stringify(S.vendor));
+    showToast('✅ Brand saved!');
+  } else showToast('❌ Error saving');
+}
+
+function populatePointsForm(){
+  if(!S.vendor) return;
+  setVal('pts-per-dollar',S.vendor.pts_per_dollar||10);
+  setVal('pts-per-visit',S.vendor.pts_per_visit||50);
+  setCheck('tog-first',S.vendor.double_first_visit!==false);
+  setCheck('tog-streak',S.vendor.streak_bonus!==false);
+  setCheck('tog-bday',!!S.vendor.birthday_reward);
+  setCheck('tog-ref',S.vendor.referral_bonus!==false);
+  setCheck('tog-winback',!!S.vendor.winback_enabled);
+  updatePtsExample();
+}
+
+function updatePtsExample(){
+  const rate=parseInt(document.getElementById('pts-per-dollar')?.value)||10;
+  const base=parseInt(document.getElementById('pts-per-visit')?.value)||50;
+  setText('pts-example',(base+Math.floor(15*rate))+' pts');
+}
+document.getElementById('pts-per-dollar')?.addEventListener('input',updatePtsExample);
+document.getElementById('pts-per-visit')?.addEventListener('input',updatePtsExample);
+
+async function savePointsConfig(){
+  showLoad('Saving...');
+  const r=await apiPatch('/api/vendor/points-config',{
+    pts_per_dollar:parseInt(document.getElementById('pts-per-dollar').value),
+    pts_per_visit:parseInt(document.getElementById('pts-per-visit').value),
+    double_first_visit:document.getElementById('tog-first').checked,
+    streak_bonus:document.getElementById('tog-streak').checked,
+    birthday_reward:document.getElementById('tog-bday').checked,
+    referral_bonus:document.getElementById('tog-ref').checked,
+    winback_enabled:document.getElementById('tog-winback').checked,
+  });
+  hideLoad();
+  if(r.ok){S.vendor=r.data.data;localStorage.setItem('tl_vendor',JSON.stringify(S.vendor));showToast('✅ Saved!')}
+  else showToast('❌ Error');
+}
+
+async function loadAnalytics(){
+  const r=await apiGet('/api/vendor/stats');
+  if(r.ok){
+    const d=r.data.data;
+    setText('an-members',d.total_members||0);
+    setText('an-visits',d.visits_today||0);
+    setText('an-rdm',d.total_redemptions||0);
+  }
+}
+
+async function loadCustomers(){
+  setText('v-cust-sub','Your loyalty members');
+}
+
+function renderVSettings(){
+  if(!S.vendor) return;
+  const slug=S.vendor.slug||'yourtruck';
+  const num=S.vendor.vendor_number||'––––';
+  setText('v-qr-url','foodtruckrewards.app/'+slug);
+  setText('v-vendor-number','#'+num);
+  setText('v-num-inline',num);
+  if(S.vendor.trial_ends_at) setText('v-trial-end',new Date(S.vendor.trial_ends_at).toLocaleDateString());
+  // Status badge
+  const statusEl=document.getElementById('v-plan-status');
+  if(statusEl){
+    const now=new Date();
+    let status='Trial',cls='tag-bl';
+    if(S.vendor.plan_active){status='Active';cls='tag-gn';}
+    else if(S.vendor.promo_expires_at&&new Date(S.vendor.promo_expires_at)>now){status='Promo';cls='tag-gd';}
+    statusEl.textContent=status;statusEl.className='tag '+cls;
+  }
+  // Profile picture preview
+  const pic=S.vendor.profile_picture_url;
+  const prev=document.getElementById('v-prof-pic-preview');
+  if(prev){
+    if(pic){prev.innerHTML=`<img src="${pic}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;}
+    else{prev.textContent=S.vendor.emoji||'🚚';}
+  }
+  // Pre-fill URL field
+  const urlEl=document.getElementById('v-pic-url');
+  if(urlEl&&pic) urlEl.value=pic;
+}
+
+function copyVendorLink(){
+  const slug=S.vendor?.slug||'yourtruck';
+  const url='https://foodtruckrewards.app/'+slug;
+  navigator.clipboard?.writeText(url).then(()=>showToast('📋 Link copied!'));
+}
+
+function shareVendorLink(){
+  const slug=S.vendor?.slug||'yourtruck';
+  const url='https://foodtruckrewards.app/'+slug;
+  const name=S.vendor?.truck_name||'our truck';
+  if(navigator.share){
+    navigator.share({title:'Join '+name+' Rewards',text:`Join ${name}'s loyalty program and earn free food! 🚚`,url});
+  } else {
+    copyVendorLink();
+  }
+}
+
+/* ════════════════════════════════════
+   CUSTOMER AUTH
+════════════════════════════════════ */
+async function customerSignup(){
+  const name=document.getElementById('c-su-name').value.trim();
+  const phone=document.getElementById('c-su-phone').value.replace(/\D/g,'');
+  const email=document.getElementById('c-su-email').value.trim();
+  const errEl=document.getElementById('c-signup-err');
+  errEl.classList.remove('show');
+  if(!name){showErr(errEl,'Please enter your name');return}
+  if(phone.length<10){showErr(errEl,'Please enter a valid phone number');return}
+  if(!email||!email.includes('@')){showErr(errEl,'Please enter a valid email address');return}
+  showLoad('Creating your account...');
+  const r=await apiPost('/api/customer/signup',{name,phone,email});
+  hideLoad();
+  if(!r.ok){showErr(errEl,r.data.error||'Signup failed');return}
+  const ctoken = r.data.data.token;
+  S.customer={...r.data.data.customer, token: ctoken};
+  localStorage.setItem('tl_customer', JSON.stringify(S.customer));
+  localStorage.setItem('tl_ctoken', ctoken);
+  S.cScreen='s-c-home'; show('s-c-home'); renderNav(CNAV,'s-c-home');
+  renderMyTrucks();
+  showToast('🎉 Account created! Scan a food truck QR to start earning.');
+}
+
+async function customerLogin(){
+  const phone=document.getElementById('c-login-phone').value.replace(/\D/g,'');
+  const email=document.getElementById('c-login-email').value.trim();
+  const errEl=document.getElementById('c-login-err');
+  errEl.classList.remove('show');
+  if(phone.length<10&&!email){showErr(errEl,'Enter your phone number or email');return}
+  showLoad('Signing in...');
+  const r=await apiPost('/api/customer/login',{phone:phone||undefined,email:email||undefined});
+  hideLoad();
+  if(!r.ok){showErr(errEl,r.data.error||'Account not found — please sign up');return}
+  const ctoken = r.data.data.token;
+  S.customer={...r.data.data.customer, token: ctoken};
+  localStorage.setItem('tl_customer', JSON.stringify(S.customer));
+  localStorage.setItem('tl_ctoken', ctoken);
+  S.myTrucks=r.data.data.trucks||[];
+  localStorage.setItem('tl_my_trucks',JSON.stringify(S.myTrucks));
+  S.cScreen='s-c-home'; show('s-c-home'); renderNav(CNAV,'s-c-home');
+  renderMyTrucks();
+  showToast('👋 Welcome back, '+S.customer.name+'!');
+}
+
+function customerLogout(){
+  S.customer=null; S.myTrucks=[]; S.activeTruck=null;
+  ['tl_customer','tl_my_trucks','tl_active_truck','tl_active_truck_pts','tl_ctoken'].forEach(k=>localStorage.removeItem(k));
+  S.cScreen='s-c-signup'; show('s-c-signup'); renderNav([],'' );
+  showToast('Signed out');
+}
+
+/* ════════════════════════════════════
+   CUSTOMER: MY TRUCKS
+════════════════════════════════════ */
+function renderMyTrucks(){
+  if(!S.customer) return;
+  setText('c-home-greeting',S.customer.name?S.customer.name.split(' ')[0]+"'s Trucks":'My Trucks');
+  setText('c-home-sub',S.myTrucks.length?S.myTrucks.length+' truck'+(S.myTrucks.length!==1?'s':'')+'  joined':'Scan a QR code to join your first truck');
+  const noTrucks=document.getElementById('c-no-trucks');
+  const trucksList=document.getElementById('c-trucks-list');
+  const scanMore=document.getElementById('c-scan-more');
+  if(!S.myTrucks.length){
+    if(noTrucks) noTrucks.style.display='block';
+    if(trucksList) trucksList.innerHTML='';
+    if(scanMore) scanMore.style.display='none';
+    return;
+  }
+  if(noTrucks) noTrucks.style.display='none';
+  if(scanMore) scanMore.style.display='block';
+  if(!trucksList) return;
+  trucksList.innerHTML=S.myTrucks.map((t,i)=>{
+    const pts=t.points_balance||0;
+    const tier=DEFAULT_TIERS.slice().reverse().find(tr=>pts>=tr.pts_threshold)||DEFAULT_TIERS[0];
+    const p=t.color_primary||'#FF5A1F';
+    const loc=localStorage.getItem('tl_location_'+t.id)||'';
+    return `
+    <div class="truck-card" onclick="openTruck(${i})">
+      <div class="tc-top">
+        <div class="tc-icon" style="background:rgba(${hexRGB(p)},.15)">${t.emoji||'🚚'}</div>
+        <div>
+          <div class="tc-name">${t.truck_name||'Food Truck'}</div>
+          <div class="tc-sub">${tier.icon} ${tier.name}${loc?' · 📍 '+loc:''}</div>
+        </div>
+        <div class="tag tag-or" style="margin-left:auto">${pts} pts</div>
+      </div>
+      <div class="tc-stats">
+        <div class="tc-stat"><div class="tc-stat-val" style="color:${p}">${pts}</div><div class="tc-stat-lbl">Points</div></div>
+        <div class="tc-stat"><div class="tc-stat-val">${t.visit_count||0}</div><div class="tc-stat-lbl">Visits</div></div>
+        <div class="tc-stat"><div class="tc-stat-val" style="color:var(--gn)">$${(t.total_saved||0).toFixed(0)}</div><div class="tc-stat-lbl">Saved</div></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openTruck(i){
+  S.activeTruck=S.myTrucks[i];
+  localStorage.setItem('tl_active_truck',JSON.stringify(S.activeTruck));
+  S.rewards=[...DEFAULT_REWARDS]; S.prizes=[...DEFAULT_PRIZES];
+  // Load truck's prizes and rewards
+  if(S.activeTruck.id){
+    apiGet('/api/truck/'+S.activeTruck.slug+'/config').then(r=>{
+      if(r.ok&&r.data.data){
+        if(r.data.data.rewards?.length) S.rewards=r.data.data.rewards;
+        if(r.data.data.prizes?.length) S.prizes=r.data.data.prizes;
+        renderTruckRewards();
+      }
+    });
+  }
+  goC('s-c-truck');
+}
+
+/* ════════════════════════════════════
+   CUSTOMER: JOIN TRUCK
+════════════════════════════════════ */
+async function joinTruckByCode(){
+  const code=document.getElementById('c-truck-code-input')?.value.trim().toLowerCase();
+  if(!code){showToast('Enter a truck code');return}
+  showLoad('Finding truck...');
+  const r=await apiPost('/api/customer/join-truck',{slug:code,customer_id:S.customer?.id});
+  hideLoad();
+  if(!r.ok){showToast('❌ '+(r.data.error||'Truck not found'));return}
+  const truck=r.data.data.truck;
+  if(!S.myTrucks.find(t=>t.id===truck.id)){
+    S.myTrucks.push(truck);
+    localStorage.setItem('tl_my_trucks',JSON.stringify(S.myTrucks));
+  }
+  S.activeTruck=truck;
+  localStorage.setItem('tl_active_truck',JSON.stringify(truck));
+  S.rewards=[...DEFAULT_REWARDS]; S.prizes=[...DEFAULT_PRIZES];
+  showToast('🎉 Joined '+truck.truck_name+'!');
+  goC('s-c-truck');
+}
+
+function joinDemoTruck(){
+  // Demo mode for testing without live API
+  const demo={id:'demo',slug:'demo',truck_name:'Flavor on Wheels',tagline:'Best burgers on wheels',emoji:'🍔',color_primary:'#E8641A',color_secondary:'#F5B800',points_balance:125,visit_count:3,total_saved:0};
+  if(!S.myTrucks.find(t=>t.id==='demo')) S.myTrucks.push(demo);
+  localStorage.setItem('tl_my_trucks',JSON.stringify(S.myTrucks));
+  S.activeTruck=demo; localStorage.setItem('tl_active_truck',JSON.stringify(demo));
+  S.rewards=[...DEFAULT_REWARDS]; S.prizes=[...DEFAULT_PRIZES];
+  showToast('🎉 Joined demo truck!');
+  goC('s-c-truck');
+}
+
+function startCustomerQRScan(){showToast('📷 QR scan requires device camera — enter truck code manually for now')}
+
+/* ════════════════════════════════════
+   CUSTOMER: TRUCK DASHBOARD
+════════════════════════════════════ */
+function renderTruckDash(){
+  const t=S.activeTruck;
+  if(!t) return;
+  const p=t.color_primary||'#FF5A1F';
+  const pts=t.points_balance||0;
+  // Apply truck brand colors to this screen
+  document.getElementById('c-truck-header').style.background=`linear-gradient(180deg,rgba(${hexRGB(p)},.12) 0%,transparent 100%)`;
+  setText('ct-name',t.truck_name||'Food Truck');
+  setText('ct-tagline',t.tagline||'');
+  setText('ct-emoji',t.emoji||'🚚');
+  setText('ct-pts',pts);
+  setText('ct-visits',t.visit_count||0);
+  setText('ct-saved','$'+(t.total_saved||0).toFixed(0));
+  // Location
+  const loc=localStorage.getItem('tl_location'+(t.id==='demo'?'':('_'+t.id)))||'';
+  const locBar=document.getElementById('ct-location-bar');
+  if(locBar){locBar.style.display=loc?'block':'none';setText('ct-location-text',loc)}
+  // Tier
+  const tier=DEFAULT_TIERS.slice().reverse().find(tr=>pts>=tr.pts_threshold)||DEFAULT_TIERS[0];
+  const nextTier=DEFAULT_TIERS.find(tr=>pts<tr.pts_threshold);
+  setText('ct-tier',tier.icon+' '+tier.name);
+  setText('ct-next-tier-lbl',nextTier?'Next: '+nextTier.icon+' '+nextTier.name:'👑 Max Tier!');
+  if(nextTier){
+    const pct=((pts-tier.pts_threshold)/(nextTier.pts_threshold-tier.pts_threshold))*100;
+    setText('ct-pts-away',(nextTier.pts_threshold-pts)+' pts away');
+    const fill=document.getElementById('ct-prog-fill');
+    if(fill){fill.style.width=Math.min(pct,100)+'%';fill.style.background=`linear-gradient(90deg,${p},${t.color_secondary||'#F5B800'})`}
+  }
+  // Streak
+  const streak=t.current_streak||0;
+  setText('ct-streak',streak+' day'+(streak!==1?'s':''));
+  renderStreakDays('ct-streak-days',streak);
+  setText('ct-streak-tip',streak>0?`💡 Come back tomorrow to keep your ${streak}-day streak!`:'Visit today to start your streak!');
+  // Rewards
+  renderTruckRewards();
+}
+
+function renderTruckRewards(){
+  const el=document.getElementById('ct-rewards-list');
+  if(!el) return;
+  const t=S.activeTruck;
+  const pts=t?.points_balance||0;
+  const rewards=S.rewards.length?S.rewards:DEFAULT_REWARDS;
+  if(!rewards.length){el.innerHTML='<div style="text-align:center;padding:16px;color:var(--mu)">No rewards set up yet.</div>';return}
+  el.innerHTML=rewards.map((r,i)=>{
+    const cost=r.pts_required||r.pts||0;
+    const unlocked=pts>=cost;
+    return `
+    <div class="rrow ${unlocked?'unlocked':''}">
+      <div class="rico">${r.emoji}</div>
+      <div class="rinfo">
+        <div class="rname">${r.name}</div>
+        <div class="rpts">${unlocked?'✓ You can redeem this now!':Math.max(0,cost-pts)+' more pts needed (you have '+pts+')'}</div>
+      </div>
+      <button class="rdm-btn ${unlocked?'ready':'locked'}"
+        onclick="${unlocked?`openRedeem(${i})`:`showToast('Need ${Math.max(0,cost-pts)} more pts!')`}">
+        ${unlocked?'REDEEM':'🔒'}
+      </button>
+    </div>`;
+  }).join('');
+}
+
+async function checkInAtTruck(){
+  if(!S.customer){showToast('Please sign in first');return}
+  if(!S.activeTruck){showToast('No truck selected');return}
+  if(S.activeTruck.id==='demo'){
+    // Demo mode
+    S.visitPtsEarned=50;
+    S.pendingWin=null;
+    goC('s-c-spin');
+    return;
+  }
+  showLoad('Checking in...');
+  const r=await apiPost('/api/customer/visit',{customer_id:S.customer.id,vendor_id:S.activeTruck.id});
+  hideLoad();
+  if(!r.ok){
+    if(r.status===409){showToast('✅ Already checked in today! Come back tomorrow.');return}
+    showToast('❌ '+(r.data.error||'Check-in error'));return;
+  }
+  const d=r.data.data;
+  S.visitPtsEarned=d.pts_earned||50;
+  S.pendingWin=d.spin_result||null;
+  // Update truck in myTrucks
+  const idx=S.myTrucks.findIndex(t=>t.id===S.activeTruck.id);
+  if(idx>=0){S.myTrucks[idx].points_balance=d.new_balance;S.myTrucks[idx].current_streak=d.new_streak}
+  S.activeTruck.points_balance=d.new_balance;
+  S.activeTruck.current_streak=d.new_streak;
+  localStorage.setItem('tl_my_trucks',JSON.stringify(S.myTrucks));
+  localStorage.setItem('tl_active_truck',JSON.stringify(S.activeTruck));
+  if(d.tier_upgraded) showToast('🎉 You leveled up!');
+  goC('s-c-spin');
+}
+
+/* ════════════════════════════════════
+   CUSTOMER: REDEEM
+════════════════════════════════════ */
+function openRedeem(i){
+  const r=S.rewards[i];
+  const code='STK-'+Math.floor(1000+Math.random()*9000);
+  S.currentRdm={reward:r,code,idx:i};
+  setText('rdm-emo',r.emoji);
+  setText('rdm-name',r.name);
+  setText('rdm-truck',S.activeTruck?.truck_name||'this truck');
+  setText('rdm-pts-cost','–'+(r.pts_required||r.pts||0)+' pts');
+  setText('rdm-code',code);
+  setText('rdm-code-inline',code);
+  openSheet('sh-redeem');
+}
+
+/* ════════════════════════════════════
+   CUSTOMER: PROFILE / QR
+════════════════════════════════════ */
+function renderProfile(){
+  const c=S.customer;
+  if(!c){show('s-c-signup');return}
+
+  // If name is missing, try refreshing from API
+  if(!c.name && c.id){
+    fetch(API+'/api/customer/'+c.id+'/trucks',{headers:{'X-Customer-Token':c.token||''}})
+      .then(r=>r.json()).then(d=>{
+        // Trigger a fresh login to restore full profile
+      }).catch(()=>{});
+  }
+
+  // Profile picture — check customer object first, then dedicated key
+  const picUrl = c.profile_picture_url || localStorage.getItem('tl_cpic') || '';
+  const av = document.getElementById('c-prof-av');
+  if (av) {
+    av.innerHTML = '';
+    if (picUrl) {
+      const img = document.createElement('img');
+      img.src = picUrl;
+      img.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:50%';
+      img.onerror = () => {
+        av.innerHTML = '';
+        av.textContent = (c.name || '?')[0].toUpperCase();
+        av.style.color = 'var(--brand)';
+        localStorage.removeItem('tl_cpic');
+      };
+      av.appendChild(img);
+    } else {
+      av.textContent = (c.name || '?')[0].toUpperCase();
+      av.style.color = 'var(--brand)';
+    }
+  }
+  // Show name — if missing show nothing until they set it via Edit Profile
+  setText('c-prof-name', c.name || '');
+  // If no name, hide the name element and show a prompt instead
+  const nameEl = document.getElementById('c-prof-name');
+  if (nameEl) {
+    if (!c.name) {
+      nameEl.innerHTML = '<span style="font-size:14px;color:var(--mu);font-weight:600">Tap Edit Profile to add your name</span>';
+    }
+  }
+  setText('c-prof-phone',formatPhoneDisplay(c.phone||''));
+  setText('c-prof-email',c.email||'');
+  const totalPts=S.myTrucks.reduce((s,t)=>s+(t.points_total||t.points_balance||0),0);
+  const totalVisits=S.myTrucks.reduce((s,t)=>s+(t.visit_count||0),0);
+  const totalSaved=S.myTrucks.reduce((s,t)=>s+(t.total_saved||0),0);
+  setText('c-total-pts',totalPts);
+  setText('c-total-visits',totalVisits);
+  setText('c-trucks-count',S.myTrucks.length);
+  setText('c-total-saved','$'+totalSaved.toFixed(2));
+  if(c.referral_code){setText('c-ref-link','foodtruckrewards.app/join?ref='+c.referral_code)}
+  if(c.birthday){setVal('c-birthday',c.birthday)}
+}
+
+function renderMyQR(){
+  const c=S.customer;
+  if(!c) return;
+  const rid=c.rewards_id||'FTR-'+String(c.id||'000000').padStart(6,'0');
+  setText('c-qr-id',rid);
+}
+
+function shareMyQR(){
+  const c=S.customer;
+  if(!c) return;
+  const rid=c.rewards_id||'FTR-000000';
+  if(navigator.share){
+    navigator.share({title:'My Food Truck Rewards ID',text:'My rewards ID is '+rid+'. Scan it to give me points!',url:'https://foodtruckrewards.app'});
+  } else {
+    navigator.clipboard?.writeText(rid).then(()=>showToast('📋 Rewards ID copied: '+rid));
+  }
+}
+
+function shareReferral(){
+  const c=S.customer;
+  if(!c){showToast('Sign in first');return}
+  const url='https://foodtruckrewards.app/join?ref='+(c.referral_code||'');
+  if(navigator.share){
+    navigator.share({title:'Join Food Truck Rewards',text:'Join me on Food Truck Rewards — earn free food at local food trucks! We both get 100 bonus points when you join. 🚚🎰',url});
+  } else {
+    navigator.clipboard?.writeText(url).then(()=>showToast('📋 Referral link copied!'));
+  }
+}
+
+function saveBirthday(){
+  const v=document.getElementById('c-birthday')?.value;
+  if(!v){showToast('Pick your birthday first');return}
+  showToast('🎂 Birthday saved! You\'ll get a surprise on your day.');
+}
+
+/* ════════════════════════════════════
+   CUSTOMER: HISTORY
+════════════════════════════════════ */
+function renderHistory(){
+  const el=document.getElementById('c-hist-body');
+  if(!el) return;
+  if(!S.customer){el.innerHTML='<div style="text-align:center;padding:32px 0;color:var(--mu)">Sign in to see your history</div>';return}
+  if(!S.myTrucks.length){el.innerHTML='<div style="text-align:center;padding:32px 0;color:var(--mu)">No visits yet — scan a truck QR to start!</div>';return}
+  el.innerHTML='<div style="text-align:center;padding:20px;color:var(--mu)">Loading...</div>';
+  // In live app this would fetch from API
+  // For now show trucks summary
+  const rows=S.myTrucks.map(t=>`
+    <div class="hist-item">
+      <div class="hist-left">
+        <div class="hist-ico">${t.emoji||'🚚'}</div>
+        <div><div class="hist-desc">${t.truck_name}</div><div class="hist-date">${t.visit_count||0} total visits</div></div>
+      </div>
+      <div class="hist-pts" style="color:var(--gd)">${t.points_balance||0} pts</div>
+    </div>`).join('');
+  el.innerHTML=rows||'<div style="text-align:center;padding:32px 0;color:var(--mu)">No history yet</div>';
+}
+
+/* ════════════════════════════════════
+   SPIN WHEEL
+════════════════════════════════════ */
+function renderSpinPreview(){
+  const el=document.getElementById('spp-grid');
+  if(!el) return;
+  const prizes=S.prizes.length?S.prizes:DEFAULT_PRIZES;
+  const sorted=[...prizes].sort((a,b)=>(b.pts||0)-(a.pts||0));
+  const maxPts=Math.max(...prizes.map(p=>p.pts||0));
+  el.innerHTML=sorted.slice(0,6).map(p=>{
+    const pts=p.pts||0;
+    return `<div class="spp-item ${pts===maxPts?'jackpot':''}">
+      <div style="font-size:18px;margin-bottom:3px">${p.emoji}</div>
+      <div class="spp-pts">+${pts}</div>
+      <div class="spp-lbl">pts${pts===maxPts?' 🏆':''}</div>
+    </div>`;
+  }).join('');
+  setText('spin-truck-name',S.activeTruck?.truck_name||'this truck');
+  setText('spin-visit-pts',S.visitPtsEarned||50);
+}
+
+function drawWheel(angle){
+  const canvas=document.getElementById('spin-canvas');
+  if(!canvas) return;
+  const ctx=canvas.getContext('2d');
+  const cx=140,cy=140,r=132;
+  const segs=S.prizes.length?S.prizes:DEFAULT_PRIZES;
+  const n=segs.length, arc=(Math.PI*2)/n;
+  const cols=['#FF5A1F','#CC4510','#FF7040','#E04800','#FF6530','#F5B800','#CC9800','#FF8050'];
+  ctx.clearRect(0,0,280,280);
+  segs.forEach((seg,i)=>{
+    const a=angle+i*arc-Math.PI/2;
+    ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,a,a+arc);ctx.closePath();
+    ctx.fillStyle=cols[i%cols.length];ctx.fill();
+    ctx.strokeStyle='rgba(0,0,0,.2)';ctx.lineWidth=1.5;ctx.stroke();
+    ctx.save();ctx.translate(cx,cy);ctx.rotate(a+arc/2);
+    ctx.textAlign='right';
+    ctx.fillStyle='rgba(255,255,255,.95)';
+    ctx.font='bold 12px "DM Sans",sans-serif';
+    ctx.fillText('+'+(seg.pts||0)+' pts',r-10,3);
+    ctx.font='16px serif';ctx.fillText(seg.emoji,r-62,5);
+    ctx.restore();
+  });
+  ctx.beginPath();ctx.arc(cx,cy,18,0,Math.PI*2);
+  ctx.fillStyle='#FFF8F0';ctx.fill();
+  ctx.strokeStyle=S.activeTruck?.color_primary||'#FF5A1F';ctx.lineWidth=2.5;ctx.stroke();
+  ctx.font='13px serif';ctx.textAlign='center';ctx.fillText('🔥',cx,cy+5);
+}
+
+function doSpin(){
+  if(S.spinning) return;
+  S.spinning=true;
+  const btn=document.getElementById('spin-btn');
+  btn.textContent='SPINNING...';btn.disabled=true;
+  const segs=S.prizes.length?S.prizes:DEFAULT_PRIZES;
+  let winIdx;
+  if(S.pendingWin){
+    const pName=S.pendingWin.prize_name;
+    winIdx=segs.findIndex(s=>s.name===pName);
+    if(winIdx<0) winIdx=weightedRandom(segs);
+  } else {
+    winIdx=weightedRandom(segs);
+  }
+  const arc=(Math.PI*2)/segs.length;
+  const target=(Math.PI*2*6)+((Math.PI*2)-winIdx*arc)-arc/2;
+  const dur=4500,start=performance.now(),startAngle=S.spinAngle;
+  function tick(now){
+    const t=Math.min((now-start)/dur,1);
+    const ease=1-Math.pow(1-t,4);
+    S.spinAngle=startAngle+target*ease;
+    drawWheel(S.spinAngle);
+    if(t<1){requestAnimationFrame(tick)}
+    else{
+      S.spinning=false;btn.textContent='SPIN THE WHEEL';btn.disabled=false;
+      const won=segs[winIdx];
+      const wonPts=won.pts||0;
+      const visitPts=S.visitPtsEarned||50;
+      const newBal=(S.activeTruck?.points_balance||0);
+      S.pendingWin=null;
+      setText('win-pts-big','+'+wonPts);
+      setText('win-visit-pts','+'+visitPts);
+      setText('win-spin-pts','+'+wonPts);
+      setText('win-truck-name',S.activeTruck?.truck_name||'this truck');
+      setText('win-new-balance',newBal+' pts');
+      confetti();openSheet('sh-win');
+    }
+  }
+  requestAnimationFrame(tick);
+}
+
+function weightedRandom(segs){
+  const total=segs.reduce((s,p)=>s+(p.probability||1),0);
+  let r=Math.random()*total,cum=0;
+  for(let i=0;i<segs.length;i++){cum+=segs[i].probability||1;if(r<=cum)return i}
+  return segs.length-1;
+}
+
+/* ════════════════════════════════════
+   STREAK DAYS
+════════════════════════════════════ */
+function renderStreakDays(elId,streak){
+  const el=document.getElementById(elId);
+  if(!el) return;
+  const days=['M','T','W','T','F','S','S'];
+  const today=new Date().getDay();
+  const todayIdx=today===0?6:today-1;
+  el.innerHTML=days.map((d,i)=>{
+    let cls='future';
+    if(i<todayIdx&&i>=todayIdx-streak+1) cls='done';
+    if(i===todayIdx) cls=streak>0?'today':'future';
+    return `<div class="sd ${cls}">${d}</div>`;
+  }).join('');
+}
+
+/* ════════════════════════════════════
+   UTILS
+════════════════════════════════════ */
+function setText(id,val){const e=document.getElementById(id);if(e)e.textContent=val}
+function setVal(id,v){const e=document.getElementById(id);if(e)e.value=v}
+function setCheck(id,v){const e=document.getElementById(id);if(e)e.checked=!!v}
+function showErr(el,msg){el.textContent=msg;el.classList.add('show')}
+function hexRGB(hex){
+  if(!hex||hex.length<7) return '255,90,31';
+  return `${parseInt(hex.slice(1,3),16)},${parseInt(hex.slice(3,5),16)},${parseInt(hex.slice(5,7),16)}`;
+}
+function formatPhone(el){
+  let v=el.value.replace(/\D/g,'');
+  if(v.length>=6) v='('+v.slice(0,3)+') '+v.slice(3,6)+'-'+v.slice(6,10);
+  else if(v.length>=3) v='('+v.slice(0,3)+') '+v.slice(3);
+  el.value=v;
+}
+function formatPhoneDisplay(ph){
+  const d=ph.replace(/\D/g,'');
+  return d.length>=10?`(${d.slice(0,3)}) ${d.slice(3,6)}-${d.slice(6,10)}`:ph;
+}
+function confetti(){
+  const c=document.getElementById('cc');c.innerHTML='';
+  const p=S.activeTruck?.color_primary||'#FF5A1F';
+  const s=S.activeTruck?.color_secondary||'#F5B800';
+  const cols=[p,s,'#fff','#FFE566','#FF8A65'];
+  for(let i=0;i<70;i++){
+    const el=document.createElement('div');el.className='cp';
+    el.style.cssText=`left:${Math.random()*100}vw;background:${cols[Math.floor(Math.random()*cols.length)]};width:${6+Math.random()*8}px;height:${6+Math.random()*8}px;border-radius:${Math.random()>.5?'50%':'3px'};animation-duration:${1.6+Math.random()*2}s;animation-delay:${Math.random()*.6}s;`;
+    c.appendChild(el);
+  }
+  setTimeout(()=>c.innerHTML='',4000);
+}
+
+/* ════════════════════════════════════
+   INIT
+════════════════════════════════════ */
+(function init(){
+  S.prizes=[...DEFAULT_PRIZES];
+  S.rewards=[...DEFAULT_REWARDS];
+  // Restore vendor session
+  if(S.vendorToken&&S.vendor){
+    S.vScreen='s-v-home';show('s-v-home');renderNav(VNAV,'s-v-home');loadVendorHome();
+  } else {
+    show('s-v-login');renderNav([],'' );
+  }
+  // Determine customer start screen
+  if(S.customer){
+    S.cScreen='s-c-home';
+    if(S.activeTruck) S.cScreen='s-c-truck';
+  }
+  drawWheel(0);
+})();
+/* ── TRUCK SEARCH ── */
+async function searchTrucks(query) {
+  const el = document.getElementById('c-search-results');
+  query = (query || '').trim();
+  if (query.length < 2) { el.innerHTML = ''; return; }
+  el.innerHTML = '<div style="text-align:center;padding:12px;color:var(--mu);font-size:13px">Searching...</div>';
+  const res = await apiGet('/api/trucks/search?q=' + encodeURIComponent(query));
+  if (!res.ok || !res.data?.length) {
+    el.innerHTML = '<div style="text-align:center;padding:12px;color:var(--mu);font-size:13px;font-weight:600">No trucks found. Try a different name or enter the truck code directly.</div>';
+    return;
+  }
+  el.innerHTML = res.data.map(t => `
+    <div style="display:flex;align-items:center;gap:12px;background:white;border:2px solid var(--b2);border-radius:12px;padding:12px;margin-bottom:8px;cursor:pointer;box-shadow:var(--sh1)" onclick="joinTruckFromSearch('${t.slug}','${(t.truck_name||'').replace(/'/g,'')}')" >
+      <div style="font-size:26px;width:44px;height:44px;background:var(--s2);border-radius:10px;display:flex;align-items:center;justify-content:center">${t.emoji||'🚚'}</div>
+      <div style="flex:1">
+        <div style="font-weight:800;font-size:14px">${t.truck_name}</div>
+        <div style="font-size:12px;color:var(--mu);font-weight:600">Truck #${t.vendor_number||'–'}</div>
+      </div>
+      <div style="font-size:22px;color:var(--brand)">→</div>
+    </div>`).join('');
+}
+
+async function joinTruckFromSearch(slug, name) {
+  document.getElementById('c-truck-code-input').value = slug;
+  document.getElementById('c-search-results').innerHTML = '';
+  document.getElementById('c-truck-search').value = name;
+  await joinTruckByCode();
+}
+
+/* ── PROFILE PICTURE — DEVICE UPLOAD ── */
+
+function resizeImageToBase64(file, maxSize=400) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let w = img.width, h = img.height;
+        // Crop to square first (center crop)
+        const minDim = Math.min(w, h);
+        const sx = (w - minDim) / 2, sy = (h - minDim) / 2;
+        const size = Math.min(minDim, maxSize);
+        canvas.width = size; canvas.height = size;
+        canvas.getContext('2d').drawImage(img, sx, sy, minDim, minDim, 0, 0, size, size);
+        resolve(canvas.toDataURL('image/jpeg', 0.75));
+      };
+      img.onerror = reject;
+      img.src = e.target.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+async function handleVendorPicFile(input) {
+  const file = input.files?.[0];
+  if (!file) return;
+  const upEl = document.getElementById('v-pic-uploading');
+  const prev = document.getElementById('v-prof-pic-preview');
+  if (upEl) upEl.style.display = 'block';
+  try {
+    const b64 = await resizeImageToBase64(file);
+    // Show preview immediately
+    if (prev) prev.innerHTML = `<img src="${b64}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+    // Upload to API
+    const res = await fetch(API + '/api/vendor/upload-picture', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + (S.vendor?.token || localStorage.getItem('tl_vtoken') || '') },
+      body: JSON.stringify({ image_b64: b64 })
+    });
+    const data = await res.json();
+    if (res.ok && data.data?.url) {
+      S.vendor = { ...S.vendor, profile_picture_url: data.data.url };
+      localStorage.setItem('tl_vendor', JSON.stringify(S.vendor));
+      showToast('✅ Profile picture saved!');
+    } else {
+      // Still save the base64 directly as the picture URL (works fine for display)
+      await apiPatch('/api/vendor/brand', { profile_picture_url: b64 });
+      showToast('✅ Profile picture saved!');
+    }
+  } catch(e) {
+    showToast('❌ Upload failed — try a smaller image');
+  } finally {
+    if (upEl) upEl.style.display = 'none';
+    input.value = '';
+  }
+}
+
+async function handleCustomerPicFile(input) {
+  const file = input.files?.[0];
+  if (!file) return;
+  const upEl = document.getElementById('edit-pic-uploading');
+  const prev = document.getElementById('edit-prof-preview');
+  if (upEl) upEl.style.display = 'block';
+  const token = S.customer?.token || localStorage.getItem('tl_ctoken') || '';
+  try {
+    const b64 = await resizeImageToBase64(file);
+
+    // Show preview in edit sheet immediately
+    if (prev) {
+      prev.innerHTML = '';
+      const img = document.createElement('img');
+      img.src = b64;
+      img.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:50%';
+      prev.appendChild(img);
+    }
+
+    // Also update the main profile avatar immediately without waiting for API
+    const av = document.getElementById('c-prof-av');
+    if (av) {
+      av.innerHTML = '';
+      const img2 = document.createElement('img');
+      img2.src = b64;
+      img2.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:50%';
+      av.appendChild(img2);
+    }
+
+    // Save to state + dedicated storage key right away (before API call)
+    S.customer = { ...S.customer, profile_picture_url: b64 };
+    localStorage.setItem('tl_customer', JSON.stringify(S.customer));
+    localStorage.setItem('tl_cpic', b64);
+
+    // Try to upload to server for persistence
+    try {
+      const res = await fetch(API + '/api/customer/upload-picture', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Customer-Token': token },
+        body: JSON.stringify({ image_b64: b64 })
+      });
+      const data = await res.json();
+      if (res.ok && data.data?.url) {
+        S.customer = { ...S.customer, profile_picture_url: data.data.url };
+        localStorage.setItem('tl_customer', JSON.stringify(S.customer));
+        localStorage.setItem('tl_cpic', data.data.url);
+      }
+    } catch(e) {
+      // API upload failed but local preview still works
+    }
+
+    showToast('✅ Photo updated!');
+  } catch(e) {
+    showToast('❌ Upload failed — try a smaller photo');
+  } finally {
+    if (upEl) upEl.style.display = 'none';
+    input.value = '';
+  }
+}
+
+/* ── CUSTOMER EDIT PROFILE ── */
+function openEditProfile() {
+  const c = S.customer;
+  if (!c) return;
+  // Pre-fill all fields from stored customer data
+  const nameEl  = document.getElementById('edit-name');
+  const phoneEl = document.getElementById('edit-phone');
+  const emailEl = document.getElementById('edit-email');
+  if (nameEl)  nameEl.value  = c.name  || '';
+  if (phoneEl) phoneEl.value = formatPhoneDisplay(c.phone || '');
+  if (emailEl) emailEl.value = c.email || '';
+  // Pre-fill profile picture preview
+  const prev = document.getElementById('edit-prof-preview');
+  if (prev) {
+    if (c.profile_picture_url) {
+      prev.innerHTML = `<img src="${c.profile_picture_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+    } else {
+      prev.innerHTML = '';
+      prev.textContent = (c.name || '?')[0].toUpperCase();
+    }
+  }
+  openSheet('sh-edit-profile');
+}
+
+async function saveCustomerProfile() {
+  const name  = document.getElementById('edit-name')?.value.trim();
+  const phone = document.getElementById('edit-phone')?.value.replace(/\D/g,'');
+  const email = document.getElementById('edit-email')?.value.trim();
+  if (!name) { showToast('Name is required'); return; }
+
+  // Get token from customer object or fallback key
+  const token = S.customer?.token || localStorage.getItem('tl_ctoken') || '';
+  if (!token) { showToast('❌ Please sign out and sign back in'); return; }
+
+  showLoad('Saving...');
+  const body = { name };
+  if (phone && phone.length >= 10) body.phone = phone;
+  if (email && email.includes('@')) body.email = email;
+
+  const res = await fetch(API + '/api/customer/profile', {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', 'X-Customer-Token': token },
+    body: JSON.stringify(body)
+  });
+  const data = await res.json();
+  hideLoad();
+  if (res.ok) {
+    S.customer = { ...S.customer, ...data.data, token };
+    localStorage.setItem('tl_customer', JSON.stringify(S.customer));
+    closeSheet('sh-edit-profile');
+    renderProfile();
+    showToast('✅ Profile updated!');
+  } else {
+    showToast('❌ ' + (data.error || 'Error saving'));
+  }
+}
+
+/* ── CANCEL CUSTOMER ACCOUNT ── */
+function confirmCancelCustomer() {
+  if (confirm('Are you sure you want to permanently delete your account? This cannot be undone.')) {
+    deleteCustomerAccount();
+  }
+}
+
+async function deleteCustomerAccount() {
+  const token = S.customer?.token || localStorage.getItem('tl_ctoken') || '';
+  showLoad('Deleting account...');
+  const res = await fetch(API + '/api/customer/delete-account', {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json', 'X-Customer-Token': token },
+    body: JSON.stringify({ confirm: 'DELETE' })
+  });
+  hideLoad();
+  if (res.ok) {
+    localStorage.removeItem('tl_ctoken');
+    customerLogout();
+    showToast('Account deleted. Sorry to see you go!');
+  } else {
+    showToast('❌ Error deleting account — please contact support');
+  }
+}
+
+/* ── CANCEL VENDOR SUBSCRIPTION ── */
+async function cancelSubscription() {
+  if (!confirm('Cancel your subscription? You\'ll keep access until the end of your billing period.')) return;
+  showLoad('Cancelling...');
+  const res = await apiPost('/api/vendor/cancel-subscription', {});
+  hideLoad();
+  if (res.ok) {
+    showToast('Subscription cancelled. Access continues until billing period ends.');
+    loadVendorHome();
+  } else {
+    showToast('❌ ' + (res.data?.error || 'Error cancelling'));
+  }
+}
+
+/* ── VENDOR NUMBER ── */
+function copyVendorNumber() {
+  const num = S.vendor?.vendor_number || '';
+  if (!num) { showToast('No vendor number yet'); return; }
+  navigator.clipboard?.writeText('#' + num)
+    .then(() => showToast('📋 Vendor number #' + num + ' copied!'))
+    .catch(() => showToast('#' + num));
+}
+
+/* ════════════════════════════════════
+   APP BOOT — runs once on page load
+════════════════════════════════════ */
+setMode(S.mode);
+
+</script>
+<!-- Stripe.js loaded last so it never blocks app rendering -->
+<script src="https://js.stripe.com/v3/" async></script>
+</body>
+</html>
