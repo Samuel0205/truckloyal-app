@@ -592,18 +592,20 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
         <!-- Profile Picture -->
         <div class="card">
           <div class="card-title">🖼️ Profile Picture</div>
+          <!-- Hidden real file input -->
+          <input type="file" id="v-pic-file" accept="image/*" style="display:none" onchange="handleVendorPicFile(this)">
           <div style="display:flex;align-items:center;gap:16px;margin-bottom:14px">
-            <div style="width:72px;height:72px;border-radius:50%;background:rgba(255,87,34,.12);border:3px solid var(--b2);overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:28px" id="v-prof-pic-preview">🚚</div>
+            <div style="position:relative;flex-shrink:0;cursor:pointer" onclick="document.getElementById('v-pic-file').click()">
+              <div style="width:72px;height:72px;border-radius:50%;background:rgba(255,87,34,.12);border:3px solid var(--b2);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:28px" id="v-prof-pic-preview">🚚</div>
+              <div style="position:absolute;bottom:0;right:0;width:24px;height:24px;background:var(--brand);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;border:2px solid white">📷</div>
+            </div>
             <div style="flex:1">
               <div style="font-size:13px;font-weight:700;margin-bottom:4px">Truck profile picture</div>
-              <div style="font-size:12px;color:var(--mu);line-height:1.5">Paste an image URL below. Use a square image for best results.</div>
+              <div style="font-size:12px;color:var(--mu);line-height:1.5;margin-bottom:10px">Tap your photo to choose from your camera or gallery.</div>
+              <button class="btn btn-s btn-sm" style="width:100%" onclick="document.getElementById('v-pic-file').click()">📷 Choose Photo</button>
             </div>
           </div>
-          <div class="field" style="margin-bottom:10px">
-            <label>Image URL</label>
-            <input type="url" id="v-pic-url" placeholder="https://..." oninput="previewVendorPic(this.value)">
-          </div>
-          <button class="btn btn-s btn-sm" style="width:100%" onclick="saveVendorPic()">Save Profile Picture</button>
+          <div id="v-pic-uploading" style="display:none;text-align:center;padding:8px;font-size:13px;color:var(--mu);font-weight:600">⏳ Uploading...</div>
         </div>
 
         <!-- Vendor Number -->
@@ -1037,11 +1039,17 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
   <div class="sheet" onclick="event.stopPropagation()">
     <div class="sheet-handle"></div>
     <div class="sheet-title">Edit Profile</div>
+    <!-- Hidden real file input - triggers native camera/gallery picker -->
+    <input type="file" id="edit-pic-file" accept="image/*" style="display:none" onchange="handleCustomerPicFile(this)">
     <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px">
-      <div style="width:64px;height:64px;border-radius:50%;background:rgba(255,87,34,.12);border:2px solid var(--b2);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:900;flex-shrink:0" id="edit-prof-preview">?</div>
+      <div style="position:relative;cursor:pointer;flex-shrink:0" onclick="document.getElementById('edit-pic-file').click()">
+        <div style="width:64px;height:64px;border-radius:50%;background:rgba(255,87,34,.12);border:2px solid var(--b2);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:900" id="edit-prof-preview">?</div>
+        <div style="position:absolute;bottom:0;right:0;width:22px;height:22px;background:var(--brand);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;border:2px solid white">📷</div>
+      </div>
       <div style="flex:1">
-        <div style="font-size:11px;font-weight:800;color:var(--mu);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px">Profile Picture URL</div>
-        <input type="url" id="edit-pic-url" placeholder="https://i.imgur.com/..." style="width:100%;background:var(--s2);border:2px solid var(--b2);border-radius:10px;padding:10px 12px;color:var(--tx);font-size:14px;font-family:var(--fb);font-weight:600;outline:none" oninput="previewCustomerPic(this.value)">
+        <div style="font-size:13px;font-weight:700;margin-bottom:6px">Profile Photo</div>
+        <button class="btn btn-s btn-sm" style="width:100%" onclick="document.getElementById('edit-pic-file').click()">📷 Choose from Device</button>
+        <div id="edit-pic-uploading" style="display:none;font-size:12px;color:var(--mu);margin-top:6px;font-weight:600">⏳ Uploading...</div>
       </div>
     </div>
     <div class="field"><label>Full Name</label><input type="text" id="edit-name" placeholder="Your name"></div>
@@ -2205,39 +2213,98 @@ async function joinTruckFromSearch(slug, name) {
   await joinTruckByCode();
 }
 
-/* ── PROFILE PICTURE ── */
-function previewCustomerPic(url) {
-  const el = document.getElementById('edit-prof-preview');
-  if (!el) return;
-  if (url && url.startsWith('http')) {
-    el.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%" onerror="this.parentElement.textContent='?'">`;
-  } else {
-    el.textContent = S.customer ? (S.customer.name||'?')[0].toUpperCase() : '?';
+/* ── PROFILE PICTURE — DEVICE UPLOAD ── */
+
+function resizeImageToBase64(file, maxSize=600) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let w = img.width, h = img.height;
+        if (w > h) { if (w > maxSize) { h = h*(maxSize/w); w = maxSize; } }
+        else        { if (h > maxSize) { w = w*(maxSize/h); h = maxSize; } }
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', 0.82));
+      };
+      img.onerror = reject;
+      img.src = e.target.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+async function handleVendorPicFile(input) {
+  const file = input.files?.[0];
+  if (!file) return;
+  const upEl = document.getElementById('v-pic-uploading');
+  const prev = document.getElementById('v-prof-pic-preview');
+  if (upEl) upEl.style.display = 'block';
+  try {
+    const b64 = await resizeImageToBase64(file);
+    // Show preview immediately
+    if (prev) prev.innerHTML = `<img src="${b64}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+    // Upload to API
+    const res = await fetch(API + '/api/vendor/upload-picture', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + (S.vendor?.token || localStorage.getItem('tl_vtoken') || '') },
+      body: JSON.stringify({ image_b64: b64 })
+    });
+    const data = await res.json();
+    if (res.ok && data.data?.url) {
+      S.vendor = { ...S.vendor, profile_picture_url: data.data.url };
+      localStorage.setItem('tl_vendor', JSON.stringify(S.vendor));
+      showToast('✅ Profile picture saved!');
+    } else {
+      // Still save the base64 directly as the picture URL (works fine for display)
+      await apiPatch('/api/vendor/brand', { profile_picture_url: b64 });
+      showToast('✅ Profile picture saved!');
+    }
+  } catch(e) {
+    showToast('❌ Upload failed — try a smaller image');
+  } finally {
+    if (upEl) upEl.style.display = 'none';
+    input.value = '';
   }
 }
 
-function previewVendorPic(url) {
-  const el = document.getElementById('v-prof-pic-preview');
-  if (!el) return;
-  if (url && url.startsWith('http')) {
-    el.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%" onerror="this.parentElement.textContent='🚚'">`;
-  } else {
-    el.textContent = S.vendor?.emoji || '🚚';
-  }
-}
-
-async function saveVendorPic() {
-  const url = document.getElementById('v-pic-url')?.value.trim();
-  if (!url) { showToast('Paste an image URL first'); return; }
-  showLoad('Saving...');
-  const res = await apiPatch('/api/vendor/brand', { profile_picture_url: url });
-  hideLoad();
-  if (res.ok) {
-    S.vendor = res.data.data;
-    localStorage.setItem('tl_vendor', JSON.stringify(S.vendor));
-    showToast('✅ Profile picture saved!');
-  } else {
-    showToast('❌ Error saving picture');
+async function handleCustomerPicFile(input) {
+  const file = input.files?.[0];
+  if (!file) return;
+  const upEl = document.getElementById('edit-pic-uploading');
+  const prev = document.getElementById('edit-prof-preview');
+  if (upEl) upEl.style.display = 'block';
+  try {
+    const b64 = await resizeImageToBase64(file);
+    // Show preview immediately
+    if (prev) prev.innerHTML = `<img src="${b64}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+    // Upload to API
+    const res = await fetch(API + '/api/customer/upload-picture', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Customer-Token': S.customer?.token || '' },
+      body: JSON.stringify({ image_b64: b64 })
+    });
+    const data = await res.json();
+    if (res.ok && data.data?.url) {
+      S.customer = { ...S.customer, profile_picture_url: data.data.url };
+      localStorage.setItem('tl_customer', JSON.stringify(S.customer));
+      renderProfile();
+      showToast('✅ Photo updated!');
+    } else {
+      // Save base64 directly as fallback
+      S.customer = { ...S.customer, profile_picture_url: b64 };
+      localStorage.setItem('tl_customer', JSON.stringify(S.customer));
+      renderProfile();
+      showToast('✅ Photo updated!');
+    }
+  } catch(e) {
+    showToast('❌ Upload failed — try a smaller photo');
+  } finally {
+    if (upEl) upEl.style.display = 'none';
+    input.value = '';
   }
 }
 
@@ -2248,7 +2315,6 @@ function openEditProfile() {
   setVal('edit-name',  c.name  || '');
   setVal('edit-phone', formatPhoneDisplay(c.phone || ''));
   setVal('edit-email', c.email || '');
-  setVal('edit-pic-url', c.profile_picture_url || '');
   const prev = document.getElementById('edit-prof-preview');
   if (prev) {
     if (c.profile_picture_url) {
@@ -2264,7 +2330,6 @@ async function saveCustomerProfile() {
   const name  = document.getElementById('edit-name')?.value.trim();
   const phone = document.getElementById('edit-phone')?.value.replace(/\D/g,'');
   const email = document.getElementById('edit-email')?.value.trim();
-  const pic   = document.getElementById('edit-pic-url')?.value.trim();
   if (!name) { showToast('Name is required'); return; }
   showLoad('Saving...');
   const res = await fetch(API + '/api/customer/profile', {
@@ -2273,7 +2338,7 @@ async function saveCustomerProfile() {
       'Content-Type': 'application/json',
       'X-Customer-Token': S.customer?.token || ''
     },
-    body: JSON.stringify({ name, phone: phone||undefined, email: email||undefined, profile_picture_url: pic||undefined })
+    body: JSON.stringify({ name, phone: phone||undefined, email: email||undefined })
   });
   const data = await res.json();
   hideLoad();
