@@ -588,35 +588,80 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
     <div class="screen" id="s-v-settings">
       <div class="sh"><h1>⚙️ Settings</h1></div>
       <div class="bp">
+
+        <!-- Profile Picture -->
         <div class="card">
-          <div class="card-title">📱 Your QR Code & Link</div>
+          <div class="card-title">🖼️ Profile Picture</div>
+          <div style="display:flex;align-items:center;gap:16px;margin-bottom:14px">
+            <div style="width:72px;height:72px;border-radius:50%;background:rgba(255,87,34,.12);border:3px solid var(--b2);overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:28px" id="v-prof-pic-preview">🚚</div>
+            <div style="flex:1">
+              <div style="font-size:13px;font-weight:700;margin-bottom:4px">Truck profile picture</div>
+              <div style="font-size:12px;color:var(--mu);line-height:1.5">Paste an image URL below. Use a square image for best results.</div>
+            </div>
+          </div>
+          <div class="field" style="margin-bottom:10px">
+            <label>Image URL</label>
+            <input type="url" id="v-pic-url" placeholder="https://..." oninput="previewVendorPic(this.value)">
+          </div>
+          <button class="btn btn-s btn-sm" style="width:100%" onclick="saveVendorPic()">Save Profile Picture</button>
+        </div>
+
+        <!-- Vendor Number -->
+        <div class="card">
+          <div class="card-title">🔢 Your Vendor Number</div>
+          <div style="font-size:12px;color:var(--mu);margin-bottom:12px;line-height:1.5">Customers can find your truck by entering this number in the app. Share it at the window or post it on your truck.</div>
+          <div style="background:var(--s2);border:2px solid var(--b2);border-radius:12px;padding:16px;text-align:center;margin-bottom:12px">
+            <div style="font-size:36px;font-weight:900;letter-spacing:4px;color:var(--brand)" id="v-vendor-number">#––––</div>
+            <div style="font-size:11px;color:var(--mu);margin-top:4px;font-weight:700">Your unique truck number</div>
+          </div>
+          <button class="btn btn-s btn-sm" style="width:100%" onclick="copyVendorNumber()">📋 Copy Number</button>
+        </div>
+
+        <!-- QR & Link -->
+        <div class="card">
+          <div class="card-title">📱 QR Code & Link</div>
           <div style="text-align:center;margin-bottom:12px">
-            <div style="background:white;border-radius:16px;padding:14px;display:inline-block">
+            <div style="background:white;border-radius:16px;padding:14px;display:inline-block;border:2px solid var(--b1)">
               <svg width="130" height="130" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg"><rect width="160" height="160" fill="white"/><rect x="10" y="10" width="50" height="50" rx="4" fill="#111"/><rect x="16" y="16" width="38" height="38" rx="2" fill="white"/><rect x="22" y="22" width="26" height="26" rx="1" fill="#111"/><rect x="100" y="10" width="50" height="50" rx="4" fill="#111"/><rect x="106" y="16" width="38" height="38" rx="2" fill="white"/><rect x="112" y="22" width="26" height="26" rx="1" fill="#111"/><rect x="10" y="100" width="50" height="50" rx="4" fill="#111"/><rect x="16" y="106" width="38" height="38" rx="2" fill="white"/><rect x="22" y="112" width="26" height="26" rx="1" fill="#111"/><rect x="70" y="10" width="8" height="8" fill="#111"/><rect x="82" y="22" width="8" height="8" fill="#111"/><rect x="70" y="34" width="8" height="8" fill="#111"/><rect x="82" y="70" width="8" height="8" fill="#111"/><rect x="100" y="70" width="8" height="8" fill="#111"/><rect x="70" y="100" width="8" height="8" fill="#111"/><rect x="136" y="136" width="8" height="8" fill="#111"/></svg>
             </div>
           </div>
           <div style="background:var(--s2);border:1px solid var(--b2);border-radius:10px;padding:10px 14px;font-size:12px;color:var(--mu);margin-bottom:12px;word-break:break-all;text-align:center" id="v-qr-url">foodtruckrewards.app/yourtruck</div>
           <div class="callout co-bl" style="margin-bottom:12px">
             <div class="co-icon">💡</div>
-            <div><div class="co-title">3 ways to share</div><div class="co-desc">1. Print QR on your menu board or truck<br>2. Text the link to customers at the window<br>3. Post the link in your social bio</div></div>
+            <div><div class="co-title">3 ways customers find you</div><div class="co-desc">1. Scan this QR code<br>2. Enter your truck number (#<span id="v-num-inline">––––</span>)<br>3. Search by your truck name in the app</div></div>
           </div>
           <div class="btn-row">
             <button class="btn btn-s btn-sm" style="flex:1" onclick="copyVendorLink()">📋 Copy Link</button>
             <button class="btn btn-s btn-sm" style="flex:1" onclick="shareVendorLink()">📤 Share</button>
           </div>
         </div>
+
+        <!-- Notifications — removed "New Member Welcome" -->
         <div class="card">
-          <div class="card-title">🔔 SMS Notifications</div>
-          <div class="tr"><div class="tr-info"><div class="tt">Reward Unlocked</div><div class="td">Alert customer when they have enough pts to redeem</div></div><label class="tog"><input type="checkbox" checked><div class="tog-track"></div></label></div>
+          <div class="card-title">🔔 Notifications</div>
+          <div class="callout co-bl" style="margin-bottom:12px">
+            <div class="co-icon">💡</div>
+            <div><div class="co-desc">Notifications are sent via SMS when Twilio is connected. Coming soon — these settings will be live when SMS is enabled.</div></div>
+          </div>
+          <div class="tr"><div class="tr-info"><div class="tt">Reward Unlocked</div><div class="td">Alert when customer has enough points to redeem</div></div><label class="tog"><input type="checkbox" checked><div class="tog-track"></div></label></div>
           <div class="tr"><div class="tr-info"><div class="tt">Tier Upgrade</div><div class="td">Celebrate when a customer levels up</div></div><label class="tog"><input type="checkbox" checked><div class="tog-track"></div></label></div>
           <div class="tr"><div class="tr-info"><div class="tt">Streak Warning</div><div class="td">Remind customer before their streak expires</div></div><label class="tog"><input type="checkbox" checked><div class="tog-track"></div></label></div>
-          <div class="tr"><div class="tr-info"><div class="tt">New Member Welcome</div><div class="td">Auto-message when someone joins your program</div></div><label class="tog"><input type="checkbox" checked><div class="tog-track"></div></label></div>
         </div>
+
+        <!-- Subscription + cancel -->
         <div class="card">
           <div class="card-title">💳 Subscription</div>
-          <div class="tr"><div class="tr-info"><div class="tt">Plan</div><div class="td">Starter — up to 500 members</div></div><div class="tag tag-gn">$29/mo</div></div>
+          <div class="tr"><div class="tr-info"><div class="tt">Plan</div><div class="td">Food Truck Rewards — up to 500 members</div></div><div class="tag tag-gn">$9.99/mo</div></div>
+          <div class="tr"><div class="tr-info"><div class="tt">Status</div></div><div class="tag tag-bl" id="v-plan-status">Trial</div></div>
           <div class="tr"><div class="tr-info"><div class="tt">Trial ends</div></div><div style="font-size:13px;color:var(--mu)" id="v-trial-end">–</div></div>
+          <div class="callout co-or" style="margin-top:12px;margin-bottom:0">
+            <div class="co-icon">⚠️</div>
+            <div><div class="co-title">Cancel subscription</div><div class="co-desc">You'll keep access until the end of your current billing period. Your customer data is preserved for 30 days if you reactivate.</div>
+            <button class="btn btn-sm" style="margin-top:10px;background:#FEE2E2;color:#B91C1C;border:none;font-weight:700" onclick="cancelSubscription()">Cancel My Subscription</button>
+            </div>
+          </div>
         </div>
+
         <button class="btn btn-g" style="margin-top:4px;color:var(--rd);border-color:rgba(255,79,79,.25)" onclick="vendorLogout()">Sign Out</button>
       </div>
     </div>
@@ -690,27 +735,43 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
 
     <!-- CUSTOMER: SCAN QR / JOIN TRUCK -->
     <div class="screen" id="s-c-scan">
-      <div class="sh sh-row"><div class="back-btn" onclick="goC('s-c-home')">←</div><div><h1>📷 Join a Truck</h1><p>Scan or enter a truck's code</p></div></div>
+      <div class="sh sh-row"><div class="back-btn" onclick="goC('s-c-home')">←</div><div><h1>🚚 Find a Truck</h1><p>Search, scan, or enter a code</p></div></div>
       <div class="bp">
-        <div class="callout co-or">
-          <div class="co-icon">📷</div>
-          <div><div class="co-title">How to scan</div><div class="co-desc">Ask the food truck for their QR code — it's on their truck, menu board, or they can show it from their phone. Point your camera at it.</div></div>
-        </div>
-        <div style="background:var(--s2);border:1.5px dashed var(--b2);border-radius:14px;padding:40px 20px;text-align:center;margin-bottom:14px;cursor:pointer" onclick="startCustomerQRScan()">
-          <div style="font-size:40px;margin-bottom:8px">📷</div>
-          <div style="font-size:14px;font-weight:600;margin-bottom:4px">Tap to scan QR code</div>
-          <div style="font-size:12px;color:var(--mu)">Opens your camera</div>
-        </div>
-        <div style="text-align:center;font-size:13px;color:var(--mu);margin:14px 0">— or enter the truck's code manually —</div>
-        <div class="field">
-          <label>Truck Code</label>
-          <input type="text" id="c-truck-code-input" placeholder="e.g. flavoronwheels" autocomplete="off" style="text-transform:lowercase">
-        </div>
-        <button class="btn btn-p" onclick="joinTruckByCode()">Join This Truck →</button>
 
-        <!-- Demo mode for testing -->
-        <div style="margin-top:20px;text-align:center">
-          <div style="font-size:12px;color:var(--fa);margin-bottom:8px">— demo —</div>
+        <!-- Search by name -->
+        <div class="card">
+          <div class="card-title">🔍 Search by Truck Name</div>
+          <div style="display:flex;gap:8px">
+            <input type="text" id="c-truck-search" placeholder="e.g. Flavor on Wheels" autocomplete="off"
+              style="flex:1;background:var(--s2);border:2px solid var(--b2);border-radius:12px;padding:12px 14px;color:var(--tx);font-size:15px;font-family:var(--fb);font-weight:600;outline:none"
+              oninput="searchTrucks(this.value)" onkeydown="if(event.key==='Enter')searchTrucks(this.value)">
+            <button class="btn btn-p btn-sm" onclick="searchTrucks(document.getElementById('c-truck-search').value)">Search</button>
+          </div>
+          <div id="c-search-results" style="margin-top:10px"></div>
+        </div>
+
+        <!-- Scan QR -->
+        <div class="card">
+          <div class="card-title">📷 Scan QR Code</div>
+          <div style="background:var(--s2);border:1.5px dashed var(--b2);border-radius:12px;padding:28px 20px;text-align:center;cursor:pointer" onclick="startCustomerQRScan()">
+            <div style="font-size:36px;margin-bottom:6px">📷</div>
+            <div style="font-size:14px;font-weight:700;margin-bottom:3px">Tap to open camera</div>
+            <div style="font-size:12px;color:var(--mu)">Point at the truck's QR code</div>
+          </div>
+        </div>
+
+        <!-- Enter code manually -->
+        <div class="card">
+          <div class="card-title">🔢 Enter Truck Number or Code</div>
+          <div style="font-size:12px;color:var(--mu);margin-bottom:10px;line-height:1.5">Enter the truck's 4-digit number (e.g. 1042) or their short code (e.g. flavoronwheels)</div>
+          <div class="field" style="margin-bottom:10px">
+            <input type="text" id="c-truck-code-input" placeholder="1042 or flavoronwheels" autocomplete="off" style="text-transform:lowercase" onkeydown="if(event.key==='Enter')joinTruckByCode()">
+          </div>
+          <button class="btn btn-p" onclick="joinTruckByCode()">Join This Truck →</button>
+        </div>
+
+        <!-- Demo mode -->
+        <div style="text-align:center;margin-top:4px">
           <button class="btn btn-g btn-sm" onclick="joinDemoTruck()">Join Demo Truck (Testing)</button>
         </div>
       </div>
@@ -824,11 +885,17 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
     <div class="screen" id="s-c-profile">
       <div class="sh"><h1>👤 Profile</h1></div>
       <div class="bp">
-        <div style="text-align:center;padding:14px 0 22px">
-          <div style="width:76px;height:76px;border-radius:50%;background:rgba(255,90,31,.15);color:var(--brand);display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-size:30px;font-weight:900;margin:0 auto 10px" id="c-prof-av">?</div>
+
+        <!-- Profile picture + name -->
+        <div style="text-align:center;padding:14px 0 18px">
+          <div style="position:relative;width:84px;margin:0 auto 10px">
+            <div style="width:84px;height:84px;border-radius:50%;background:rgba(255,87,34,.12);border:3px solid var(--b2);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:34px;font-weight:900" id="c-prof-av">?</div>
+            <div style="position:absolute;bottom:0;right:0;width:26px;height:26px;background:var(--brand);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;cursor:pointer;border:2px solid white" onclick="openSheet('sh-edit-profile')">✏️</div>
+          </div>
           <div style="font-family:var(--fd);font-size:22px;font-weight:900;margin-bottom:2px" id="c-prof-name">Member</div>
-          <div style="font-size:13px;color:var(--mu);margin-bottom:4px" id="c-prof-phone">–</div>
+          <div style="font-size:13px;color:var(--mu);margin-bottom:2px" id="c-prof-phone">–</div>
           <div style="font-size:13px;color:var(--mu)" id="c-prof-email">–</div>
+          <button class="btn btn-s btn-sm" style="margin-top:10px" onclick="openSheet('sh-edit-profile')">✏️ Edit Profile</button>
         </div>
 
         <!-- My QR code shortcut -->
@@ -854,6 +921,13 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
           <div style="font-size:13px;color:var(--mu);margin-bottom:12px;line-height:1.6">Share your referral link. When a friend joins and makes their first purchase at any truck, <strong style="color:var(--gd)">you both earn 100 bonus points</strong> at that truck.</div>
           <div style="background:var(--s2);border:1px solid var(--b2);border-radius:10px;padding:10px 14px;font-size:13px;color:var(--mu);margin-bottom:12px;word-break:break-all" id="c-ref-link">Create an account to get your link</div>
           <button class="btn btn-p btn-sm" style="width:100%" onclick="shareReferral()">📤 Share Referral Link</button>
+        </div>
+
+        <!-- Cancel membership -->
+        <div class="card">
+          <div class="card-title">⚠️ Cancel Membership</div>
+          <div style="font-size:13px;color:var(--mu);margin-bottom:12px;line-height:1.6">Cancelling removes your account and all points balances permanently. Your visit history cannot be recovered. This cannot be undone.</div>
+          <button class="btn btn-sm" style="width:100%;background:#FEE2E2;color:#B91C1C;border:none;font-weight:700" onclick="confirmCancelCustomer()">Delete My Account</button>
         </div>
 
         <button class="btn btn-g" style="margin-top:4px" onclick="customerLogout()">Sign Out</button>
@@ -957,6 +1031,26 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
 
 <div class="cc-wrap" id="cc"></div>
 <div class="load-over" id="load-over"><div class="lspin"></div><div class="ltxt" id="load-txt">Loading...</div></div>
+
+<!-- CUSTOMER EDIT PROFILE SHEET -->
+<div class="overlay" id="sh-edit-profile" onclick="closeSheet('sh-edit-profile')">
+  <div class="sheet" onclick="event.stopPropagation()">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">Edit Profile</div>
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px">
+      <div style="width:64px;height:64px;border-radius:50%;background:rgba(255,87,34,.12);border:2px solid var(--b2);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:900;flex-shrink:0" id="edit-prof-preview">?</div>
+      <div style="flex:1">
+        <div style="font-size:11px;font-weight:800;color:var(--mu);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px">Profile Picture URL</div>
+        <input type="url" id="edit-pic-url" placeholder="https://i.imgur.com/..." style="width:100%;background:var(--s2);border:2px solid var(--b2);border-radius:10px;padding:10px 12px;color:var(--tx);font-size:14px;font-family:var(--fb);font-weight:600;outline:none" oninput="previewCustomerPic(this.value)">
+      </div>
+    </div>
+    <div class="field"><label>Full Name</label><input type="text" id="edit-name" placeholder="Your name"></div>
+    <div class="field"><label>Phone Number</label><input type="tel" id="edit-phone" placeholder="(555) 000-0000" oninput="formatPhone(this)" maxlength="14"></div>
+    <div class="field"><label>Email Address</label><input type="email" id="edit-email" placeholder="you@email.com"></div>
+    <button class="btn btn-p" onclick="saveCustomerProfile()">Save Changes</button>
+    <button class="btn btn-g" style="margin-top:10px" onclick="closeSheet('sh-edit-profile')">Cancel</button>
+  </div>
+</div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -1529,8 +1623,30 @@ async function loadCustomers(){
 function renderVSettings(){
   if(!S.vendor) return;
   const slug=S.vendor.slug||'yourtruck';
+  const num=S.vendor.vendor_number||'––––';
   setText('v-qr-url','foodtruckrewards.app/'+slug);
+  setText('v-vendor-number','#'+num);
+  setText('v-num-inline',num);
   if(S.vendor.trial_ends_at) setText('v-trial-end',new Date(S.vendor.trial_ends_at).toLocaleDateString());
+  // Status badge
+  const statusEl=document.getElementById('v-plan-status');
+  if(statusEl){
+    const now=new Date();
+    let status='Trial',cls='tag-bl';
+    if(S.vendor.plan_active){status='Active';cls='tag-gn';}
+    else if(S.vendor.promo_expires_at&&new Date(S.vendor.promo_expires_at)>now){status='Promo';cls='tag-gd';}
+    statusEl.textContent=status;statusEl.className='tag '+cls;
+  }
+  // Profile picture preview
+  const pic=S.vendor.profile_picture_url;
+  const prev=document.getElementById('v-prof-pic-preview');
+  if(prev){
+    if(pic){prev.innerHTML=`<img src="${pic}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;}
+    else{prev.textContent=S.vendor.emoji||'🚚';}
+  }
+  // Pre-fill URL field
+  const urlEl=document.getElementById('v-pic-url');
+  if(urlEl&&pic) urlEl.value=pic;
 }
 
 function copyVendorLink(){
@@ -1812,11 +1928,19 @@ function openRedeem(i){
 function renderProfile(){
   const c=S.customer;
   if(!c){show('s-c-signup');return}
-  setText('c-prof-av',(c.name||'?')[0].toUpperCase());
+  // Profile picture or initial
+  const av=document.getElementById('c-prof-av');
+  if(av){
+    if(c.profile_picture_url){
+      av.innerHTML=`<img src="${c.profile_picture_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+    } else {
+      av.innerHTML=''; av.textContent=(c.name||'?')[0].toUpperCase();
+      av.style.color='var(--brand)';
+    }
+  }
   setText('c-prof-name',c.name||'Member');
   setText('c-prof-phone',formatPhoneDisplay(c.phone||''));
   setText('c-prof-email',c.email||'');
-  // All-time stats across all trucks
   const totalPts=S.myTrucks.reduce((s,t)=>s+(t.points_total||t.points_balance||0),0);
   const totalVisits=S.myTrucks.reduce((s,t)=>s+(t.visit_count||0),0);
   const totalSaved=S.myTrucks.reduce((s,t)=>s+(t.total_saved||0),0);
@@ -1824,10 +1948,8 @@ function renderProfile(){
   setText('c-total-visits',totalVisits);
   setText('c-trucks-count',S.myTrucks.length);
   setText('c-total-saved','$'+totalSaved.toFixed(2));
-  // Referral link
-  if(c.referral_code){
-    setText('c-ref-link','foodtruckrewards.app/join?ref='+c.referral_code);
-  }
+  if(c.referral_code){setText('c-ref-link','foodtruckrewards.app/join?ref='+c.referral_code)}
+  if(c.birthday){setVal('c-birthday',c.birthday)}
 }
 
 function renderMyQR(){
@@ -2054,6 +2176,167 @@ function confetti(){
   }
   drawWheel(0);
 })();
+/* ── TRUCK SEARCH ── */
+async function searchTrucks(query) {
+  const el = document.getElementById('c-search-results');
+  query = (query || '').trim();
+  if (query.length < 2) { el.innerHTML = ''; return; }
+  el.innerHTML = '<div style="text-align:center;padding:12px;color:var(--mu);font-size:13px">Searching...</div>';
+  const res = await apiGet('/api/trucks/search?q=' + encodeURIComponent(query));
+  if (!res.ok || !res.data?.length) {
+    el.innerHTML = '<div style="text-align:center;padding:12px;color:var(--mu);font-size:13px;font-weight:600">No trucks found. Try a different name or enter the truck code directly.</div>';
+    return;
+  }
+  el.innerHTML = res.data.map(t => `
+    <div style="display:flex;align-items:center;gap:12px;background:white;border:2px solid var(--b2);border-radius:12px;padding:12px;margin-bottom:8px;cursor:pointer;box-shadow:var(--sh1)" onclick="joinTruckFromSearch('${t.slug}','${(t.truck_name||'').replace(/'/g,'')}')" >
+      <div style="font-size:26px;width:44px;height:44px;background:var(--s2);border-radius:10px;display:flex;align-items:center;justify-content:center">${t.emoji||'🚚'}</div>
+      <div style="flex:1">
+        <div style="font-weight:800;font-size:14px">${t.truck_name}</div>
+        <div style="font-size:12px;color:var(--mu);font-weight:600">Truck #${t.vendor_number||'–'}</div>
+      </div>
+      <div style="font-size:22px;color:var(--brand)">→</div>
+    </div>`).join('');
+}
+
+async function joinTruckFromSearch(slug, name) {
+  document.getElementById('c-truck-code-input').value = slug;
+  document.getElementById('c-search-results').innerHTML = '';
+  document.getElementById('c-truck-search').value = name;
+  await joinTruckByCode();
+}
+
+/* ── PROFILE PICTURE ── */
+function previewCustomerPic(url) {
+  const el = document.getElementById('edit-prof-preview');
+  if (!el) return;
+  if (url && url.startsWith('http')) {
+    el.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%" onerror="this.parentElement.textContent='?'">`;
+  } else {
+    el.textContent = S.customer ? (S.customer.name||'?')[0].toUpperCase() : '?';
+  }
+}
+
+function previewVendorPic(url) {
+  const el = document.getElementById('v-prof-pic-preview');
+  if (!el) return;
+  if (url && url.startsWith('http')) {
+    el.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%" onerror="this.parentElement.textContent='🚚'">`;
+  } else {
+    el.textContent = S.vendor?.emoji || '🚚';
+  }
+}
+
+async function saveVendorPic() {
+  const url = document.getElementById('v-pic-url')?.value.trim();
+  if (!url) { showToast('Paste an image URL first'); return; }
+  showLoad('Saving...');
+  const res = await apiPatch('/api/vendor/brand', { profile_picture_url: url });
+  hideLoad();
+  if (res.ok) {
+    S.vendor = res.data.data;
+    localStorage.setItem('tl_vendor', JSON.stringify(S.vendor));
+    showToast('✅ Profile picture saved!');
+  } else {
+    showToast('❌ Error saving picture');
+  }
+}
+
+/* ── CUSTOMER EDIT PROFILE ── */
+function openEditProfile() {
+  const c = S.customer;
+  if (!c) return;
+  setVal('edit-name',  c.name  || '');
+  setVal('edit-phone', formatPhoneDisplay(c.phone || ''));
+  setVal('edit-email', c.email || '');
+  setVal('edit-pic-url', c.profile_picture_url || '');
+  const prev = document.getElementById('edit-prof-preview');
+  if (prev) {
+    if (c.profile_picture_url) {
+      prev.innerHTML = `<img src="${c.profile_picture_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+    } else {
+      prev.textContent = (c.name||'?')[0].toUpperCase();
+    }
+  }
+  openSheet('sh-edit-profile');
+}
+
+async function saveCustomerProfile() {
+  const name  = document.getElementById('edit-name')?.value.trim();
+  const phone = document.getElementById('edit-phone')?.value.replace(/\D/g,'');
+  const email = document.getElementById('edit-email')?.value.trim();
+  const pic   = document.getElementById('edit-pic-url')?.value.trim();
+  if (!name) { showToast('Name is required'); return; }
+  showLoad('Saving...');
+  const res = await fetch(API + '/api/customer/profile', {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Customer-Token': S.customer?.token || ''
+    },
+    body: JSON.stringify({ name, phone: phone||undefined, email: email||undefined, profile_picture_url: pic||undefined })
+  });
+  const data = await res.json();
+  hideLoad();
+  if (res.ok) {
+    S.customer = { ...S.customer, ...data.data };
+    localStorage.setItem('tl_customer', JSON.stringify(S.customer));
+    closeSheet('sh-edit-profile');
+    renderProfile();
+    showToast('✅ Profile updated!');
+  } else {
+    showToast('❌ ' + (data.error || 'Error saving'));
+  }
+}
+
+/* ── CANCEL CUSTOMER ACCOUNT ── */
+function confirmCancelCustomer() {
+  if (confirm('Are you sure you want to permanently delete your account? This cannot be undone.')) {
+    deleteCustomerAccount();
+  }
+}
+
+async function deleteCustomerAccount() {
+  showLoad('Deleting account...');
+  const res = await fetch(API + '/api/customer/delete-account', {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Customer-Token': S.customer?.token || ''
+    },
+    body: JSON.stringify({ confirm: 'DELETE' })
+  });
+  hideLoad();
+  if (res.ok) {
+    customerLogout();
+    showToast('Account deleted. Sorry to see you go!');
+  } else {
+    showToast('❌ Error deleting account — please contact support');
+  }
+}
+
+/* ── CANCEL VENDOR SUBSCRIPTION ── */
+async function cancelSubscription() {
+  if (!confirm('Cancel your subscription? You\'ll keep access until the end of your billing period.')) return;
+  showLoad('Cancelling...');
+  const res = await apiPost('/api/vendor/cancel-subscription', {});
+  hideLoad();
+  if (res.ok) {
+    showToast('Subscription cancelled. Access continues until billing period ends.');
+    loadVendorHome();
+  } else {
+    showToast('❌ ' + (res.data?.error || 'Error cancelling'));
+  }
+}
+
+/* ── VENDOR NUMBER ── */
+function copyVendorNumber() {
+  const num = S.vendor?.vendor_number || '';
+  if (!num) { showToast('No vendor number yet'); return; }
+  navigator.clipboard?.writeText('#' + num)
+    .then(() => showToast('📋 Vendor number #' + num + ' copied!'))
+    .catch(() => showToast('#' + num));
+}
+
 </script>
 </body>
 </html>
