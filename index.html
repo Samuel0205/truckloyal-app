@@ -1441,11 +1441,18 @@ async function vendorLogin(){
   if(!email||!pass){showErr(errEl,'Please fill in all fields');return}
   showLoad('Signing in...');
   const r=await apiPost('/api/vendor/login',{email,password:pass});
-  hideLoad();
-  if(!r.ok){showErr(errEl,r.data.error||'Invalid email or password');return}
-  S.vendorToken=r.data.data.token; S.vendor=r.data.data.vendor;
+  if(!r.ok){hideLoad();showErr(errEl,r.data.error||'Invalid email or password');return}
+
+  // Store token first so subsequent API calls work
+  S.vendorToken=r.data.data.token;
   localStorage.setItem('tl_vendor_token',S.vendorToken);
+
+  // Fetch full vendor object (includes vendor_number and all new fields)
+  const me=await apiGet('/api/vendor/me');
+  hideLoad();
+  S.vendor = me.ok ? me.data.data : r.data.data.vendor;
   localStorage.setItem('tl_vendor',JSON.stringify(S.vendor));
+
   S.vScreen='s-v-home'; show('s-v-home'); renderNav(VNAV,'s-v-home');
   loadVendorHome();
   showToast('👋 Welcome back, '+S.vendor.truck_name+'!');
@@ -1994,14 +2001,25 @@ async function loadCustomers(){
   setText('v-cust-sub','Your loyalty members');
 }
 
-function renderVSettings(){
+async function renderVSettings(){
   if(!S.vendor) return;
-  const slug=S.vendor.slug||'yourtruck';
-  const num=S.vendor.vendor_number||'––––';
+
+  // If vendor_number missing from cached object, refresh from API
+  if(!S.vendor.vendor_number){
+    const r = await apiGet('/api/vendor/me');
+    if(r.ok && r.data.data){
+      S.vendor = r.data.data;
+      localStorage.setItem('tl_vendor', JSON.stringify(S.vendor));
+    }
+  }
+
+  const slug = S.vendor.slug||'yourtruck';
+  const num  = S.vendor.vendor_number||'––––';
   setText('v-qr-url','foodtruckrewards.app/'+slug);
   setText('v-vendor-number','#'+num);
   setText('v-num-inline',num);
   if(S.vendor.trial_ends_at) setText('v-trial-end',new Date(S.vendor.trial_ends_at).toLocaleDateString());
+
   // Status badge
   const statusEl=document.getElementById('v-plan-status');
   if(statusEl){
@@ -2009,18 +2027,16 @@ function renderVSettings(){
     let status='Trial',cls='tag-bl';
     if(S.vendor.plan_active){status='Active';cls='tag-gn';}
     else if(S.vendor.promo_expires_at&&new Date(S.vendor.promo_expires_at)>now){status='Promo';cls='tag-gd';}
-    statusEl.textContent=status;statusEl.className='tag '+cls;
+    statusEl.textContent=status; statusEl.className='tag '+cls;
   }
+
   // Profile picture preview
-  const pic=S.vendor.profile_picture_url;
-  const prev=document.getElementById('v-prof-pic-preview');
+  const pic  = S.vendor.profile_picture_url;
+  const prev = document.getElementById('v-prof-pic-preview');
   if(prev){
     if(pic){prev.innerHTML=`<img src="${pic}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;}
     else{prev.textContent=S.vendor.emoji||'🚚';}
   }
-  // Pre-fill URL field
-  const urlEl=document.getElementById('v-pic-url');
-  if(urlEl&&pic) urlEl.value=pic;
 }
 
 function copyVendorLink(){
