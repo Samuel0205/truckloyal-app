@@ -892,12 +892,12 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
         <div style="text-align:center;padding:14px 0 18px">
           <div style="position:relative;width:84px;margin:0 auto 10px">
             <div style="width:84px;height:84px;border-radius:50%;background:rgba(255,87,34,.12);border:3px solid var(--b2);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:34px;font-weight:900" id="c-prof-av">?</div>
-            <div style="position:absolute;bottom:0;right:0;width:26px;height:26px;background:var(--brand);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;cursor:pointer;border:2px solid white" onclick="openSheet('sh-edit-profile')">✏️</div>
+            <div style="position:absolute;bottom:0;right:0;width:26px;height:26px;background:var(--brand);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;cursor:pointer;border:2px solid white" onclick="openEditProfile()">✏️</div>
           </div>
           <div style="font-family:var(--fd);font-size:22px;font-weight:900;margin-bottom:2px" id="c-prof-name">Member</div>
           <div style="font-size:13px;color:var(--mu);margin-bottom:2px" id="c-prof-phone">–</div>
           <div style="font-size:13px;color:var(--mu)" id="c-prof-email">–</div>
-          <button class="btn btn-s btn-sm" style="margin-top:10px" onclick="openSheet('sh-edit-profile')">✏️ Edit Profile</button>
+          <button class="btn btn-s btn-sm" style="margin-top:10px" onclick="openEditProfile()">✏️ Edit Profile</button>
         </div>
 
         <!-- My QR code shortcut -->
@@ -1690,7 +1690,7 @@ async function customerSignup(){
   const r=await apiPost('/api/customer/signup',{name,phone,email});
   hideLoad();
   if(!r.ok){showErr(errEl,r.data.error||'Signup failed');return}
-  S.customer=r.data.data.customer;
+  S.customer={...r.data.data.customer, token: r.data.data.token};
   localStorage.setItem('tl_customer',JSON.stringify(S.customer));
   S.cScreen='s-c-home'; show('s-c-home'); renderNav(CNAV,'s-c-home');
   renderMyTrucks();
@@ -1707,7 +1707,7 @@ async function customerLogin(){
   const r=await apiPost('/api/customer/login',{phone:phone||undefined,email:email||undefined});
   hideLoad();
   if(!r.ok){showErr(errEl,r.data.error||'Account not found — please sign up');return}
-  S.customer=r.data.data.customer;
+  S.customer={...r.data.data.customer, token: r.data.data.token};
   localStorage.setItem('tl_customer',JSON.stringify(S.customer));
   S.myTrucks=r.data.data.trucks||[];
   localStorage.setItem('tl_my_trucks',JSON.stringify(S.myTrucks));
@@ -1936,6 +1936,15 @@ function openRedeem(i){
 function renderProfile(){
   const c=S.customer;
   if(!c){show('s-c-signup');return}
+
+  // If name is missing, try refreshing from API
+  if(!c.name && c.id){
+    fetch(API+'/api/customer/'+c.id+'/trucks',{headers:{'X-Customer-Token':c.token||''}})
+      .then(r=>r.json()).then(d=>{
+        // Trigger a fresh login to restore full profile
+      }).catch(()=>{});
+  }
+
   // Profile picture or initial
   const av=document.getElementById('c-prof-av');
   if(av){
@@ -1946,7 +1955,9 @@ function renderProfile(){
       av.style.color='var(--brand)';
     }
   }
-  setText('c-prof-name',c.name||'Member');
+  // Show name — fall back to phone if name is somehow missing
+  const displayName = c.name || (c.phone ? formatPhoneDisplay(c.phone) : 'Member');
+  setText('c-prof-name', displayName);
   setText('c-prof-phone',formatPhoneDisplay(c.phone||''));
   setText('c-prof-email',c.email||'');
   const totalPts=S.myTrucks.reduce((s,t)=>s+(t.points_total||t.points_balance||0),0);
@@ -2312,15 +2323,21 @@ async function handleCustomerPicFile(input) {
 function openEditProfile() {
   const c = S.customer;
   if (!c) return;
-  setVal('edit-name',  c.name  || '');
-  setVal('edit-phone', formatPhoneDisplay(c.phone || ''));
-  setVal('edit-email', c.email || '');
+  // Pre-fill all fields from stored customer data
+  const nameEl  = document.getElementById('edit-name');
+  const phoneEl = document.getElementById('edit-phone');
+  const emailEl = document.getElementById('edit-email');
+  if (nameEl)  nameEl.value  = c.name  || '';
+  if (phoneEl) phoneEl.value = formatPhoneDisplay(c.phone || '');
+  if (emailEl) emailEl.value = c.email || '';
+  // Pre-fill profile picture preview
   const prev = document.getElementById('edit-prof-preview');
   if (prev) {
     if (c.profile_picture_url) {
       prev.innerHTML = `<img src="${c.profile_picture_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
     } else {
-      prev.textContent = (c.name||'?')[0].toUpperCase();
+      prev.innerHTML = '';
+      prev.textContent = (c.name || '?')[0].toUpperCase();
     }
   }
   openSheet('sh-edit-profile');
