@@ -752,12 +752,27 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
     <div class="screen" id="s-v-points">
       <div class="sh sh-row"><div class="back-btn" onclick="goV('s-v-home')">←</div><div><h1>⚙️ Points Rules</h1></div></div>
       <div class="bp">
+
+        <!-- How it works for vendors -->
+        <div class="callout co-bl" style="margin-bottom:16px">
+          <div class="co-icon">💡</div>
+          <div>
+            <div class="co-title">How customer earning works</div>
+            <div class="co-desc">
+              <strong>Check-in QR scan</strong> → customer gets visit points + 1 spin on the wheel per day at your truck.<br><br>
+              <strong>At the window</strong> → you award points based on their order total. No spin for this method — just points.<br><br>
+              <strong>Want points-only, no spin?</strong> Just post your QR code at the truck and use the Award Points window — skip the spin prizes entirely.<br><br>
+              Points are <strong>per-truck</strong> — customers earn and spend points separately at each truck they join.
+            </div>
+          </div>
+        </div>
+
         <div class="card">
           <div class="card-title">💰 Order-Based Earning</div>
           <div class="field"><label>Points per $1 Spent</label><input type="number" id="pts-per-dollar" value="10" min="1" step="1"></div>
           <div class="field"><label>Base Visit Points (regardless of order size)</label><input type="number" id="pts-per-visit" value="50" min="0"></div>
           <div style="font-size:12px;color:var(--mu);line-height:1.6;padding:10px;background:var(--s2);border-radius:10px">
-            Example: Customer spends $15 → <span id="pts-example" style="color:var(--gd)">200 pts</span> (50 base + 150 order)
+            Example: Customer spends $15 → <span id="pts-example" style="color:var(--gd);font-weight:800">200 pts</span> (50 base + 150 order)
           </div>
         </div>
         <div class="card">
@@ -1064,24 +1079,33 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
 
     <!-- CUSTOMER: PER-TRUCK DASHBOARD -->
     <div class="screen" id="s-c-truck">
-      <!-- Truck header with brand colors -->
-      <div id="c-truck-header" style="padding:20px 20px 16px;border-bottom:1px solid var(--b1);background:linear-gradient(180deg,rgba(255,90,31,.08) 0%,transparent 100%)">
+      <div id="c-truck-header" style="padding:18px 20px 14px;border-bottom:2px solid var(--b1)">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
           <div class="back-btn" onclick="goC('s-c-home')">←</div>
-          <div>
-            <div style="font-size:11px;color:var(--mu);letter-spacing:1px;margin-bottom:2px" id="ct-tagline">–</div>
-            <div style="font-family:var(--fd);font-size:22px;font-weight:900;line-height:1" id="ct-name">–</div>
+          <div style="flex:1">
+            <div style="font-size:11px;color:var(--mu);letter-spacing:1px;margin-bottom:2px;font-weight:700" id="ct-tagline">–</div>
+            <div style="font-family:var(--fd);font-size:20px;font-weight:900;line-height:1" id="ct-name">–</div>
           </div>
-          <div style="margin-left:auto;font-size:32px" id="ct-emoji">🚚</div>
+          <div style="font-size:34px" id="ct-emoji">🚚</div>
         </div>
         <!-- Location today -->
-        <div id="ct-location-bar" style="background:rgba(79,158,255,.08);border:1px solid rgba(79,158,255,.18);border-radius:10px;padding:8px 12px;font-size:12px;color:var(--bl);margin-bottom:12px;display:none">
+        <div id="ct-location-bar" style="background:#E3F2FD;border:1.5px solid #90CAF9;border-radius:10px;padding:8px 12px;font-size:12px;color:#1565C0;margin-bottom:12px;display:none;font-weight:700">
           📍 <span id="ct-location-text">–</span>
         </div>
-        <div class="stats g3">
-          <div class="sc"><div class="sv" id="ct-pts" style="color:var(--brand)">0</div><div class="sl">Points</div></div>
-          <div class="sc"><div class="sv" id="ct-visits">0</div><div class="sl">Visits</div></div>
-          <div class="sc"><div class="sv" style="color:var(--gn)" id="ct-saved">$0</div><div class="sl">Saved</div></div>
+        <!-- Points hero card -->
+        <div style="background:white;border:2px solid var(--b2);border-radius:16px;padding:16px;display:flex;align-items:center;gap:0;box-shadow:var(--sh1)">
+          <div style="flex:1;text-align:center;border-right:1.5px solid var(--b1)">
+            <div style="font-family:var(--fd);font-size:36px;font-weight:900;color:var(--brand);line-height:1" id="ct-pts">0</div>
+            <div style="font-size:10px;color:var(--mu);font-weight:800;text-transform:uppercase;letter-spacing:.5px;margin-top:3px">Points Here</div>
+          </div>
+          <div style="flex:1;text-align:center;border-right:1.5px solid var(--b1)">
+            <div style="font-family:var(--fd);font-size:28px;font-weight:900;line-height:1" id="ct-visits">0</div>
+            <div style="font-size:10px;color:var(--mu);font-weight:800;text-transform:uppercase;letter-spacing:.5px;margin-top:3px">Visits</div>
+          </div>
+          <div style="flex:1;text-align:center">
+            <div style="font-family:var(--fd);font-size:28px;font-weight:900;color:var(--gn);line-height:1" id="ct-saved">$0</div>
+            <div style="font-size:10px;color:var(--mu);font-weight:800;text-transform:uppercase;letter-spacing:.5px;margin-top:3px">Saved</div>
+          </div>
         </div>
       </div>
       <div style="padding:14px 20px 80px">
@@ -1089,12 +1113,12 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
         <div class="card">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
             <div>
-              <div style="font-size:11px;color:var(--mu);text-transform:uppercase;letter-spacing:.8px;margin-bottom:3px">Your tier</div>
-              <div style="font-family:var(--fd);font-size:18px;font-weight:800" id="ct-tier">🌱 Starter</div>
+              <div style="font-size:11px;color:var(--mu);text-transform:uppercase;letter-spacing:.8px;margin-bottom:3px;font-weight:700">Your tier at this truck</div>
+              <div style="font-family:var(--fd);font-size:18px;font-weight:900" id="ct-tier">🌱 Starter</div>
             </div>
             <div style="text-align:right">
-              <div style="font-size:12px;color:var(--mu)" id="ct-next-tier-lbl">Next: 🔥 Regular</div>
-              <div style="font-size:11px;color:var(--mu)" id="ct-pts-away">200 pts away</div>
+              <div style="font-size:12px;color:var(--mu);font-weight:700" id="ct-next-tier-lbl">Next: 🔥 Regular</div>
+              <div style="font-size:11px;color:var(--mu);font-weight:600" id="ct-pts-away">200 pts away</div>
             </div>
           </div>
           <div class="pbar"><div class="pfill" id="ct-prog-fill" style="width:0%"></div></div>
@@ -1104,15 +1128,18 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
         <div class="sk-card">
           <div class="sk-top"><div class="sk-lbl">🔥 Visit Streak</div><div class="sk-cnt" id="ct-streak">0 days</div></div>
           <div class="sk-days" id="ct-streak-days"></div>
-          <div style="font-size:11px;color:var(--gd);margin-top:8px" id="ct-streak-tip">Visit today to start your streak!</div>
+          <div style="font-size:11px;color:var(--gd);margin-top:8px;font-weight:700" id="ct-streak-tip">Visit today to start your streak!</div>
         </div>
 
         <!-- Check in button -->
-        <button class="btn btn-p" style="margin-bottom:12px" onclick="checkInAtTruck()">⚡ Check In & Spin the Wheel</button>
+        <button class="btn btn-p" id="ct-checkin-btn" style="margin-bottom:8px" onclick="checkInAtTruck()">⚡ Check In & Spin the Wheel</button>
+        <div style="font-size:11px;color:var(--mu);text-align:center;margin-bottom:16px;line-height:1.5;font-weight:600">
+          Points earned here are only for <strong id="ct-pts-note">this truck</strong>
+        </div>
 
-        <!-- Rewards for THIS truck -->
-        <div style="font-family:var(--fd);font-size:15px;font-weight:800;margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px">Redeem Points</div>
-        <div style="font-size:12px;color:var(--mu);margin-bottom:12px;line-height:1.5">Show the redemption code to the cashier before ordering. They'll enter it to confirm.</div>
+        <!-- Rewards -->
+        <div style="font-family:var(--fd);font-size:15px;font-weight:900;margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px">🎁 Redeem Points</div>
+        <div style="font-size:12px;color:var(--mu);margin-bottom:12px;line-height:1.5;font-weight:600">Show the code to the cashier before ordering.</div>
         <div id="ct-rewards-list"></div>
       </div>
     </div>
@@ -1120,17 +1147,26 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
     <!-- CUSTOMER: SPIN (after check-in at a specific truck) -->
     <div class="screen" id="s-c-spin">
       <div class="spin-wrap">
-        <div class="spin-title">🎰 Spin for Bonus Points!</div>
-        <div class="spin-sub">Checked in at <strong id="spin-truck-name">–</strong> · +<span id="spin-visit-pts">50</span> pts earned</div>
-        <div style="font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--mu);margin-bottom:8px;width:100%;text-align:left">What you could win:</div>
+        <div style="text-align:center;margin-bottom:4px">
+          <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:var(--mu)">Checked in at</div>
+          <div style="font-family:var(--fd);font-size:20px;font-weight:900;color:var(--tx)" id="spin-truck-name">–</div>
+        </div>
+        <div style="background:white;border:2px solid var(--b2);border-radius:14px;padding:12px 16px;margin-bottom:14px;width:100%;box-shadow:var(--sh1);display:flex;align-items:center;justify-content:space-between">
+          <div style="font-size:13px;font-weight:700;color:var(--mu)">⚡ Visit points earned</div>
+          <div style="font-family:var(--fd);font-size:20px;font-weight:900;color:var(--gn)">+<span id="spin-visit-pts">50</span></div>
+        </div>
+        <div style="font-size:12px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--mu);margin-bottom:8px;width:100%;text-align:left">🎰 Spin to win bonus points:</div>
         <div class="spp-grid" id="spp-grid"></div>
-        <div style="font-size:11px;color:var(--fa);margin-bottom:14px;text-align:center">Every spin wins something · Points added automatically</div>
+        <div style="font-size:11px;color:var(--mu);margin-bottom:12px;text-align:center;font-weight:600">Every spin wins · 1 spin per day per truck</div>
         <div class="wheel-area">
           <div class="wheel-ptr">▼</div>
           <canvas id="spin-canvas" width="280" height="280"></canvas>
         </div>
-        <button class="btn btn-p" id="spin-btn" style="max-width:280px" onclick="doSpin()">SPIN THE WHEEL</button>
-        <p style="font-size:12px;color:var(--mu);margin-top:10px;line-height:1.6;text-align:center">Points are added to your balance.<br>Use them to redeem rewards from the truck's page.</p>
+        <button class="btn btn-p" id="spin-btn" style="max-width:280px;font-size:17px;padding:16px 20px" onclick="doSpin()">🎰 SPIN THE WHEEL</button>
+        <div style="font-size:11px;color:var(--mu);margin-top:10px;line-height:1.7;text-align:center;font-weight:600">
+          Bonus points added to your balance at <span id="spin-truck-name2">this truck</span>.<br>
+          Use points to redeem rewards from the truck's page.
+        </div>
       </div>
     </div>
 
@@ -1269,27 +1305,35 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
 <div class="overlay" id="sh-win">
   <div class="sheet">
     <div class="sheet-handle"></div>
-    <div style="text-align:center;font-family:var(--fd);font-size:22px;font-weight:800;color:var(--gd);margin-bottom:16px">🎉 You Won!</div>
-    <div style="background:linear-gradient(135deg,#FFFDE7,#FFF3E0);border:2px solid #FFE082;border-radius:18px;padding:22px;text-align:center;margin-bottom:14px;box-shadow:0 4px 16px rgba(249,168,37,.15)">
-      <div style="font-family:var(--fd);font-size:54px;color:#E65100;line-height:1;margin-bottom:4px" id="win-pts-big">+50</div>
-      <div style="font-size:13px;color:var(--mu);text-transform:uppercase;letter-spacing:1px;font-weight:700">Bonus Points</div>
+    <div style="text-align:center;margin-bottom:16px">
+      <div style="font-size:40px;margin-bottom:4px">🎉</div>
+      <div style="font-family:var(--fd);font-size:24px;font-weight:900;color:var(--tx)">You Won Bonus Points!</div>
+      <div style="font-size:13px;color:var(--mu);font-weight:600;margin-top:4px">at <strong id="win-truck-name-top">–</strong></div>
     </div>
-    <div style="background:var(--s2);border:2px solid var(--b2);border-radius:12px;padding:14px;margin-bottom:16px">
-      <div style="display:flex;justify-content:space-between;margin-bottom:6px">
-        <div style="font-size:13px;color:var(--mu)">Visit + order pts</div>
-        <div style="font-family:var(--fd);font-weight:800;color:var(--gd)" id="win-visit-pts">+50</div>
+    <!-- Big win number -->
+    <div style="background:linear-gradient(135deg,#FFFDE7,#FFF3E0);border:2px solid #FFE082;border-radius:18px;padding:20px;text-align:center;margin-bottom:12px;box-shadow:0 4px 16px rgba(249,168,37,.15)">
+      <div style="font-family:var(--fd);font-size:58px;font-weight:900;color:#E65100;line-height:1;margin-bottom:2px" id="win-pts-big">+50</div>
+      <div style="font-size:12px;color:var(--mu);text-transform:uppercase;letter-spacing:1px;font-weight:800">Bonus Points from Spin</div>
+    </div>
+    <!-- Breakdown -->
+    <div style="background:white;border:2px solid var(--b2);border-radius:14px;padding:14px;margin-bottom:16px;box-shadow:var(--sh1)">
+      <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--mu);margin-bottom:10px">Today's Earnings Breakdown</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <div style="font-size:13px;font-weight:600;color:var(--mu)">⚡ Visit + order points</div>
+        <div style="font-family:var(--fd);font-size:16px;font-weight:900;color:var(--gn)" id="win-visit-pts">+50 pts</div>
       </div>
-      <div style="display:flex;justify-content:space-between;margin-bottom:8px">
-        <div style="font-size:13px;color:var(--mu)">Spin bonus</div>
-        <div style="font-family:var(--fd);font-weight:800;color:var(--gd)" id="win-spin-pts">+50</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div style="font-size:13px;font-weight:600;color:var(--mu)">🎰 Spin bonus</div>
+        <div style="font-family:var(--fd);font-size:16px;font-weight:900;color:#E65100" id="win-spin-pts">+50 bonus pts</div>
       </div>
-      <div style="height:1px;background:var(--b1);margin-bottom:8px"></div>
-      <div style="display:flex;justify-content:space-between">
-        <div style="font-size:13px;font-weight:600">New balance at <span id="win-truck-name">–</span></div>
-        <div style="font-family:var(--fd);font-weight:800;color:var(--brand)" id="win-new-balance">100</div>
+      <div style="height:1.5px;background:var(--b1);margin-bottom:10px"></div>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div style="font-size:13px;font-weight:800">New balance at <span id="win-truck-name">–</span></div>
+        <div style="font-family:var(--fd);font-size:20px;font-weight:900;color:var(--brand)" id="win-new-balance">100 pts</div>
       </div>
     </div>
-    <button class="btn btn-p" onclick="closeSheet('sh-win');goC('s-c-truck')">View My Rewards →</button>
+    <button class="btn btn-p" onclick="closeSheet('sh-win');renderTruckDash();goC('s-c-truck')">✅ See My Rewards →</button>
+    <div style="text-align:center;font-size:11px;color:var(--mu);margin-top:10px;font-weight:600">1 spin per day per truck · Come back tomorrow for more!</div>
   </div>
 </div>
 
@@ -2198,34 +2242,52 @@ function customerLogout(){
 ════════════════════════════════════ */
 function renderMyTrucks(){
   if(!S.customer) return;
-  setText('c-home-greeting',S.customer.name?S.customer.name.split(' ')[0]+"'s Trucks":'My Trucks');
-  setText('c-home-sub',S.myTrucks.length?S.myTrucks.length+' truck'+(S.myTrucks.length!==1?'s':'')+'  joined':'Scan a QR code to join your first truck');
-  const noTrucks=document.getElementById('c-no-trucks');
-  const trucksList=document.getElementById('c-trucks-list');
-  const scanMore=document.getElementById('c-scan-more');
+  const firstName = S.customer.name ? S.customer.name.split(' ')[0] : '';
+  setText('c-home-greeting', firstName ? firstName+"'s Trucks" : 'My Trucks');
+
+  const totalPts = S.myTrucks.reduce((s,t)=>s+(t.points_balance||0),0);
+  const totalVisits = S.myTrucks.reduce((s,t)=>s+(t.visit_count||0),0);
+  const totalPtsEl = document.getElementById('c-home-total-pts');
+  if(totalPtsEl && S.myTrucks.length){
+    totalPtsEl.textContent = totalPts + ' total pts';
+    totalPtsEl.style.display = 'block';
+  } else if(totalPtsEl){
+    totalPtsEl.style.display = 'none';
+  }
+
+  setText('c-home-sub', S.myTrucks.length
+    ? S.myTrucks.length+' truck'+(S.myTrucks.length!==1?'s':'')+' joined · '+totalVisits+' visits'
+    : 'Scan a QR code to join your first truck');
+
+  const noTrucks  = document.getElementById('c-no-trucks');
+  const trucksList= document.getElementById('c-trucks-list');
+  const scanMore  = document.getElementById('c-scan-more');
+
   if(!S.myTrucks.length){
-    if(noTrucks) noTrucks.style.display='block';
+    if(noTrucks)  noTrucks.style.display='block';
     if(trucksList) trucksList.innerHTML='';
-    if(scanMore) scanMore.style.display='none';
+    if(scanMore)  scanMore.style.display='none';
     return;
   }
-  if(noTrucks) noTrucks.style.display='none';
-  if(scanMore) scanMore.style.display='block';
+  if(noTrucks)  noTrucks.style.display='none';
+  if(scanMore)  scanMore.style.display='block';
   if(!trucksList) return;
-  trucksList.innerHTML=S.myTrucks.map((t,i)=>{
-    const pts=t.points_balance||0;
-    const tier=DEFAULT_TIERS.slice().reverse().find(tr=>pts>=tr.pts_threshold)||DEFAULT_TIERS[0];
-    const p=t.color_primary||'#FF5A1F';
-    const loc=localStorage.getItem('tl_location_'+t.id)||'';
+
+  trucksList.innerHTML = S.myTrucks.map((t,i)=>{
+    const pts  = t.points_balance||0;
+    const tier = DEFAULT_TIERS.slice().reverse().find(tr=>pts>=tr.pts_threshold)||DEFAULT_TIERS[0];
+    const p    = t.color_primary||'#FF5722';
+    const todayKey = 'spin_used_'+t.id+'_'+new Date().toDateString();
+    const checkedIn = localStorage.getItem(todayKey);
     return `
-    <div class="truck-card" onclick="openTruck(${i})">
+    <div class="truck-card ${t.id===S.activeTruck?.id?'active-truck':''}" onclick="openTruck(${i})">
       <div class="tc-top">
-        <div class="tc-icon" style="background:rgba(${hexRGB(p)},.15)">${t.emoji||'🚚'}</div>
-        <div>
+        <div class="tc-icon" style="background:rgba(${hexRGB(p)},.15);font-size:26px">${t.emoji||'🚚'}</div>
+        <div style="flex:1;min-width:0">
           <div class="tc-name">${t.truck_name||'Food Truck'}</div>
-          <div class="tc-sub">${tier.icon} ${tier.name}${loc?' · 📍 '+loc:''}</div>
+          <div class="tc-sub">${tier.icon} ${tier.name}${checkedIn?' · <span style="color:#2E7D32;font-weight:800">✅ Checked in today</span>':''}</div>
         </div>
-        <div class="tag tag-or" style="margin-left:auto">${pts} pts</div>
+        <div style="font-family:var(--fd);font-size:20px;font-weight:900;color:${p};flex-shrink:0">${pts}<span style="font-size:11px;font-weight:700;color:var(--mu)"> pts</span></div>
       </div>
       <div class="tc-stats">
         <div class="tc-stat"><div class="tc-stat-val" style="color:${p}">${pts}</div><div class="tc-stat-lbl">Points</div></div>
@@ -2291,23 +2353,44 @@ function startCustomerQRScan(){showToast('📷 QR scan requires device camera �
 /* ════════════════════════════════════
    CUSTOMER: TRUCK DASHBOARD
 ════════════════════════════════════ */
-function renderTruckDash(){
+async function renderTruckDash(){
   const t=S.activeTruck;
   if(!t) return;
+
+  // Refresh per-truck data from API to ensure points are current
+  if(t.id && t.id!=='demo' && S.customer?.id){
+    try {
+      const r=await apiGet('/api/customer/'+S.customer.id+'/trucks');
+      if(r.ok && r.data.data){
+        const fresh=r.data.data.find(x=>x.id===t.id);
+        if(fresh){
+          S.activeTruck={...S.activeTruck,...fresh};
+          const idx=S.myTrucks.findIndex(x=>x.id===t.id);
+          if(idx>=0) S.myTrucks[idx]={...S.myTrucks[idx],...fresh};
+          localStorage.setItem('tl_active_truck',JSON.stringify(S.activeTruck));
+          localStorage.setItem('tl_my_trucks',JSON.stringify(S.myTrucks));
+        }
+      }
+    } catch(e){}
+  }
+
   const p=t.color_primary||'#FF5A1F';
-  const pts=t.points_balance||0;
-  // Apply truck brand colors to this screen
+  const pts=S.activeTruck.points_balance||0;
+
   document.getElementById('c-truck-header').style.background=`linear-gradient(180deg,rgba(${hexRGB(p)},.12) 0%,transparent 100%)`;
   setText('ct-name',t.truck_name||'Food Truck');
   setText('ct-tagline',t.tagline||'');
   setText('ct-emoji',t.emoji||'🚚');
   setText('ct-pts',pts);
-  setText('ct-visits',t.visit_count||0);
-  setText('ct-saved','$'+(t.total_saved||0).toFixed(0));
+  setText('ct-visits',S.activeTruck.visit_count||0);
+  setText('ct-saved','$'+(S.activeTruck.total_saved||0).toFixed(0));
+  setText('ct-pts-note',t.truck_name||'this truck');
+
   // Location
-  const loc=localStorage.getItem('tl_location'+(t.id==='demo'?'':('_'+t.id)))||'';
+  const loc=t.location_today||localStorage.getItem('tl_location_'+(t.id==='demo'?'':t.id))||'';
   const locBar=document.getElementById('ct-location-bar');
   if(locBar){locBar.style.display=loc?'block':'none';setText('ct-location-text',loc)}
+
   // Tier
   const tier=DEFAULT_TIERS.slice().reverse().find(tr=>pts>=tr.pts_threshold)||DEFAULT_TIERS[0];
   const nextTier=DEFAULT_TIERS.find(tr=>pts<tr.pts_threshold);
@@ -2319,11 +2402,33 @@ function renderTruckDash(){
     const fill=document.getElementById('ct-prog-fill');
     if(fill){fill.style.width=Math.min(pct,100)+'%';fill.style.background=`linear-gradient(90deg,${p},${t.color_secondary||'#F5B800'})`}
   }
+
   // Streak
-  const streak=t.current_streak||0;
+  const streak=S.activeTruck.current_streak||0;
   setText('ct-streak',streak+' day'+(streak!==1?'s':''));
   renderStreakDays('ct-streak-days',streak);
   setText('ct-streak-tip',streak>0?`💡 Come back tomorrow to keep your ${streak}-day streak!`:'Visit today to start your streak!');
+
+  // Check-in button — show if already checked in today
+  const todayKey='spin_used_'+t.id+'_'+new Date().toDateString();
+  const alreadySpun=localStorage.getItem(todayKey);
+  const checkinBtn=document.getElementById('ct-checkin-btn');
+  if(checkinBtn){
+    if(alreadySpun){
+      checkinBtn.textContent='✅ Checked In Today · Come Back Tomorrow!';
+      checkinBtn.style.background='#E8F5E9';
+      checkinBtn.style.color='#2E7D32';
+      checkinBtn.style.boxShadow='none';
+      checkinBtn.disabled=true;
+    } else {
+      checkinBtn.textContent='⚡ Check In & Spin the Wheel';
+      checkinBtn.style.background='';
+      checkinBtn.style.color='';
+      checkinBtn.style.boxShadow='';
+      checkinBtn.disabled=false;
+    }
+  }
+
   // Rewards
   renderTruckRewards();
 }
@@ -2356,31 +2461,47 @@ function renderTruckRewards(){
 async function checkInAtTruck(){
   if(!S.customer){showToast('Please sign in first');return}
   if(!S.activeTruck){showToast('No truck selected');return}
+
+  // Check 1 spin per day per truck (client-side guard — server also enforces)
+  const todayKey='spin_used_'+S.activeTruck.id+'_'+new Date().toDateString();
+  const alreadySpun=localStorage.getItem(todayKey);
+
   if(S.activeTruck.id==='demo'){
-    // Demo mode
-    S.visitPtsEarned=50;
-    S.pendingWin=null;
-    goC('s-c-spin');
-    return;
+    S.visitPtsEarned=50; S.pendingWin=null;
+    if(alreadySpun){showToast('✅ Already spun today! Come back tomorrow for another spin.');return}
+    goC('s-c-spin'); return;
   }
+
   showLoad('Checking in...');
   const r=await apiPost('/api/customer/visit',{customer_id:S.customer.id,vendor_id:S.activeTruck.id});
   hideLoad();
+
   if(!r.ok){
-    if(r.status===409){showToast('✅ Already checked in today! Come back tomorrow.');return}
-    showToast('❌ '+(r.data.error||'Check-in error'));return;
+    const status=r.data?.status||r.status;
+    if(status===409||r.data?.error?.includes('today')){
+      showToast('✅ Already checked in today! Come back tomorrow for points & spin.');
+      return;
+    }
+    showToast('❌ '+(r.data?.error||'Check-in error')); return;
   }
+
   const d=r.data.data;
   S.visitPtsEarned=d.pts_earned||50;
   S.pendingWin=d.spin_result||null;
-  // Update truck in myTrucks
+
+  // Update per-truck balance — visit pts already applied by server
   const idx=S.myTrucks.findIndex(t=>t.id===S.activeTruck.id);
-  if(idx>=0){S.myTrucks[idx].points_balance=d.new_balance;S.myTrucks[idx].current_streak=d.new_streak}
+  if(idx>=0){
+    S.myTrucks[idx].points_balance=d.new_balance;
+    S.myTrucks[idx].current_streak=d.new_streak;
+    S.myTrucks[idx].visit_count=(S.myTrucks[idx].visit_count||0)+1;
+  }
   S.activeTruck.points_balance=d.new_balance;
   S.activeTruck.current_streak=d.new_streak;
   localStorage.setItem('tl_my_trucks',JSON.stringify(S.myTrucks));
   localStorage.setItem('tl_active_truck',JSON.stringify(S.activeTruck));
-  if(d.tier_upgraded) showToast('🎉 You leveled up!');
+
+  if(d.tier_upgraded) showToast('🎉 You leveled up to a new tier!');
   goC('s-c-spin');
 }
 
@@ -2496,23 +2617,73 @@ function saveBirthday(){
 /* ════════════════════════════════════
    CUSTOMER: HISTORY
 ════════════════════════════════════ */
-function renderHistory(){
+async function renderHistory(){
   const el=document.getElementById('c-hist-body');
   if(!el) return;
   if(!S.customer){el.innerHTML='<div style="text-align:center;padding:32px 0;color:var(--mu)">Sign in to see your history</div>';return}
-  if(!S.myTrucks.length){el.innerHTML='<div style="text-align:center;padding:32px 0;color:var(--mu)">No visits yet — scan a truck QR to start!</div>';return}
-  el.innerHTML='<div style="text-align:center;padding:20px;color:var(--mu)">Loading...</div>';
-  // In live app this would fetch from API
-  // For now show trucks summary
-  const rows=S.myTrucks.map(t=>`
-    <div class="hist-item">
-      <div class="hist-left">
-        <div class="hist-ico">${t.emoji||'🚚'}</div>
-        <div><div class="hist-desc">${t.truck_name}</div><div class="hist-date">${t.visit_count||0} total visits</div></div>
-      </div>
-      <div class="hist-pts" style="color:var(--gd)">${t.points_balance||0} pts</div>
-    </div>`).join('');
-  el.innerHTML=rows||'<div style="text-align:center;padding:32px 0;color:var(--mu)">No history yet</div>';
+
+  el.innerHTML='<div style="text-align:center;padding:32px;color:var(--mu);font-weight:600">Loading history...</div>';
+
+  try {
+    const r=await apiGet('/api/customer/'+S.customer.id+'/history');
+    if(!r.ok || !r.data.data){
+      el.innerHTML='<div style="text-align:center;padding:32px;color:var(--mu)">No history yet — check in at a truck to start!</div>';
+      return;
+    }
+    const {visits=[],redemptions=[]}=r.data.data;
+    if(!visits.length && !redemptions.length){
+      el.innerHTML='<div style="text-align:center;padding:40px 20px"><div style="font-size:40px;margin-bottom:12px">📋</div><div style="font-size:15px;font-weight:700;margin-bottom:6px">No activity yet</div><div style="font-size:13px;color:var(--mu)">Check in at a truck to start earning points!</div></div>';
+      return;
+    }
+    // Merge and sort by date
+    const all=[
+      ...visits.map(v=>({...v,_type:'visit'})),
+      ...redemptions.map(r=>({...r,_type:'redeem'}))
+    ].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
+
+    const rows=all.slice(0,40).map(item=>{
+      if(item._type==='visit'){
+        const spinPts=item.spin_results?.prize_value?'+'+item.spin_results.prize_value+' spin':'';
+        return `
+        <div class="hist-item">
+          <div class="hist-left">
+            <div class="hist-ico" style="background:#E8F5E9">⚡</div>
+            <div>
+              <div class="hist-desc">Check-in</div>
+              <div class="hist-date">${fmtHistDate(item.created_at)}${spinPts?' · '+spinPts+' pts bonus':''}</div>
+            </div>
+          </div>
+          <div class="hist-pts" style="color:var(--gn)">+${item.pts_earned||0}</div>
+        </div>`;
+      } else {
+        return `
+        <div class="hist-item">
+          <div class="hist-left">
+            <div class="hist-ico" style="background:#FFF3E0">${item.rewards?.emoji||'🎁'}</div>
+            <div>
+              <div class="hist-desc">${item.rewards?.name||'Reward redeemed'}</div>
+              <div class="hist-date">${fmtHistDate(item.created_at)} · Code: ${item.code||'–'}</div>
+            </div>
+          </div>
+          <div class="hist-pts" style="color:var(--rd)">−${item.pts_spent||0}</div>
+        </div>`;
+      }
+    }).join('');
+    el.innerHTML=`<div class="card" style="padding:0;overflow:hidden">${rows}</div>`;
+  } catch(e){
+    el.innerHTML='<div style="text-align:center;padding:32px;color:var(--mu)">Could not load history. Try again.</div>';
+  }
+}
+
+function fmtHistDate(iso){
+  if(!iso) return '–';
+  const d=new Date(iso);
+  const now=new Date();
+  const diff=(now-d)/86400000;
+  if(diff<1) return 'Today';
+  if(diff<2) return 'Yesterday';
+  if(diff<7) return Math.floor(diff)+' days ago';
+  return d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
 }
 
 /* ════════════════════════════════════
@@ -2522,18 +2693,21 @@ function renderSpinPreview(){
   const el=document.getElementById('spp-grid');
   if(!el) return;
   const prizes=S.prizes.length?S.prizes:DEFAULT_PRIZES;
-  const sorted=[...prizes].sort((a,b)=>(b.pts||0)-(a.pts||0));
-  const maxPts=Math.max(...prizes.map(p=>p.pts||0));
+  // Use prize_value from API or pts fallback
+  const withPts = prizes.map(p=>({...p, pts: parseInt(p.prize_value||p.pts||25)}));
+  const sorted=[...withPts].sort((a,b)=>b.pts-a.pts);
+  const maxPts=Math.max(...withPts.map(p=>p.pts));
   el.innerHTML=sorted.slice(0,6).map(p=>{
-    const pts=p.pts||0;
-    return `<div class="spp-item ${pts===maxPts?'jackpot':''}">
-      <div style="font-size:18px;margin-bottom:3px">${p.emoji}</div>
-      <div class="spp-pts">+${pts}</div>
-      <div class="spp-lbl">pts${pts===maxPts?' 🏆':''}</div>
+    return `<div class="spp-item ${p.pts===maxPts?'jackpot':''}">
+      <div style="font-size:18px;margin-bottom:3px">${p.emoji||'⚡'}</div>
+      <div class="spp-pts">+${p.pts}</div>
+      <div class="spp-lbl">pts${p.pts===maxPts?' 🏆':''}</div>
     </div>`;
   }).join('');
-  setText('spin-truck-name',S.activeTruck?.truck_name||'this truck');
-  setText('spin-visit-pts',S.visitPtsEarned||50);
+  const truckName = S.activeTruck?.truck_name||'this truck';
+  setText('spin-truck-name', truckName);
+  setText('spin-truck-name2', truckName);
+  setText('spin-visit-pts', S.visitPtsEarned||50);
 }
 
 function drawWheel(angle){
@@ -2590,14 +2764,34 @@ function doSpin(){
     else{
       S.spinning=false;btn.textContent='SPIN THE WHEEL';btn.disabled=false;
       const won=segs[winIdx];
-      const wonPts=won.pts||0;
+      // Spin pts: check prize_value first (from API), then pts fallback
+      const wonPts=parseInt(won.prize_value||won.pts||25);
       const visitPts=S.visitPtsEarned||50;
-      const newBal=(S.activeTruck?.points_balance||0);
+
+      // Update truck balance with BOTH visit pts + spin pts
+      const prevBal=S.activeTruck?.points_balance||0;
+      const newBal=prevBal+wonPts; // visit pts already added on check-in, just add spin now
+      if(S.activeTruck){
+        S.activeTruck.points_balance=newBal;
+        localStorage.setItem('tl_active_truck',JSON.stringify(S.activeTruck));
+        // Also update in myTrucks list
+        const idx=S.myTrucks.findIndex(t=>t.id===S.activeTruck.id);
+        if(idx>=0){
+          S.myTrucks[idx].points_balance=newBal;
+          localStorage.setItem('tl_my_trucks',JSON.stringify(S.myTrucks));
+        }
+      }
       S.pendingWin=null;
+
+      // Mark spin used today for this truck
+      const todayKey='spin_used_'+S.activeTruck?.id+'_'+new Date().toDateString();
+      localStorage.setItem(todayKey,'1');
+
       setText('win-pts-big','+'+wonPts);
-      setText('win-visit-pts','+'+visitPts);
-      setText('win-spin-pts','+'+wonPts);
+      setText('win-visit-pts','+'+visitPts+' pts');
+      setText('win-spin-pts','+'+wonPts+' bonus pts');
       setText('win-truck-name',S.activeTruck?.truck_name||'this truck');
+      setText('win-truck-name-top',S.activeTruck?.truck_name||'this truck');
       setText('win-new-balance',newBal+' pts');
       confetti();openSheet('sh-win');
     }
@@ -2940,14 +3134,24 @@ async function sendVendorReset(){
   if(!email||!email.includes('@')){showErr(errEl,'Please enter a valid email address');return}
   const btn = document.getElementById('v-forgot-btn');
   btn.disabled=true; btn.textContent='Sending...';
-  const r = await fetch(API+'/api/auth/forgot-password',{
-    method:'POST', headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({email, user_type:'vendor'})
-  });
-  btn.disabled=false; btn.textContent='Send Reset Link';
-  // Always show success — never reveal if email exists
-  form.style.display='none';
-  okEl.style.display='flex';
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(()=>controller.abort(), 15000);
+    await fetch(API+'/api/auth/forgot-password',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({email, user_type:'vendor'}),
+      signal: controller.signal
+    });
+    clearTimeout(timeout);
+  } catch(e) {
+    // Even on error, show success — security best practice (never reveal if email exists)
+    console.warn('Reset email error:', e);
+  } finally {
+    btn.disabled=false; btn.textContent='Send Reset Link';
+    form.style.display='none';
+    okEl.style.display='flex';
+  }
 }
 
 async function sendCustomerReset(){
@@ -2959,13 +3163,23 @@ async function sendCustomerReset(){
   if(!email||!email.includes('@')){showErr(errEl,'Please enter a valid email address');return}
   const btn = document.getElementById('c-forgot-btn');
   btn.disabled=true; btn.textContent='Sending...';
-  await fetch(API+'/api/auth/forgot-password',{
-    method:'POST', headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({email, user_type:'customer'})
-  });
-  btn.disabled=false; btn.textContent='Send Reset Link';
-  form.style.display='none';
-  okEl.style.display='flex';
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(()=>controller.abort(), 15000);
+    await fetch(API+'/api/auth/forgot-password',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({email, user_type:'customer'}),
+      signal: controller.signal
+    });
+    clearTimeout(timeout);
+  } catch(e) {
+    console.warn('Reset email error:', e);
+  } finally {
+    btn.disabled=false; btn.textContent='Send Reset Link';
+    form.style.display='none';
+    okEl.style.display='flex';
+  }
 }
 
 async function submitVendorReset(){
