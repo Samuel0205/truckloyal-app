@@ -292,8 +292,8 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
     <div class="screen" id="s-v-forgot">
       <div class="auth-wrap">
         <div class="auth-logo">🔑</div>
-        <div class="auth-title">Reset Password</div>
-        <div class="auth-sub">Enter the email address on your vendor account. We'll send you a secure reset link.</div>
+        <div class="auth-title" id="v-forgot-title">Reset Password</div>
+        <div class="auth-sub" id="v-forgot-sub">Enter the email on your vendor account. We'll send you a secure link to set a new password.</div>
         <div class="auth-err" id="v-forgot-err"></div>
         <div class="callout co-gn" id="v-forgot-ok" style="display:none;width:100%">
           <div class="co-icon">✅</div>
@@ -853,7 +853,6 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
         <!-- Profile Picture -->
         <div class="card">
           <div class="card-title">🖼️ Profile Picture</div>
-          <!-- Hidden real file input -->
           <input type="file" id="v-pic-file" accept="image/*" style="display:none" onchange="handleVendorPicFile(this)">
           <div style="display:flex;align-items:center;gap:16px;margin-bottom:14px">
             <div style="position:relative;flex-shrink:0;cursor:pointer" onclick="document.getElementById('v-pic-file').click()">
@@ -862,17 +861,43 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
             </div>
             <div style="flex:1">
               <div style="font-size:13px;font-weight:700;margin-bottom:4px">Truck profile picture</div>
-              <div style="font-size:12px;color:var(--mu);line-height:1.5;margin-bottom:10px">Tap your photo to choose from your camera or gallery.</div>
+              <div style="font-size:12px;color:var(--mu);line-height:1.5;margin-bottom:10px">Tap to choose from your camera or gallery.</div>
               <button class="btn btn-s btn-sm" style="width:100%" onclick="document.getElementById('v-pic-file').click()">📷 Choose Photo</button>
             </div>
           </div>
-          <div id="v-pic-uploading" style="display:none;text-align:center;padding:8px;font-size:13px;color:var(--mu);font-weight:600">⏳ Uploading...</div>
+          <div id="v-pic-uploading" style="display:none;text-align:center;padding:8px;font-size:13px;color:var(--mu);font-weight:600">⏳ Saving...</div>
+        </div>
+
+        <!-- Account Details -->
+        <div class="card">
+          <div class="card-title">👤 Account Details</div>
+          <div class="field"><label>Owner Name</label><input type="text" id="v-set-owner" placeholder="Your name"></div>
+          <div class="field"><label>Truck Name</label><input type="text" id="v-set-truck" placeholder="Your truck name"></div>
+          <div class="field"><label>Phone Number</label><input type="tel" id="v-set-phone" placeholder="(555) 000-0000" maxlength="14" oninput="formatPhone(this)"></div>
+          <div class="field"><label>Email Address</label><input type="email" id="v-set-email" placeholder="you@yourtruck.com" autocomplete="off"></div>
+          <button class="btn btn-p btn-sm" style="width:100%" onclick="saveVendorProfile()">Save Changes</button>
+        </div>
+
+        <!-- Change Password -->
+        <div class="card">
+          <div class="card-title">🔒 Change Password</div>
+          <div class="field"><label>Current Password</label><input type="password" id="v-set-cur-pass" placeholder="••••••••" autocomplete="current-password"></div>
+          <div class="field"><label>New Password</label><input type="password" id="v-set-new-pass" placeholder="8+ characters" autocomplete="new-password"></div>
+          <div class="field"><label>Confirm New Password</label><input type="password" id="v-set-confirm-pass" placeholder="Repeat new password" autocomplete="new-password"></div>
+          <div class="auth-err" id="v-pass-err" style="margin-bottom:10px"></div>
+          <button class="btn btn-s btn-sm" style="width:100%" onclick="changeVendorPassword()">Update Password</button>
+        </div>
+
+        <!-- Forgot password link from settings -->
+        <div style="text-align:center;margin-top:-4px;margin-bottom:4px">
+          <span style="font-size:12px;color:var(--mu);font-weight:600">Forgot your current password? </span>
+          <span style="font-size:12px;color:var(--brand);font-weight:800;cursor:pointer;text-decoration:underline" onclick="openVendorChangePassword()">Send reset link</span>
         </div>
 
         <!-- Vendor Number -->
         <div class="card">
           <div class="card-title">🔢 Your Vendor Number</div>
-          <div style="font-size:12px;color:var(--mu);margin-bottom:12px;line-height:1.5">Customers can find your truck by entering this number in the app. Share it at the window or post it on your truck.</div>
+          <div style="font-size:12px;color:var(--mu);margin-bottom:12px;line-height:1.5">Customers can find your truck by entering this number in the app.</div>
           <div style="background:var(--s2);border:2px solid var(--b2);border-radius:12px;padding:16px;text-align:center;margin-bottom:12px">
             <div style="font-size:36px;font-weight:900;letter-spacing:4px;color:var(--brand)" id="v-vendor-number">#––––</div>
             <div style="font-size:11px;color:var(--mu);margin-top:4px;font-weight:700">Your unique truck number</div>
@@ -899,27 +924,27 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
           </div>
         </div>
 
-        <!-- Notifications — removed "New Member Welcome" -->
+        <!-- Notifications -->
         <div class="card">
           <div class="card-title">🔔 Notifications</div>
           <div class="callout co-bl" style="margin-bottom:12px">
             <div class="co-icon">💡</div>
-            <div><div class="co-desc">Notifications are sent via SMS when Twilio is connected. Coming soon — these settings will be live when SMS is enabled.</div></div>
+            <div><div class="co-desc">SMS notifications coming soon. These settings will activate when SMS is enabled.</div></div>
           </div>
-          <div class="tr"><div class="tr-info"><div class="tt">Reward Unlocked</div><div class="td">Alert when customer has enough points to redeem</div></div><label class="tog"><input type="checkbox" checked><div class="tog-track"></div></label></div>
-          <div class="tr"><div class="tr-info"><div class="tt">Tier Upgrade</div><div class="td">Celebrate when a customer levels up</div></div><label class="tog"><input type="checkbox" checked><div class="tog-track"></div></label></div>
-          <div class="tr"><div class="tr-info"><div class="tt">Streak Warning</div><div class="td">Remind customer before their streak expires</div></div><label class="tog"><input type="checkbox" checked><div class="tog-track"></div></label></div>
+          <div class="tr"><div class="tr-info"><div class="tt">Reward Unlocked</div><div class="td">Alert when customer can redeem</div></div><label class="tog"><input type="checkbox" checked><div class="tog-track"></div></label></div>
+          <div class="tr"><div class="tr-info"><div class="tt">Tier Upgrade</div><div class="td">Celebrate when customer levels up</div></div><label class="tog"><input type="checkbox" checked><div class="tog-track"></div></label></div>
+          <div class="tr"><div class="tr-info"><div class="tt">Streak Warning</div><div class="td">Remind before streak expires</div></div><label class="tog"><input type="checkbox" checked><div class="tog-track"></div></label></div>
         </div>
 
-        <!-- Subscription + cancel -->
+        <!-- Subscription -->
         <div class="card">
           <div class="card-title">💳 Subscription</div>
-          <div class="tr"><div class="tr-info"><div class="tt">Plan</div><div class="td">Food Truck Rewards — up to 500 members</div></div><div class="tag tag-gn">$9.99/mo</div></div>
+          <div class="tr"><div class="tr-info"><div class="tt">Plan</div><div class="td">Food Truck Rewards</div></div><div class="tag tag-gn">$9.99/mo</div></div>
           <div class="tr"><div class="tr-info"><div class="tt">Status</div></div><div class="tag tag-bl" id="v-plan-status">Trial</div></div>
           <div class="tr"><div class="tr-info"><div class="tt">Trial ends</div></div><div style="font-size:13px;color:var(--mu)" id="v-trial-end">–</div></div>
           <div class="callout co-or" style="margin-top:12px;margin-bottom:0">
             <div class="co-icon">⚠️</div>
-            <div><div class="co-title">Cancel subscription</div><div class="co-desc">You'll keep access until the end of your current billing period. Your customer data is preserved for 30 days if you reactivate.</div>
+            <div><div class="co-title">Cancel subscription</div><div class="co-desc">You'll keep access until the end of your billing period.</div>
             <button class="btn btn-sm" style="margin-top:10px;background:#FEE2E2;color:#B91C1C;border:none;font-weight:700" onclick="cancelSubscription()">Cancel My Subscription</button>
             </div>
           </div>
@@ -1498,18 +1523,35 @@ function setMode(mode){
   document.getElementById('mb-c').classList.toggle('on',mode==='customer');
   if(mode==='vendor'){
     if(S.vendorToken&&S.vendor){
-      const dest=(S.vScreen==='s-v-login'||S.vScreen==='s-v-signup')?'s-v-home':S.vScreen;
+      // Don't redirect away from auth-related screens even when logged in
+      const authScreens=['s-v-login','s-v-signup','s-v-forgot','s-v-reset','s-v-card-setup'];
+      const dest=authScreens.includes(S.vScreen)?'s-v-home':S.vScreen;
       S.vScreen=dest; show(dest); renderNav(VNAV,dest); loadVendorHome();
-    } else { show('s-v-login'); S.vScreen='s-v-login'; renderNav([],'')}
+    } else {
+      // Not logged in — allow forgot/reset screens without redirecting to login
+      const allowedUnauth=['s-v-login','s-v-signup','s-v-forgot','s-v-reset','s-v-card-setup','s-v-terms','s-v-privacy'];
+      if(allowedUnauth.includes(S.vScreen)){
+        show(S.vScreen); renderNav([],'' );
+      } else {
+        show('s-v-login'); S.vScreen='s-v-login'; renderNav([],'' );
+      }
+    }
   } else {
     if(S.customer){
-      const dest=(S.cScreen==='s-c-signup'||S.cScreen==='s-c-login')?'s-c-home':S.cScreen;
+      const authScreens=['s-c-signup','s-c-login','s-c-forgot','s-c-reset'];
+      const dest=authScreens.includes(S.cScreen)?'s-c-home':S.cScreen;
       S.cScreen=dest; show(dest); renderNav(CNAV,dest);
       if(dest==='s-c-home') renderMyTrucks();
       if(dest==='s-c-truck') renderTruckDash();
       if(dest==='s-c-spin'){renderSpinPreview();drawWheel(S.spinAngle)}
     } else {
-      show('s-c-signup'); S.cScreen='s-c-signup'; renderNav([],'')}
+      const allowedUnauth=['s-c-signup','s-c-login','s-c-forgot','s-c-reset'];
+      if(allowedUnauth.includes(S.cScreen)){
+        show(S.cScreen); renderNav([],'' );
+      } else {
+        show('s-c-signup'); S.cScreen='s-c-signup'; renderNav([],'' );
+      }
+    }
   }
 }
 
@@ -2134,7 +2176,7 @@ async function loadCustomers(){
 async function renderVSettings(){
   if(!S.vendor) return;
 
-  // If vendor_number missing from cached object, refresh from API
+  // Refresh from API if vendor_number missing
   if(!S.vendor.vendor_number){
     const r = await apiGet('/api/vendor/me');
     if(r.ok && r.data.data){
@@ -2150,17 +2192,23 @@ async function renderVSettings(){
   setText('v-num-inline',num);
   if(S.vendor.trial_ends_at) setText('v-trial-end',new Date(S.vendor.trial_ends_at).toLocaleDateString());
 
+  // Pre-fill account fields
+  setVal('v-set-owner', S.vendor.owner_name||'');
+  setVal('v-set-truck', S.vendor.truck_name||'');
+  setVal('v-set-phone', formatPhoneDisplay(S.vendor.phone||''));
+  setVal('v-set-email', S.vendor.email||'');
+
   // Status badge
-  const statusEl=document.getElementById('v-plan-status');
+  const statusEl = document.getElementById('v-plan-status');
   if(statusEl){
-    const now=new Date();
-    let status='Trial',cls='tag-bl';
+    const now = new Date();
+    let status='Trial', cls='tag-bl';
     if(S.vendor.plan_active){status='Active';cls='tag-gn';}
     else if(S.vendor.promo_expires_at&&new Date(S.vendor.promo_expires_at)>now){status='Promo';cls='tag-gd';}
     statusEl.textContent=status; statusEl.className='tag '+cls;
   }
 
-  // Profile picture — check vendor object first, then dedicated key
+  // Profile picture
   const pic  = S.vendor.profile_picture_url || localStorage.getItem('tl_vpic') || '';
   const prev = document.getElementById('v-prof-pic-preview');
   if(prev){
@@ -2169,7 +2217,7 @@ async function renderVSettings(){
       const img = document.createElement('img');
       img.src = pic;
       img.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:50%';
-      img.onerror = () => { prev.innerHTML = ''; prev.textContent = S.vendor.emoji||'🚚'; };
+      img.onerror = () => { prev.innerHTML=''; prev.textContent=S.vendor.emoji||'🚚'; };
       prev.appendChild(img);
     } else {
       prev.textContent = S.vendor.emoji||'🚚';
@@ -2329,21 +2377,47 @@ function openTruck(i){
    CUSTOMER: JOIN TRUCK
 ════════════════════════════════════ */
 async function joinTruckByCode(){
-  const code=document.getElementById('c-truck-code-input')?.value.trim().toLowerCase();
-  if(!code){showToast('Enter a truck code');return}
+  let code = document.getElementById('c-truck-code-input')?.value.trim();
+  if(!code){showToast('Enter a truck code or number');return}
+  if(!S.customer){showToast('Please sign in first');return}
+
   showLoad('Finding truck...');
-  const r=await apiPost('/api/customer/join-truck',{slug:code,customer_id:S.customer?.id});
+
+  // If it's a 4-digit number, search by vendor_number first
+  const isNumber = /^\d{3,5}$/.test(code.replace('#',''));
+  if(isNumber){
+    const num = code.replace('#','');
+    const searchRes = await apiGet('/api/trucks/search?q=' + encodeURIComponent('#'+num));
+    if(searchRes.ok && searchRes.data.data?.length){
+      code = searchRes.data.data[0].slug;
+    }
+  }
+
+  const r = await apiPost('/api/customer/join-truck',{slug:code.toLowerCase(),customer_id:S.customer?.id});
   hideLoad();
-  if(!r.ok){showToast('❌ '+(r.data.error||'Truck not found'));return}
+  if(!r.ok){showToast('❌ '+(r.data?.error||'Truck not found — check the code'));return}
   const truck=r.data.data.truck;
   if(!S.myTrucks.find(t=>t.id===truck.id)){
     S.myTrucks.push(truck);
     localStorage.setItem('tl_my_trucks',JSON.stringify(S.myTrucks));
+  } else {
+    // Update existing entry with fresh data
+    const idx = S.myTrucks.findIndex(t=>t.id===truck.id);
+    if(idx>=0) S.myTrucks[idx]={...S.myTrucks[idx],...truck};
+    localStorage.setItem('tl_my_trucks',JSON.stringify(S.myTrucks));
   }
   S.activeTruck=truck;
+  S.rewards=truck.rewards||[...DEFAULT_REWARDS];
+  S.prizes=truck.prizes||[...DEFAULT_PRIZES];
   localStorage.setItem('tl_active_truck',JSON.stringify(truck));
-  S.rewards=[...DEFAULT_REWARDS]; S.prizes=[...DEFAULT_PRIZES];
-  showToast('🎉 Joined '+truck.truck_name+'!');
+  // Clear search
+  const searchEl=document.getElementById('c-truck-search');
+  const codeEl=document.getElementById('c-truck-code-input');
+  const resultsEl=document.getElementById('c-search-results');
+  if(searchEl) searchEl.value='';
+  if(codeEl) codeEl.value='';
+  if(resultsEl) resultsEl.innerHTML='';
+  showToast('🎉 '+(r.data.data.is_new?'Joined ':'Rejoined ')+truck.truck_name+'!');
   goC('s-c-truck');
 }
 
@@ -2358,7 +2432,74 @@ function joinDemoTruck(){
   goC('s-c-truck');
 }
 
-function startCustomerQRScan(){showToast('📷 QR scan requires device camera — enter truck code manually for now')}
+function startCustomerQRScan(){
+  // Use native file input with camera as fallback — works on Android WebView
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*';
+  input.capture = 'environment'; // Opens rear camera on mobile
+  input.style.display = 'none';
+  document.body.appendChild(input);
+
+  input.onchange = async () => {
+    const file = input.files?.[0];
+    document.body.removeChild(input);
+    if(!file) return;
+
+    showLoad('Reading QR code...');
+    try {
+      // Load jsQR dynamically
+      await loadScript('https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js');
+
+      const img = new Image();
+      const url = URL.createObjectURL(file);
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width  = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0);
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        URL.revokeObjectURL(url);
+
+        const code = window.jsQR && window.jsQR(imageData.data, imageData.width, imageData.height);
+        hideLoad();
+
+        if(code && code.data){
+          // Extract slug from URL or use raw data as slug
+          let slug = code.data;
+          // Handle URLs like foodtruckrewards.app/truckslug
+          const match = code.data.match(/\/([a-z0-9]+)\s*$/i);
+          if(match) slug = match[1].toLowerCase();
+          else slug = code.data.toLowerCase().replace(/[^a-z0-9]/g,'');
+
+          document.getElementById('c-truck-code-input').value = slug;
+          showToast('✅ QR scanned! Joining truck...');
+          joinTruckByCode();
+        } else {
+          showToast('❌ Could not read QR code — try entering the truck code manually');
+        }
+      };
+      img.onerror = () => { hideLoad(); showToast('❌ Could not load image'); };
+      img.src = url;
+    } catch(e) {
+      hideLoad();
+      showToast('❌ QR scan failed — enter the truck code manually');
+    }
+  };
+
+  input.oncancel = () => { document.body.removeChild(input); };
+  input.click();
+}
+
+function loadScript(src){
+  return new Promise((resolve, reject) => {
+    if(document.querySelector(`script[src="${src}"]`)){resolve();return;}
+    const s = document.createElement('script');
+    s.src = src; s.onload = resolve; s.onerror = reject;
+    document.head.appendChild(s);
+  });
+}
 
 /* ════════════════════════════════════
    CUSTOMER: TRUCK DASHBOARD
@@ -2499,15 +2640,17 @@ async function checkInAtTruck(){
   S.visitPtsEarned=d.pts_earned||50;
   S.pendingWin=d.spin_result||null;
 
-  // Update per-truck balance — visit pts already applied by server
+  // Update per-truck stats from server response
   const idx=S.myTrucks.findIndex(t=>t.id===S.activeTruck.id);
-  if(idx>=0){
-    S.myTrucks[idx].points_balance=d.new_balance;
-    S.myTrucks[idx].current_streak=d.new_streak;
-    S.myTrucks[idx].visit_count=(S.myTrucks[idx].visit_count||0)+1;
-  }
-  S.activeTruck.points_balance=d.new_balance;
-  S.activeTruck.current_streak=d.new_streak;
+  const updatedFields = {
+    points_balance: d.new_balance,
+    current_streak: d.new_streak,
+    visit_count: (S.activeTruck.visit_count||0) + 1,
+    last_visit_date: new Date().toISOString().split('T')[0],
+  };
+  if(idx>=0){ S.myTrucks[idx]={...S.myTrucks[idx],...updatedFields}; }
+  S.activeTruck={...S.activeTruck,...updatedFields};
+
   localStorage.setItem('tl_my_trucks',JSON.stringify(S.myTrucks));
   localStorage.setItem('tl_active_truck',JSON.stringify(S.activeTruck));
 
@@ -2651,16 +2794,21 @@ async function renderHistory(){
       ...redemptions.map(r=>({...r,_type:'redeem'}))
     ].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
 
+    // Build vendor id→name lookup from joined trucks
+    const vendorNames={};
+    S.myTrucks.forEach(t=>{ vendorNames[t.id]=t.truck_name||'Food Truck'; });
+
     const rows=all.slice(0,40).map(item=>{
+      const truckName = vendorNames[item.vendor_id] || 'Food Truck';
       if(item._type==='visit'){
-        const spinPts=item.spin_results?.prize_value?'+'+item.spin_results.prize_value+' spin':'';
+        const spinPts=item.spin_results?.prize_value?'+'+item.spin_results.prize_value+' spin bonus':'';
         return `
         <div class="hist-item">
           <div class="hist-left">
             <div class="hist-ico" style="background:#E8F5E9">⚡</div>
             <div>
-              <div class="hist-desc">Check-in</div>
-              <div class="hist-date">${fmtHistDate(item.created_at)}${spinPts?' · '+spinPts+' pts bonus':''}</div>
+              <div class="hist-desc">Check-in · <strong>${truckName}</strong></div>
+              <div class="hist-date">${fmtHistDate(item.created_at)}${spinPts?' · '+spinPts:''}</div>
             </div>
           </div>
           <div class="hist-pts" style="color:var(--gn)">+${item.pts_earned||0}</div>
@@ -2671,7 +2819,7 @@ async function renderHistory(){
           <div class="hist-left">
             <div class="hist-ico" style="background:#FFF3E0">${item.rewards?.emoji||'🎁'}</div>
             <div>
-              <div class="hist-desc">${item.rewards?.name||'Reward redeemed'}</div>
+              <div class="hist-desc">${item.rewards?.name||'Reward'} · <strong>${truckName}</strong></div>
               <div class="hist-date">${fmtHistDate(item.created_at)} · Code: ${item.code||'–'}</div>
             </div>
           </div>
@@ -2890,22 +3038,27 @@ function confetti(){
 async function searchTrucks(query) {
   const el = document.getElementById('c-search-results');
   query = (query || '').trim();
-  if (query.length < 2) { el.innerHTML = ''; return; }
-  el.innerHTML = '<div style="text-align:center;padding:12px;color:var(--mu);font-size:13px">Searching...</div>';
-  const res = await apiGet('/api/trucks/search?q=' + encodeURIComponent(query));
-  if (!res.ok || !res.data?.length) {
-    el.innerHTML = '<div style="text-align:center;padding:12px;color:var(--mu);font-size:13px;font-weight:600">No trucks found. Try a different name or enter the truck code directly.</div>';
-    return;
+  if (query.length < 1) { el.innerHTML = ''; return; }
+  el.innerHTML = '<div style="text-align:center;padding:12px;color:var(--mu);font-size:13px;font-weight:600">Searching...</div>';
+  try {
+    const res = await apiGet('/api/trucks/search?q=' + encodeURIComponent(query));
+    if (!res.ok || !res.data.data?.length) {
+      // Also try joining by the number/code directly
+      el.innerHTML = '<div style="text-align:center;padding:12px;color:var(--mu);font-size:13px;font-weight:600">No trucks found — try the truck code or number below</div>';
+      return;
+    }
+    el.innerHTML = res.data.data.map(t => `
+      <div style="display:flex;align-items:center;gap:12px;background:white;border:2px solid var(--b2);border-radius:12px;padding:12px;margin-bottom:8px;cursor:pointer;box-shadow:var(--sh1)" onclick="joinTruckFromSearch('${t.slug}','${(t.truck_name||'').replace(/'/g,"\\'")}')">
+        <div style="font-size:26px;width:44px;height:44px;background:var(--s2);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0">${t.emoji||'🚚'}</div>
+        <div style="flex:1">
+          <div style="font-weight:800;font-size:14px">${t.truck_name}</div>
+          <div style="font-size:12px;color:var(--mu);font-weight:600">Truck #${t.vendor_number||'–'}</div>
+        </div>
+        <div style="font-size:20px;color:var(--brand)">→</div>
+      </div>`).join('');
+  } catch(e) {
+    el.innerHTML = '<div style="text-align:center;padding:12px;color:var(--mu);font-size:13px">Search unavailable — enter the truck code below</div>';
   }
-  el.innerHTML = res.data.map(t => `
-    <div style="display:flex;align-items:center;gap:12px;background:white;border:2px solid var(--b2);border-radius:12px;padding:12px;margin-bottom:8px;cursor:pointer;box-shadow:var(--sh1)" onclick="joinTruckFromSearch('${t.slug}','${(t.truck_name||'').replace(/'/g,'')}')" >
-      <div style="font-size:26px;width:44px;height:44px;background:var(--s2);border-radius:10px;display:flex;align-items:center;justify-content:center">${t.emoji||'🚚'}</div>
-      <div style="flex:1">
-        <div style="font-weight:800;font-size:14px">${t.truck_name}</div>
-        <div style="font-size:12px;color:var(--mu);font-weight:600">Truck #${t.vendor_number||'–'}</div>
-      </div>
-      <div style="font-size:22px;color:var(--brand)">→</div>
-    </div>`).join('');
 }
 
 async function joinTruckFromSearch(slug, name) {
@@ -3316,6 +3469,65 @@ function copyVendorNumber() {
     .then(() => showToast('📋 Vendor number #' + num + ' copied!'))
     .catch(() => showToast('#' + num));
 }
+
+async function saveVendorProfile(){
+  const owner = document.getElementById('v-set-owner')?.value.trim();
+  const truck = document.getElementById('v-set-truck')?.value.trim();
+  if(!truck){showToast('Truck name is required');return}
+  showLoad('Saving...');
+  const r1 = await apiPatch('/api/vendor/brand', {truck_name: truck});
+  const r2 = await apiPatch('/api/vendor/profile', {owner_name: owner||undefined});
+  hideLoad();
+  if(r1.ok||r2.ok){
+    const fresh=await apiGet('/api/vendor/me');
+    if(fresh.ok){S.vendor=fresh.data.data;localStorage.setItem('tl_vendor',JSON.stringify(S.vendor));}
+    showToast('✅ Profile saved!');
+    renderVSettings();
+  } else {
+    showToast('❌ Error saving — try again');
+  }
+}
+
+async function changeVendorPassword(){
+  const cur     = document.getElementById('v-set-cur-pass')?.value;
+  const newPass = document.getElementById('v-set-new-pass')?.value;
+  const confirm = document.getElementById('v-set-confirm-pass')?.value;
+  const errEl   = document.getElementById('v-pass-err');
+  errEl.classList.remove('show');
+  if(!cur){showErr(errEl,'Enter your current password');return}
+  if(!newPass||newPass.length<8){showErr(errEl,'New password must be at least 8 characters');return}
+  if(newPass!==confirm){showErr(errEl,'Passwords do not match');return}
+  showLoad('Updating...');
+  const r=await apiPatch('/api/vendor/profile',{current_password:cur,new_password:newPass});
+  hideLoad();
+  if(r.ok){
+    document.getElementById('v-set-cur-pass').value='';
+    document.getElementById('v-set-new-pass').value='';
+    document.getElementById('v-set-confirm-pass').value='';
+    showToast('✅ Password updated!');
+  } else {
+    showErr(errEl, r.data?.error||'Incorrect current password');
+  }
+}
+
+/* ── VENDOR PROFILE SAVE ── */
+function openVendorChangePassword(){
+  // Open forgot screen from settings context — pre-fill email, adjust title
+  const emailEl = document.getElementById('v-forgot-email');
+  if(emailEl && S.vendor?.email) emailEl.value = S.vendor.email;
+  const titleEl = document.getElementById('v-forgot-title');
+  if(titleEl) titleEl.textContent = 'Change Password';
+  const subEl = document.getElementById('v-forgot-sub');
+  if(subEl) subEl.textContent = 'We\'ll send a secure link to '+( S.vendor?.email||'your email')+' to set a new password.';
+  // Reset form state
+  const okEl = document.getElementById('v-forgot-ok');
+  const formEl = document.getElementById('v-forgot-form');
+  if(okEl) okEl.style.display='none';
+  if(formEl) formEl.style.display='block';
+  // Navigate without going through goV (which would redirect logged-in vendors)
+  S.vScreen='s-v-forgot'; show('s-v-forgot'); renderNav([],'' );
+}
+
 
 /* ════════════════════════════════════
    APP BOOT — runs once on page load
