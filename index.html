@@ -1523,8 +1523,13 @@ function setMode(mode){
   document.getElementById('mb-c').classList.toggle('on',mode==='customer');
   if(mode==='vendor'){
     if(S.vendorToken&&S.vendor){
-      // Don't redirect away from auth-related screens even when logged in
-      const authScreens=['s-v-login','s-v-signup','s-v-forgot','s-v-reset','s-v-card-setup'];
+      // card-setup is a required step — if they're on it, keep them there
+      if(S.vScreen==='s-v-card-setup'){
+        show('s-v-card-setup'); renderNav([],'' );
+        return;
+      }
+      // For other auth screens when logged in, go home
+      const authScreens=['s-v-login','s-v-signup','s-v-forgot','s-v-reset'];
       const dest=authScreens.includes(S.vScreen)?'s-v-home':S.vScreen;
       S.vScreen=dest; show(dest); renderNav(VNAV,dest); loadVendorHome();
     } else {
@@ -1719,7 +1724,8 @@ async function submitCardSetup(){
   }
 
   if(!stripeInstance || !stripeCardElement){
-    landOnDashboard();
+    showErr(errEl, 'Payment system is loading — please wait a moment and try again.');
+    btn.disabled=false; btn.textContent='🎉 Start My Free 14-Day Trial';
     return;
   }
 
@@ -1786,12 +1792,15 @@ async function submitCardSetup(){
 }
 
 function skipCardForNow(){
-  // Allow trial without card — they'll be prompted when trial ends
-  landOnDashboard();
-  showToast('⚠️ Add your card in Settings before your trial ends');
+  // NO LONGER ALLOWED — card is required to complete signup
+  showToast('⚠️ Please enter your card details to start your free trial.');
 }
 
 function landOnDashboard(){
+  // Only allow access if vendor has gone through card setup
+  // Check if Stripe subscription was created or vendor is in trial
+  const v = S.vendor;
+  if(!v) { vendorLogout(); return; }
   S.prizes=[...DEFAULT_PRIZES]; S.rewards=[...DEFAULT_REWARDS];
   S.vScreen='s-v-home'; show('s-v-home'); renderNav(VNAV,'s-v-home');
   loadVendorHome();
