@@ -1757,7 +1757,9 @@ function landOnDashboard(){
 
 function vendorLogout(){
   S.vendorToken=null; S.vendor=null;
-  localStorage.removeItem('tl_vendor_token'); localStorage.removeItem('tl_vendor');
+  localStorage.removeItem('tl_vendor_token');
+  localStorage.removeItem('tl_vendor');
+  localStorage.removeItem('tl_vpic');
   S.vScreen='s-v-login'; show('s-v-login'); renderNav([],'' );
   showToast('Signed out');
 }
@@ -2158,12 +2160,20 @@ async function renderVSettings(){
     statusEl.textContent=status; statusEl.className='tag '+cls;
   }
 
-  // Profile picture preview
-  const pic  = S.vendor.profile_picture_url;
+  // Profile picture — check vendor object first, then dedicated key
+  const pic  = S.vendor.profile_picture_url || localStorage.getItem('tl_vpic') || '';
   const prev = document.getElementById('v-prof-pic-preview');
   if(prev){
-    if(pic){prev.innerHTML=`<img src="${pic}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;}
-    else{prev.textContent=S.vendor.emoji||'🚚';}
+    if(pic){
+      prev.innerHTML = '';
+      const img = document.createElement('img');
+      img.src = pic;
+      img.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:50%';
+      img.onerror = () => { prev.innerHTML = ''; prev.textContent = S.vendor.emoji||'🚚'; };
+      prev.appendChild(img);
+    } else {
+      prev.textContent = S.vendor.emoji||'🚚';
+    }
   }
 }
 
@@ -2937,28 +2947,55 @@ async function handleVendorPicFile(input) {
   const upEl = document.getElementById('v-pic-uploading');
   const prev = document.getElementById('v-prof-pic-preview');
   if (upEl) upEl.style.display = 'block';
+
+  // Correct token key — vendor token stored as tl_vendor_token
+  const token = S.vendorToken || localStorage.getItem('tl_vendor_token') || '';
+
   try {
     const b64 = await resizeImageToBase64(file);
-    // Show preview immediately
-    if (prev) prev.innerHTML = `<img src="${b64}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
-    // Upload to API
-    const res = await fetch(API + '/api/vendor/upload-picture', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + (S.vendor?.token || localStorage.getItem('tl_vtoken') || '') },
-      body: JSON.stringify({ image_b64: b64 })
-    });
-    const data = await res.json();
-    if (res.ok && data.data?.url) {
-      S.vendor = { ...S.vendor, profile_picture_url: data.data.url };
-      localStorage.setItem('tl_vendor', JSON.stringify(S.vendor));
-      showToast('✅ Profile picture saved!');
-    } else {
-      // Still save the base64 directly as the picture URL (works fine for display)
-      await apiPatch('/api/vendor/brand', { profile_picture_url: b64 });
-      showToast('✅ Profile picture saved!');
+
+    // Show preview immediately — don't wait for API
+    if (prev) {
+      prev.innerHTML = '';
+      const img = document.createElement('img');
+      img.src = b64;
+      img.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:50%';
+      prev.appendChild(img);
     }
+
+    // Save to local state right away so it persists even if API is slow
+    S.vendor = { ...S.vendor, profile_picture_url: b64 };
+    localStorage.setItem('tl_vendor', JSON.stringify(S.vendor));
+    localStorage.setItem('tl_vpic', b64);
+
+    // Try API upload for server persistence
+    try {
+      const res = await fetch(API + '/api/vendor/upload-picture', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token
+        },
+        body: JSON.stringify({ image_b64: b64 })
+      });
+      const data = await res.json();
+      if (res.ok && data.data?.url) {
+        S.vendor = { ...S.vendor, profile_picture_url: data.data.url };
+        localStorage.setItem('tl_vendor', JSON.stringify(S.vendor));
+        localStorage.setItem('tl_vpic', data.data.url);
+      } else {
+        // Fallback: save base64 directly via PATCH
+        await apiPatch('/api/vendor/brand', { profile_picture_url: b64 });
+      }
+    } catch(e) {
+      // API failed but preview already showing — try PATCH as fallback
+      try { await apiPatch('/api/vendor/brand', { profile_picture_url: b64 }); } catch(e2){}
+    }
+
+    showToast('✅ Profile picture saved!');
   } catch(e) {
-    showToast('❌ Upload failed — try a smaller image');
+    showToast('❌ Could not process image — try a different photo');
+    console.error('Vendor pic error:', e);
   } finally {
     if (upEl) upEl.style.display = 'none';
     input.value = '';
