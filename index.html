@@ -2634,34 +2634,44 @@ async function checkInAtTruck(){
   if(!S.customer){showToast('Please sign in first');return}
   if(!S.activeTruck){showToast('No truck selected');return}
 
-  // Check 1 spin per day per truck (client-side guard — server also enforces)
   const todayKey='spin_used_'+S.activeTruck.id+'_'+new Date().toDateString();
   const alreadySpun=localStorage.getItem(todayKey);
 
   if(S.activeTruck.id==='demo'){
     S.visitPtsEarned=50; S.pendingWin=null;
-    if(alreadySpun){showToast('✅ Already spun today! Come back tomorrow for another spin.');return}
+    if(alreadySpun){showToast('✅ Already spun today! Come back tomorrow.');return}
     goC('s-c-spin'); return;
   }
 
+  // If spin says used but points show 0, something is stale — clear and retry
+  if(alreadySpun && (S.activeTruck.points_balance||0) === 0 && (S.activeTruck.visit_count||0) === 0){
+    localStorage.removeItem(todayKey);
+  }
+
+  // Always hit the API — let the server be the source of truth
   showLoad('Checking in...');
   const r=await apiPost('/api/customer/visit',{customer_id:S.customer.id,vendor_id:S.activeTruck.id});
   hideLoad();
 
   if(!r.ok){
-    const status=r.data?.status||r.status;
-    if(status===409||r.data?.error?.includes('today')){
-      showToast('✅ Already checked in today! Come back tomorrow for points & spin.');
+    const msg = r.data?.error||'';
+    if(r.status===409||msg.includes('today')||msg.includes('tomorrow')){
+      // Already checked in — still go to spin screen if they haven't spun yet
+      if(!alreadySpun){
+        S.visitPtsEarned=0; S.pendingWin=null;
+        goC('s-c-spin');
+      } else {
+        showToast('✅ Already checked in today! Come back tomorrow for points & spin.');
+      }
       return;
     }
-    showToast('❌ '+(r.data?.error||'Check-in error')); return;
+    showToast('❌ '+(msg||'Check-in error')); return;
   }
 
   const d=r.data.data;
   S.visitPtsEarned=d.pts_earned||50;
   S.pendingWin=d.spin_result||null;
 
-  // Update per-truck stats from server response
   const idx=S.myTrucks.findIndex(t=>t.id===S.activeTruck.id);
   const updatedFields = {
     points_balance: d.new_balance,
@@ -2671,7 +2681,6 @@ async function checkInAtTruck(){
   };
   if(idx>=0){ S.myTrucks[idx]={...S.myTrucks[idx],...updatedFields}; }
   S.activeTruck={...S.activeTruck,...updatedFields};
-
   localStorage.setItem('tl_my_trucks',JSON.stringify(S.myTrucks));
   localStorage.setItem('tl_active_truck',JSON.stringify(S.activeTruck));
 
