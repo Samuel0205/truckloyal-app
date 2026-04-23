@@ -302,6 +302,9 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
           <div class="co-icon">✅</div>
           <div><div class="co-title">Check your email</div><div class="co-desc">If an account exists with that email, a reset link has been sent. It expires in 1 hour. Check your spam folder if you don't see it.</div></div>
         </div>
+        <div id="v-forgot-back" style="display:none;width:100%;margin-top:16px">
+          <button class="btn btn-p" onclick="goV('s-v-login')">← Back to Sign In</button>
+        </div>
         <div class="auth-form" id="v-forgot-form">
           <div class="field"><label>Email Address</label><input type="email" id="v-forgot-email" placeholder="you@yourtruck.com" autocomplete="email" onkeydown="if(event.key==='Enter')sendVendorReset()"></div>
           <button class="btn btn-p" id="v-forgot-btn" onclick="sendVendorReset()">Send Reset Link</button>
@@ -1008,6 +1011,9 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
           <div class="co-icon">✅</div>
           <div><div class="co-title">Check your email</div><div class="co-desc">If an account exists with that email, a reset link has been sent. It expires in 1 hour. Check your spam folder if you don't see it.</div></div>
         </div>
+        <div id="c-forgot-back" style="display:none;width:100%;margin-top:16px">
+          <button class="btn btn-p" onclick="goC('s-c-login')">← Back to Sign In</button>
+        </div>
         <div class="auth-form" id="c-forgot-form">
           <div class="field"><label>Email Address</label><input type="email" id="c-forgot-email" placeholder="you@email.com" autocomplete="email" onkeydown="if(event.key==='Enter')sendCustomerReset()"></div>
           <button class="btn btn-p" id="c-forgot-btn" onclick="sendCustomerReset()">Send Reset Link</button>
@@ -1565,7 +1571,10 @@ function setMode(mode){
 
 function goV(id){
   S.vScreen=id; show(id);
-  if(id!=='s-v-login'&&id!=='s-v-signup') renderNav(VNAV,id); else renderNav([],''  );
+  // Only show nav when logged in AND on an authenticated screen
+  const noNavScreens=['s-v-login','s-v-signup','s-v-forgot','s-v-reset','s-v-card-setup','s-v-terms','s-v-privacy'];
+  if(noNavScreens.includes(id)) renderNav([],'' );
+  else renderNav(VNAV,id);
   if(id==='s-v-home')     loadVendorHome();
   if(id==='s-v-rewards')  loadVRewards();
   if(id==='s-v-spin')     loadVPrizes();
@@ -3353,6 +3362,8 @@ async function sendVendorReset(){
     btn.disabled=false; btn.textContent='Send Reset Link';
     form.style.display='none';
     okEl.style.display='flex';
+    const backEl=document.getElementById('v-forgot-back');
+    if(backEl) backEl.style.display='block';
   }
 }
 
@@ -3381,6 +3392,8 @@ async function sendCustomerReset(){
     btn.disabled=false; btn.textContent='Send Reset Link';
     form.style.display='none';
     okEl.style.display='flex';
+    const backEl=document.getElementById('c-forgot-back');
+    if(backEl) backEl.style.display='block';
   }
 }
 
@@ -3437,39 +3450,49 @@ async function submitCustomerReset(){
   goC('s-c-login');
 }
 
-/* ─ Deep link handler: check URL params on load for reset tokens ─ */
 function checkResetDeepLink(){
-  const params    = new URLSearchParams(window.location.search);
-  const token     = params.get('reset_token');
-  const userType  = params.get('user_type');
-  const email     = params.get('email');
+  const params   = new URLSearchParams(window.location.search);
+  const token    = params.get('reset_token');
+  const userType = params.get('user_type');
+  const email    = params.get('email');
   if(!token||!email) return;
 
-  // Store for use when form is submitted
+  // Store for form submission
   window._resetToken = token;
   window._resetEmail = email;
 
-  // Verify token is still valid before showing form
+  // IMPORTANT: Clear any stored session so they can't access dashboard
+  // without completing the password reset and logging in fresh
+  if(userType === 'vendor'){
+    S.vendorToken = null; S.vendor = null;
+    localStorage.removeItem('tl_vendor_token');
+    localStorage.removeItem('tl_vendor');
+  } else {
+    S.customer = null;
+    localStorage.removeItem('tl_customer');
+  }
+
+  // Verify token is still valid
   fetch(API+'/api/auth/verify-reset-token',{
     method:'POST', headers:{'Content-Type':'application/json'},
     body:JSON.stringify({token, email, user_type: userType||'vendor'})
   }).then(r=>r.json()).then(d=>{
     if(d.data?.valid){
       if(userType==='customer'){
-        setMode('customer');
-        show('s-c-reset'); S.cScreen='s-c-reset';
+        S.cScreen='s-c-reset'; show('s-c-reset'); renderNav([],'' );
       } else {
-        setMode('vendor');
-        show('s-v-reset'); S.vScreen='s-v-reset';
+        S.vScreen='s-v-reset'; show('s-v-reset'); renderNav([],'' );
       }
     } else {
       showToast('❌ This reset link has expired. Please request a new one.');
       history.replaceState(null,'',window.location.pathname);
+      if(userType==='customer'){ show('s-c-login'); }
+      else { show('s-v-login'); }
     }
   }).catch(()=>{
-    // If verify fails, still show form — reset endpoint will catch bad tokens
-    if(userType==='customer'){setMode('customer');show('s-c-reset');}
-    else{setMode('vendor');show('s-v-reset');}
+    // If verify fails, still show the reset form
+    if(userType==='customer'){ S.cScreen='s-c-reset'; show('s-c-reset'); renderNav([],'' ); }
+    else { S.vScreen='s-v-reset'; show('s-v-reset'); renderNav([],'' ); }
   });
 }
 
