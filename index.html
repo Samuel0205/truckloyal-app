@@ -7,6 +7,11 @@
 <title>Food Truck Rewards</title>
 <meta name="theme-color" content="#FFF8F0">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
+<style>
+  html,body{background:#FFF8F0 !important}
+  #splash-cover{position:fixed;inset:0;background:#FFF8F0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:99999;transition:opacity .4s .2s}
+  #splash-cover.hidden{opacity:0;pointer-events:none}
+</style>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -258,6 +263,13 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
 </style>
 </head>
 <body>
+<!-- White splash screen — prevents black flash in Android WebView -->
+<div id="splash-cover">
+  <div style="font-size:64px;margin-bottom:12px">🔥</div>
+  <div style="font-family:Arial,sans-serif;font-size:24px;font-weight:900;color:#FF5722;letter-spacing:-0.5px">Food Truck Rewards</div>
+  <div style="margin-top:28px;width:40px;height:40px;border:4px solid #FF5722;border-top-color:transparent;border-radius:50%;animation:splspin .7s linear infinite"></div>
+</div>
+<style>@keyframes splspin{to{transform:rotate(360deg)}}</style>
 <div id="app">
   <div class="topbar">
     <div class="tl-logo">🔥 Food Truck Rewards</div>
@@ -339,10 +351,10 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
         <div class="auth-sub">14 days free, then $9.99/mo. Cancel anytime. You'll enter your card on the next step.</div>
         <div class="auth-err" id="v-signup-err"></div>
         <div class="auth-form">
-          <div class="field"><label>Truck / Business Name</label><input type="text" id="v-su-name" placeholder="e.g. Flavor on Wheels"></div>
-          <div class="field"><label>Your Name</label><input type="text" id="v-su-owner" placeholder="First and last name"></div>
-          <div class="field"><label>Email</label><input type="email" id="v-su-email" placeholder="you@yourtruck.com" autocomplete="email"></div>
-          <div class="field"><label>Password</label><input type="password" id="v-su-pass" placeholder="8+ characters" autocomplete="new-password"></div>
+          <div class="field"><label>Truck / Business Name <span style="color:var(--rd)">*</span></label><input type="text" id="v-su-name" placeholder="e.g. Flavor on Wheels" required></div>
+          <div class="field"><label>Your Name <span style="color:var(--rd)">*</span></label><input type="text" id="v-su-owner" placeholder="First and last name" required></div>
+          <div class="field"><label>Email <span style="color:var(--rd)">*</span></label><input type="email" id="v-su-email" placeholder="you@yourtruck.com" autocomplete="email" required></div>
+          <div class="field"><label>Password <span style="color:var(--rd)">*</span></label><input type="password" id="v-su-pass" placeholder="8+ characters (required)" autocomplete="new-password" required></div>
           <button class="btn btn-p" id="v-signup-btn" onclick="vendorSignup()">Continue to Payment Setup →</button>
           <div class="auth-switch">Already have an account? <span onclick="goV('s-v-login')">Sign in</span></div>
         </div>
@@ -1839,15 +1851,30 @@ async function submitCardSetup(){
     const subData = await subRes.json();
 
     if(!subRes.ok){
-      // Subscription creation failed but card saved — let them in on trial
-      console.warn('Subscription creation failed:', subData.error);
-    } else {
-      S.vendor = { ...S.vendor, plan_active: true };
-      localStorage.setItem('tl_vendor', JSON.stringify(S.vendor));
+      // Subscription failed — delete the account we just created and show error
+      showErr(errEl, subData.error || 'Payment setup failed. Please check your card and try again.');
+      if(S.vendorToken){
+        // Clean up the account
+        try {
+          await fetch(API+'/api/vendor/delete-account',{
+            method:'DELETE',
+            headers:{'Content-Type':'application/json','Authorization':'Bearer '+S.vendorToken},
+            body:JSON.stringify({confirm:'DELETE'})
+          });
+        } catch(e){}
+        S.vendorToken=null; S.vendor=null;
+        localStorage.removeItem('tl_vendor_token');
+        localStorage.removeItem('tl_vendor');
+        S.pendingSignup=null;
+      }
+      btn.disabled=false; btn.textContent='🎉 Start My Free 14-Day Trial';
+      return;
     }
 
+    S.vendor = { ...S.vendor, plan_active: true, stripe_sub_id: subData.data?.subscription_id||'pending' };
+    localStorage.setItem('tl_vendor', JSON.stringify(S.vendor));
     landOnDashboard();
-    showToast('🎉 Welcome! Trial started — first charge on ' + document.getElementById('trial-end-date').textContent);
+    showToast('🎉 Welcome! Your 14-day free trial has started!');
 
   } catch(e) {
     showErr(errEl, 'Something went wrong. Please try again.');
@@ -2216,7 +2243,6 @@ function populatePointsForm(){
   setCheck('tog-first',S.vendor.double_first_visit!==false);
   setCheck('tog-streak',S.vendor.streak_bonus!==false);
   setCheck('tog-bday',!!S.vendor.birthday_reward);
-  setCheck('tog-ref',S.vendor.referral_bonus!==false);
   setCheck('tog-winback',!!S.vendor.winback_enabled);
   updatePtsExample();
 }
@@ -2237,7 +2263,6 @@ async function savePointsConfig(){
     double_first_visit:document.getElementById('tog-first').checked,
     streak_bonus:document.getElementById('tog-streak').checked,
     birthday_reward:document.getElementById('tog-bday').checked,
-    referral_bonus:document.getElementById('tog-ref').checked,
     winback_enabled:document.getElementById('tog-winback').checked,
   });
   hideLoad();
@@ -3898,6 +3923,11 @@ function openVendorChangePassword(){
 ════════════════════════════════════ */
 setMode(S.mode);
 checkResetDeepLink();
+// Hide splash screen after app initializes
+setTimeout(()=>{
+  const sc=document.getElementById('splash-cover');
+  if(sc){sc.classList.add('hidden');setTimeout(()=>sc.remove(),600);}
+}, 300);
 
 </script>
 <!-- Stripe.js loaded last so it never blocks app rendering -->
