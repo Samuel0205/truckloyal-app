@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>Food Truck Rewards</title>
+<meta name="theme-color" content="#FFF8F0">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -25,6 +27,7 @@
   --fd:'Nunito',sans-serif;--fd-weight:900;--fb:'Nunito',sans-serif;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{background:#FFF8F0}
 html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-family:var(--fb);-webkit-font-smoothing:antialiased}
 #app{display:flex;flex-direction:column;height:100%;max-width:430px;margin:0 auto;position:relative;overflow:hidden;background:var(--bg)}
 
@@ -560,7 +563,10 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
       <div class="vh-hero">
         <div class="vh-greet">Dashboard</div>
         <div class="vh-name" id="v-hero-name">My Truck 🚚</div>
-        <div class="live-pill"><div class="ldot"></div> Program Live · <span id="v-hero-members">0</span> members</div>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <div class="live-pill"><div class="ldot"></div> Program Live · <span id="v-hero-members">0</span> members</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.75);cursor:pointer;font-weight:700;padding:4px 10px;background:rgba(255,255,255,.15);border-radius:99px" onclick="loadVendorHome();showToast('↻ Refreshed')">↻ Refresh</div>
+        </div>
       </div>
       <div style="padding:14px 20px 0">
         <div class="stats g3">
@@ -583,7 +589,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
         <div class="qa" onclick="goV('s-v-rewards')"><div class="qa-ico">🎁</div><div class="qa-lbl">Rewards</div><div class="qa-sub">What customers earn</div></div>
         <div class="qa" onclick="goV('s-v-spin')"><div class="qa-ico">🎰</div><div class="qa-lbl">Spin Prizes</div><div class="qa-sub">Bonus points on wheel</div></div>
         <div class="qa" onclick="goV('s-v-points')"><div class="qa-ico">⚙️</div><div class="qa-lbl">Points Rules</div><div class="qa-sub">Rates & bonuses</div></div>
-        <div class="qa" onclick="goV('s-v-brand')"><div class="qa-ico">🎨</div><div class="qa-lbl">Brand</div><div class="qa-sub">Colors & identity</div></div>
+        <div class="qa" onclick="goV('s-v-brand')"><div class="qa-ico">🎨</div><div class="qa-lbl">Brand</div><div class="qa-sub">Emoji, colors & name</div></div>
       </div>
       <div style="padding:0 20px 20px">
         <!-- Today's location — posted here, shows on customer dashboard -->
@@ -786,7 +792,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
           <div class="tr"><div class="tr-info"><div class="tt">Double Points — First Visit</div><div class="td">New members get 2× on their first ever check-in</div></div><label class="tog"><input type="checkbox" id="tog-first" checked><div class="tog-track"></div></label></div>
           <div class="tr"><div class="tr-info"><div class="tt">Streak Multiplier (1.5×)</div><div class="td">Visiting consecutive days earns 1.5× points</div></div><label class="tog"><input type="checkbox" id="tog-streak" checked><div class="tog-track"></div></label></div>
           <div class="tr"><div class="tr-info"><div class="tt">Birthday Bonus (100pts)</div><div class="td">Auto award on customer's birthday if they've added it</div></div><label class="tog"><input type="checkbox" id="tog-bday"><div class="tog-track"></div></label></div>
-          <div class="tr"><div class="tr-info"><div class="tt">Referral Bonus</div><div class="td">Customer earns 100pts when a referred friend makes their first purchase</div></div><label class="tog"><input type="checkbox" id="tog-ref" checked><div class="tog-track"></div></label></div>
+
           <div class="tr"><div class="tr-info"><div class="tt">Win-Back (30 days inactive)</div><div class="td">Auto-send 50pts to customers who haven't visited in 30 days</div></div><label class="tog"><input type="checkbox" id="tog-winback"><div class="tog-track"></div></label></div>
         </div>
         <button class="btn btn-p" onclick="savePointsConfig()">Save Rules</button>
@@ -1575,6 +1581,14 @@ function setMode(mode){
         show('s-v-card-setup'); renderNav([],'' );
         return;
       }
+      // If vendor has never completed billing setup, force them to card screen
+      const needsBilling = !S.vendor.stripe_sub_id && !S.vendor.plan_active &&
+                           !S.vendor.promo_expires_at;
+      if(needsBilling && S.vScreen !== 's-v-card-setup'){
+        S.vScreen='s-v-card-setup';
+        show('s-v-card-setup'); renderNav([],'' );
+        return;
+      }
       // For other auth screens when logged in, go home
       const authScreens=['s-v-login','s-v-signup','s-v-forgot','s-v-reset'];
       const dest=authScreens.includes(S.vScreen)?'s-v-home':S.vScreen;
@@ -1896,10 +1910,15 @@ async function loadVendorHome(){
 }
 
 function debounceSaveLocation(){clearTimeout(window._locTimer);window._locTimer=setTimeout(saveLocation,1000)}
-function saveLocation(){
+async function saveLocation(){
   const v=document.getElementById('v-location-input')?.value||'';
   localStorage.setItem('tl_location',v);
-  if(v) showToast('📍 Location saved');
+  // Save to API so customers can see it
+  const r=await apiPatch('/api/vendor/brand',{location_today:v});
+  if(r.ok){
+    if(S.vendor) S.vendor.location_today=v;
+    showToast(v?'📍 Location posted — customers can see it!':'📍 Location cleared');
+  }
 }
 
 async function loadVRewards(){
@@ -1958,6 +1977,7 @@ function removeReward(i){
 }
 
 async function addPrize(){
+  if(S.prizes.length>=6){showToast('⚠️ Max 6 prizes — the wheel only shows 6. Delete one first.');return}
   const e=document.getElementById('np-e').value.trim()||'⚡';
   const n=document.getElementById('np-n').value.trim();
   const p=parseInt(document.getElementById('np-p').value)||0;
@@ -1971,7 +1991,7 @@ async function addPrize(){
 }
 
 function removePrize(i){
-  if(S.prizes[i]?.id) apiDel(`/api/vendor/prizes/${S.prizes[i].id}`).then(()=>loadVPrizes());
+  if(S.prizes[i]?.id) apiDel(`/api/vendor/prizes/${S.prizes[i].id}`).then(()=>{showToast('🗑️ Prize removed');loadVPrizes();});
   else{S.prizes.splice(i,1);renderVPrizes();renderSpinPreview();drawWheel(S.spinAngle)}
 }
 
@@ -2021,12 +2041,13 @@ async function findAwardCustomer(query){
 }
 
 function showAwardCustomer(c){
+  S.awardCustomer=c;
   const found=document.getElementById('award-customer-found');
   if(!found) return;
   found.style.display='block';
   setText('award-cust-av',(c.name||'?')[0].toUpperCase());
   setText('award-cust-name',c.name||'Customer');
-  const pts=c.vendor_points?.[S.vendor?.id]||c.points_balance||0;
+  const pts=c.points_balance||0;
   setText('award-cust-sub',(c.rewards_id||'–')+' · '+pts+' pts at this truck');
   const tier=DEFAULT_TIERS.slice().reverse().find(t=>pts>=t.pts_threshold)||DEFAULT_TIERS[0];
   setText('award-cust-tier',tier.icon+' '+tier.name);
@@ -2064,10 +2085,15 @@ async function awardPoints(){
   hideLoad();
   if(r.ok){
     confetti();
-    showToast(`✅ ${totalPts} pts awarded to ${S.awardCustomer.name||'customer'}!`);
-    resetAwardForm();
+    const newBal = r.data.data?.new_balance || 0;
+    showToast(`✅ ${totalPts} pts awarded to ${S.awardCustomer.name||'customer'}! New balance: ${newBal} pts`);
+    // Refresh customer display with new balance
+    S.awardCustomer.points_balance = newBal;
+    showAwardCustomer(S.awardCustomer);
+    document.getElementById('award-order-total').value='';
+    calcAwardPts();
   } else {
-    showToast('❌ '+(r.data.error||'Error awarding points'));
+    showToast('❌ '+(r.data?.error||'Error awarding points'));
   }
 }
 
@@ -2495,7 +2521,7 @@ function renderMyTrucks(){
     return `
     <div class="truck-card ${t.id===S.activeTruck?.id?'active-truck':''}" onclick="openTruck(${i})">
       <div class="tc-top">
-        <div class="tc-icon" style="background:rgba(${hexRGB(p)},.15);font-size:26px">${t.emoji||'🚚'}</div>
+        <div class="tc-icon" style="background:rgba(${hexRGB(p)},.15);font-size:26px;overflow:hidden">${t.profile_picture_url ? `<img src="${t.profile_picture_url}" style="width:100%;height:100%;object-fit:cover;border-radius:14px">` : (t.emoji||'🚚')}</div>
         <div style="flex:1;min-width:0">
           <div class="tc-name">${t.truck_name||'Food Truck'}</div>
           <div class="tc-sub">${tier.icon} ${tier.name}${checkedIn?' · <span style="color:#2E7D32;font-weight:800">✅ Checked in today</span>':''}</div>
@@ -2591,63 +2617,62 @@ function joinDemoTruck(){
   goC('s-c-truck');
 }
 
-function startCustomerQRScan(){
-  // Use native file input with camera as fallback — works on Android WebView
+async function startCustomerQRScan(){
   const input = document.createElement('input');
   input.type = 'file';
   input.accept = 'image/*';
-  input.capture = 'environment'; // Opens rear camera on mobile
-  input.style.display = 'none';
+  input.capture = 'environment';
+  input.style.cssText = 'position:fixed;top:-200px;left:-200px;width:1px;height:1px;opacity:0';
   document.body.appendChild(input);
 
   input.onchange = async () => {
     const file = input.files?.[0];
-    document.body.removeChild(input);
-    if(!file) return;
+    if(input.parentNode) document.body.removeChild(input);
+    if(!file){ return; }
 
     showLoad('Reading QR code...');
     try {
-      // Load jsQR dynamically
       await loadScript('https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js');
-
-      const img = new Image();
       const url = URL.createObjectURL(file);
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        canvas.width  = img.width;
-        canvas.height = img.height;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0);
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        URL.revokeObjectURL(url);
-
-        const code = window.jsQR && window.jsQR(imageData.data, imageData.width, imageData.height);
-        hideLoad();
-
-        if(code && code.data){
-          // Extract slug from URL or use raw data as slug
-          let slug = code.data;
-          // Handle URLs like foodtruckrewards.app/truckslug
-          const match = code.data.match(/\/([a-z0-9]+)\s*$/i);
-          if(match) slug = match[1].toLowerCase();
-          else slug = code.data.toLowerCase().replace(/[^a-z0-9]/g,'');
-
-          document.getElementById('c-truck-code-input').value = slug;
-          showToast('✅ QR scanned! Joining truck...');
-          joinTruckByCode();
-        } else {
-          showToast('❌ Could not read QR code — try entering the truck code manually');
-        }
-      };
-      img.onerror = () => { hideLoad(); showToast('❌ Could not load image'); };
-      img.src = url;
-    } catch(e) {
+      const img = new Image();
+      await new Promise((res,rej)=>{ img.onload=res; img.onerror=rej; img.src=url; });
+      const canvas = document.createElement('canvas');
+      canvas.width=img.width; canvas.height=img.height;
+      const ctx=canvas.getContext('2d');
+      ctx.drawImage(img,0,0);
+      URL.revokeObjectURL(url);
+      const imageData=ctx.getImageData(0,0,canvas.width,canvas.height);
       hideLoad();
-      showToast('❌ QR scan failed — enter the truck code manually');
+
+      const code = window.jsQR?.(imageData.data, imageData.width, imageData.height);
+      if(code?.data){
+        const data = code.data;
+        let slug = '';
+        // Handle ?truck=slug param
+        const truckParam = data.match(/[?&]truck=([^&\s]+)/);
+        if(truckParam){ slug = truckParam[1]; }
+        else {
+          // Handle trailing /slug path
+          const pathMatch = data.match(/\/([a-z0-9]+)\s*$/i);
+          if(pathMatch) slug = pathMatch[1];
+          else slug = data;
+        }
+        slug = slug.toLowerCase().replace(/[^a-z0-9]/g,'');
+        if(!slug){ showToast('❌ QR not recognized — enter the truck code manually'); return; }
+        const codeInput = document.getElementById('c-truck-code-input');
+        if(codeInput) codeInput.value = slug;
+        showToast('✅ QR scanned!');
+        joinTruckByCode();
+      } else {
+        showToast('❌ No QR found in image — try again or enter the truck code');
+      }
+    } catch(e){
+      hideLoad();
+      showToast('❌ Scan failed — enter truck code manually');
     }
   };
 
-  input.oncancel = () => { document.body.removeChild(input); };
+  input.oncancel = () => { if(input.parentNode) document.body.removeChild(input); };
   input.click();
 }
 
@@ -2716,15 +2741,15 @@ async function renderTruckDash(){
   // Streak
   const streak=S.activeTruck.current_streak||0;
   setText('ct-streak',streak+' day'+(streak!==1?'s':''));
-  renderStreakDays('ct-streak-days',streak);
+  const todayKey='spin_used_'+t.id+'_'+new Date().toDateString();
+  const checkedInToday=!!localStorage.getItem(todayKey);
+  renderStreakDays('ct-streak-days',streak,checkedInToday);
   setText('ct-streak-tip',streak>0?`💡 Come back tomorrow to keep your ${streak}-day streak!`:'Visit today to start your streak!');
 
   // Check-in button — show if already checked in today
-  const todayKey='spin_used_'+t.id+'_'+new Date().toDateString();
-  const alreadySpun=localStorage.getItem(todayKey);
   const checkinBtn=document.getElementById('ct-checkin-btn');
   if(checkinBtn){
-    if(alreadySpun){
+    if(checkedInToday){
       checkinBtn.textContent='✅ Checked In Today · Come Back Tomorrow!';
       checkinBtn.style.background='#E8F5E9';
       checkinBtn.style.color='#2E7D32';
@@ -3138,7 +3163,7 @@ function weightedRandom(segs){
 /* ════════════════════════════════════
    STREAK DAYS
 ════════════════════════════════════ */
-function renderStreakDays(elId,streak){
+function renderStreakDays(elId, streak, checkedInToday=false){
   const el=document.getElementById(elId);
   if(!el) return;
   const days=['M','T','W','T','F','S','S'];
@@ -3146,8 +3171,10 @@ function renderStreakDays(elId,streak){
   const todayIdx=today===0?6:today-1;
   el.innerHTML=days.map((d,i)=>{
     let cls='future';
-    if(i<todayIdx&&i>=todayIdx-streak+1) cls='done';
-    if(i===todayIdx) cls=streak>0?'today':'future';
+    // Days before today that are within the streak = done
+    if(streak>0 && i<todayIdx && i>=todayIdx-streak+(checkedInToday?0:1)) cls='done';
+    // Today is highlighted only if already checked in
+    if(i===todayIdx && checkedInToday) cls='today';
     return `<div class="sd ${cls}">${d}</div>`;
   }).join('');
 }
@@ -3555,8 +3582,8 @@ async function submitVendorReset(){
   if(!pass||pass.length<8){showErr(errEl,'Password must be at least 8 characters');return}
   if(pass!==confirm){showErr(errEl,'Passwords do not match');return}
   const params = new URLSearchParams(window.location.search);
-  const token  = params.get('reset_token')||window._resetToken||'';
-  const email  = params.get('email')||window._resetEmail||'';
+  const token  = window._resetToken || sessionStorage.getItem('_rt') || '';
+  const email  = window._resetEmail || sessionStorage.getItem('_re') || '';
   if(!token||!email){showErr(errEl,'Invalid reset link. Please request a new one.');return}
   const btn=document.getElementById('v-reset-btn');
   btn.disabled=true; btn.textContent='Updating...';
@@ -3570,6 +3597,7 @@ async function submitVendorReset(){
   showToast('✅ Password updated! Please sign in.');
   // Clear URL params and go to login
   window._resetToken=null; window._resetEmail=null;
+  sessionStorage.removeItem('_rt'); sessionStorage.removeItem('_re');
   history.replaceState(null,'',window.location.pathname);
   goV('s-v-login');
 }
@@ -3582,8 +3610,8 @@ async function submitCustomerReset(){
   if(!pass||pass.length<8){showErr(errEl,'Password must be at least 8 characters');return}
   if(pass!==confirm){showErr(errEl,'Passwords do not match');return}
   const params = new URLSearchParams(window.location.search);
-  const token  = params.get('reset_token')||window._resetToken||'';
-  const email  = params.get('email')||window._resetEmail||'';
+  const token  = window._resetToken || sessionStorage.getItem('_rt') || '';
+  const email  = window._resetEmail || sessionStorage.getItem('_re') || '';
   if(!token||!email){showErr(errEl,'Invalid reset link. Please request a new one.');return}
   const btn=document.getElementById('c-reset-btn');
   btn.disabled=true; btn.textContent='Updating...';
@@ -3596,82 +3624,162 @@ async function submitCustomerReset(){
   if(!r.ok){showErr(errEl,d.error||'Reset failed. Link may have expired.');return}
   showToast('✅ Password updated! Please sign in.');
   window._resetToken=null; window._resetEmail=null;
+  sessionStorage.removeItem('_rt'); sessionStorage.removeItem('_re');
   history.replaceState(null,'',window.location.pathname);
   goC('s-c-login');
 }
 
 function checkResetDeepLink(){
-  const params   = new URLSearchParams(window.location.search);
-  const token    = params.get('reset_token');
-  const userType = params.get('user_type');
-  const email    = params.get('email');
-  if(!token||!email) return;
+  // Parse token from URL — try multiple methods for WebView compatibility
+  const href = window.location.href;
+  let token    = new URLSearchParams(window.location.search).get('reset_token');
+  let email    = new URLSearchParams(window.location.search).get('email');
+  let userType = new URLSearchParams(window.location.search).get('user_type') || 'vendor';
 
-  // Store for form submission
+  // Fallback regex parse for WebViews that mangle location.search
+  if(!token){ const m=href.match(/[?&]reset_token=([^&\s]+)/); if(m) token=decodeURIComponent(m[1]); }
+  if(!email){ const m=href.match(/[?&]email=([^&\s]+)/); if(m) email=decodeURIComponent(m[1]); }
+  if(!token){ const m=href.match(/[?&]user_type=([^&\s]+)/); if(m) userType=m[1]; }
+
+  // Last resort: check sessionStorage (for redirect scenarios)
+  if(!token){
+    token    = sessionStorage.getItem('_rt');
+    email    = sessionStorage.getItem('_re');
+    userType = sessionStorage.getItem('_rut') || 'vendor';
+  }
+
+  if(!token || !email) return;
+
+  // Persist for form submission (survives navigation)
   window._resetToken = token;
   window._resetEmail = email;
+  sessionStorage.setItem('_rt', token);
+  sessionStorage.setItem('_re', email);
+  sessionStorage.setItem('_rut', userType);
 
-  // IMPORTANT: Clear any stored session so they can't access dashboard
-  // without completing the password reset and logging in fresh
+  // Clear session so they must log in fresh after reset
   if(userType === 'vendor'){
-    S.vendorToken = null; S.vendor = null;
+    S.vendorToken=null; S.vendor=null;
     localStorage.removeItem('tl_vendor_token');
     localStorage.removeItem('tl_vendor');
   } else {
-    S.customer = null;
+    S.customer=null;
     localStorage.removeItem('tl_customer');
   }
 
-  // Verify token is still valid
+  // Clean URL immediately so token isn't visible
+  history.replaceState(null,'',window.location.pathname);
+
+  // Verify token validity
   fetch(API+'/api/auth/verify-reset-token',{
     method:'POST', headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({token, email, user_type: userType||'vendor'})
+    body:JSON.stringify({token, email, user_type: userType})
   }).then(r=>r.json()).then(d=>{
     if(d.data?.valid){
-      if(userType==='customer'){
-        S.cScreen='s-c-reset'; show('s-c-reset'); renderNav([],'' );
-      } else {
-        S.vScreen='s-v-reset'; show('s-v-reset'); renderNav([],'' );
-      }
+      if(userType==='customer'){ S.cScreen='s-c-reset'; show('s-c-reset'); renderNav([],''); }
+      else { S.vScreen='s-v-reset'; show('s-v-reset'); renderNav([],''); }
     } else {
-      showToast('❌ This reset link has expired. Please request a new one.');
-      history.replaceState(null,'',window.location.pathname);
-      if(userType==='customer'){ show('s-c-login'); }
-      else { show('s-v-login'); }
+      sessionStorage.removeItem('_rt'); sessionStorage.removeItem('_re');
+      showToast('❌ Reset link expired — please request a new one.');
+      if(userType==='customer'){ show('s-c-login'); } else { show('s-v-login'); }
     }
   }).catch(()=>{
-    // If verify fails, still show the reset form
-    if(userType==='customer'){ S.cScreen='s-c-reset'; show('s-c-reset'); renderNav([],'' ); }
-    else { S.vScreen='s-v-reset'; show('s-v-reset'); renderNav([],'' ); }
+    if(userType==='customer'){ S.cScreen='s-c-reset'; show('s-c-reset'); renderNav([],''); }
+    else { S.vScreen='s-v-reset'; show('s-v-reset'); renderNav([],''); }
   });
 }
 
 
 function downloadVendorQR(){
   const slug = S.vendor?.slug || 'yourtruck';
-  const num  = S.vendor?.vendor_number || '';
-  const url  = `https://truckloyal-app.onrender.com?truck=${slug}`;
+  const truckName = S.vendor?.truck_name || 'My Food Truck';
+  const num = S.vendor?.vendor_number || '';
 
-  // Generate a high-res QR code as SVG then download as PNG
-  const size = 400;
-  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodeURIComponent(url)}&format=png&margin=20`;
+  // URL customers use to join — points to the app with truck slug
+  const joinUrl = `https://truckloyal-app.onrender.com?truck=${slug}`;
 
-  // Download via link
-  const a = document.createElement('a');
-  a.href = qrUrl;
-  a.download = `${slug}-qr-code.png`;
-  a.target = '_blank';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  showToast('⬇️ QR code downloading — print it and post at your truck!');
+  // Build a printable HTML page with the QR + branding
+  const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(joinUrl)}&format=png&margin=10`;
+
+  const printHtml = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>QR Code — ${truckName}</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:Arial,sans-serif;background:white;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+    .card{background:white;border:3px solid #FF5722;border-radius:20px;padding:32px;text-align:center;max-width:340px;width:100%;box-shadow:0 8px 32px rgba(0,0,0,.08)}
+    .flame{font-size:42px;margin-bottom:4px}
+    .app-name{font-size:22px;font-weight:900;color:#FF5722;margin-bottom:4px}
+    .truck-name{font-size:28px;font-weight:900;color:#2D1B0E;margin-bottom:6px}
+    .tagline{font-size:13px;color:#888;margin-bottom:20px}
+    .qr-wrap{background:#FFF8F0;border-radius:16px;padding:16px;margin-bottom:16px;display:inline-block}
+    .qr-wrap img{display:block;width:220px;height:220px}
+    .instructions{font-size:13px;color:#555;line-height:1.7;margin-bottom:16px}
+    .truck-num{font-size:16px;font-weight:900;color:#FF5722;background:#FFF3E0;border:2px solid #FFD0B0;border-radius:10px;padding:8px 16px;display:inline-block;margin-bottom:16px}
+    .divider{display:flex;align-items:center;gap:10px;margin:12px 0;color:#ccc;font-size:12px}
+    .divider::before,.divider::after{content:'';flex:1;height:1px;background:#eee}
+    .download-badge{background:#2D1B0E;color:white;border-radius:12px;padding:10px 20px;font-size:13px;font-weight:700;margin-top:4px;display:inline-block}
+    .footer{font-size:11px;color:#bbb;margin-top:16px}
+    @media print{body{padding:0}@page{margin:0.5in}}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="flame">🔥</div>
+    <div class="app-name">Food Truck Rewards</div>
+    <div class="truck-name">${truckName}</div>
+    <div class="tagline">Scan to join our loyalty program & earn free rewards!</div>
+    <div class="qr-wrap">
+      <img src="${qrApiUrl}" alt="QR Code">
+    </div>
+    <div class="instructions">
+      📱 <strong>Open your camera</strong> and point it at the QR code to join instantly — no app download required!
+    </div>
+    ${num ? `<div class="truck-num">Truck Code: #${num}</div>` : ''}
+    <div class="divider">or find us in the app</div>
+    <div class="download-badge">🚚 foodtruckrewards.app</div>
+    <div class="footer">Powered by Food Truck Rewards · Free to join</div>
+  </div>
+</body>
+</html>`;
+
+  // Open in new tab so they can print it
+  const win = window.open('', '_blank');
+  if(win){
+    win.document.write(printHtml);
+    win.document.close();
+    setTimeout(()=>win.print(), 800);
+  } else {
+    // Fallback: download raw QR if popup blocked
+    const a = document.createElement('a');
+    a.href = qrApiUrl;
+    a.download = `${slug}-qr.png`;
+    a.target = '_blank';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    showToast('⬇️ QR downloading — tip: allow popups for the full printable design');
+  }
+  showToast('🖨️ Print page opened!');
 }
 
 function copyVendorNumber() {
+  const num = S.vendor?.vendor_number || '';
   if (!num) { showToast('No vendor number yet'); return; }
-  navigator.clipboard?.writeText('#' + num)
-    .then(() => showToast('📋 Vendor number #' + num + ' copied!'))
-    .catch(() => showToast('#' + num));
+  const text = '#' + num;
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(text)
+      .then(() => showToast('📋 Vendor number ' + text + ' copied!'))
+      .catch(() => fallbackCopy(text));
+  } else { fallbackCopy(text); }
+}
+function fallbackCopy(text){
+  const el=document.createElement('textarea');
+  el.value=text; el.style.cssText='position:fixed;opacity:0';
+  document.body.appendChild(el); el.select();
+  try{ document.execCommand('copy'); showToast('📋 ' + text + ' copied!'); }
+  catch(e){ showToast(text); }
+  document.body.removeChild(el);
 }
 
 async function saveVendorProfile(){
