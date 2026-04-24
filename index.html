@@ -1485,14 +1485,14 @@ const API = 'https://truckloyal-api.onrender.com';
    STATE
 ════════════════════════════════════ */
 const S = {
-  mode: 'vendor',
+  mode: 'customer',
   vScreen: 's-v-login',
   cScreen: 's-c-signup',
   // Vendor
-  vendorToken: localStorage.getItem('tl_vendor_token') || null,
-  vendor: JSON.parse(localStorage.getItem('tl_vendor') || 'null'),
+  vendorToken: null, // Always require fresh login on app open
+  vendor: null, // Restored via login only
   // Customer
-  customer: JSON.parse(localStorage.getItem('tl_customer') || 'null'),
+  customer: null, // Restored via login only
   // Active truck being viewed by customer
   activeTruck: JSON.parse(localStorage.getItem('tl_active_truck') || 'null'),
   activeTruckPoints: JSON.parse(localStorage.getItem('tl_active_truck_pts') || 'null'),
@@ -1538,7 +1538,7 @@ const DEFAULT_TIERS = [
 const EMOJIS = ['🚚','🌮','🍔','🍕','🥩','🍜','🫔','🥗','🍦','☕','🌯','🧆'];
 const PRESETS = [['#FF5A1F','#F5B800'],['#8B5CF6','#EC4899'],['#059669','#34D399'],['#0EA5E9','#38BDF8'],['#DC2626','#F97316'],['#1D4ED8','#FBBF24']];
 const VNAV = [{id:'s-v-home',icon:'🏠',label:'Home'},{id:'s-v-analytics',icon:'📊',label:'Analytics'},{id:'s-v-customers',icon:'👥',label:'Members'},{id:'s-v-settings',icon:'⚙️',label:'Settings'}];
-const CNAV = [{id:'s-c-home',icon:'🚚',label:'My Trucks'},{id:'s-c-history',icon:'📋',label:'History'},{id:'s-c-profile',icon:'👤',label:'Profile'}];
+const CNAV = [{id:'s-c-home',icon:'🏠',label:'Home'},{id:'s-c-history',icon:'📋',label:'History'},{id:'s-c-profile',icon:'👤',label:'Profile'}];
 
 /* ════════════════════════════════════
    API HELPERS
@@ -1614,17 +1614,15 @@ function setMode(mode){
   } else {
     if(S.customer){
       const authScreens=['s-c-signup','s-c-login','s-c-forgot','s-c-reset'];
-      const dest=authScreens.includes(S.cScreen)?'s-c-home':S.cScreen;
-      S.cScreen=dest; show(dest); renderNav(CNAV,dest);
-      if(dest==='s-c-home') renderMyTrucks();
-      if(dest==='s-c-truck') renderTruckDash();
-      if(dest==='s-c-spin'){renderSpinPreview();drawWheel(S.spinAngle)}
+      // Always land on home (truck list) — don't auto-open a specific truck
+      S.cScreen='s-c-home'; show('s-c-home'); renderNav(CNAV,'s-c-home');
+      renderMyTrucks();
     } else {
       const allowedUnauth=['s-c-signup','s-c-login','s-c-forgot','s-c-reset'];
       if(allowedUnauth.includes(S.cScreen)){
         show(S.cScreen); renderNav([],'' );
       } else {
-        show('s-c-signup'); S.cScreen='s-c-signup'; renderNav([],'' );
+        show('s-c-login'); S.cScreen='s-c-login'; renderNav([],'' );
       }
     }
   }
@@ -2498,7 +2496,7 @@ async function customerLogin(){
 function customerLogout(){
   S.customer=null; S.myTrucks=[]; S.activeTruck=null;
   ['tl_customer','tl_my_trucks','tl_active_truck','tl_active_truck_pts','tl_ctoken'].forEach(k=>localStorage.removeItem(k));
-  S.cScreen='s-c-signup'; show('s-c-signup'); renderNav([],'' );
+  S.cScreen='s-c-login'; show('s-c-login'); renderNav([],'' );
   showToast('Signed out');
 }
 
