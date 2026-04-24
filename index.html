@@ -1030,15 +1030,12 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
       <div class="auth-wrap">
         <div class="auth-logo">👤</div>
         <div class="auth-title">Sign In</div>
-        <div class="auth-sub">Welcome back! Sign in to see your points and rewards.</div>
+        <div class="auth-sub">Welcome back! Sign in with your phone number and email.</div>
         <div class="auth-err" id="c-login-err"></div>
         <div class="auth-form">
           <div class="field"><label>Phone Number</label><input type="tel" id="c-login-phone" placeholder="(555) 000-0000" maxlength="14" oninput="formatPhone(this)" autocomplete="tel"></div>
           <div class="field"><label>Email Address</label><input type="email" id="c-login-email" placeholder="you@email.com" autocomplete="email"></div>
           <button class="btn btn-p" id="c-login-btn" onclick="customerLogin()">Sign In</button>
-          <div style="text-align:center;margin-top:12px">
-            <span style="font-size:13px;color:var(--brand);font-weight:700;cursor:pointer;text-decoration:underline" onclick="goC('s-c-forgot')">Forgot password?</span>
-          </div>
           <div class="auth-switch">No account? <span onclick="goC('s-c-signup')">Create one free</span></div>
         </div>
       </div>
@@ -1706,37 +1703,26 @@ async function vendorSignup(){
 
   if(!name||!owner||!email||!pass){showErr(errEl,'Please fill in all fields');return}
   if(pass.length<8){showErr(errEl,'Password must be at least 8 characters');return}
+  if(!email.includes('@')){showErr(errEl,'Enter a valid email address');return}
 
-  showLoad('Creating your account...');
-  const r = await apiPost('/api/vendor/signup',{email,password:pass,truck_name:name,owner_name:owner});
-  hideLoad();
+  // Store signup info — account is NOT created until payment succeeds
+  S.pendingSignup = {email, password:pass, truck_name:name, owner_name:owner};
 
-  if(!r.ok){showErr(errEl,r.data.error||'Signup failed');return}
-
-  // Save vendor state
-  S.vendorToken = r.data.data.token;
-  S.vendor      = r.data.data.vendor;
-  localStorage.setItem('tl_vendor_token', S.vendorToken);
-  localStorage.setItem('tl_vendor', JSON.stringify(S.vendor));
-
-  // Show trial end date across all legal disclosure elements
+  // Show trial end date
   const trialEnd = new Date();
   trialEnd.setDate(trialEnd.getDate() + 14);
   const trialStr = trialEnd.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
   ['trial-end-date','trial-end-label','trial-end-consent','trial-end-cancel','trial-end-summary'].forEach(id=>{
     const el = document.getElementById(id);
-    if(el) el.textContent = id === 'trial-end-label' ? trialStr : trialStr;
+    if(el) el.textContent = trialStr;
   });
-  // Show vendor email in billing summary
   const emailDisplay = document.getElementById('billing-email-display');
   if(emailDisplay) emailDisplay.textContent = email;
 
-  // Navigate to card setup
+  // Go to payment — account created only after card is charged
   show('s-v-card-setup');
   S.vScreen = 's-v-card-setup';
   renderNav([], '');
-
-  // Mount Stripe card element
   initStripeCard();
 }
 
@@ -1780,7 +1766,6 @@ async function submitCardSetup(){
   const errEl = document.getElementById('v-card-err');
   errEl.classList.remove('show');
 
-  // Check legal consent first
   const consent = document.getElementById('legal-consent');
   if(!consent?.checked){
     showErr(errEl, 'Please read and accept the Terms of Service and billing authorization to continue.');
@@ -1789,7 +1774,6 @@ async function submitCardSetup(){
 
   if(!stripeInstance || !stripeCardElement){
     showErr(errEl, 'Payment system is loading — please wait a moment and try again.');
-    btn.disabled=false; btn.textContent='🎉 Start My Free 14-Day Trial';
     return;
   }
 
@@ -1798,7 +1782,24 @@ async function submitCardSetup(){
   btn.textContent = '⏳ Setting up your trial...';
 
   try {
-    // 1. Create a SetupIntent on the backend
+    // Step 1: If this is a new signup, create the account now (not before)
+    if(S.pendingSignup && !S.vendorToken){
+      btn.textContent = '⏳ Creating account...';
+      const signupRes = await apiPost('/api/vendor/signup', S.pendingSignup);
+      if(!signupRes.ok){
+        showErr(errEl, signupRes.data?.error || 'Signup failed — check your details and try again.');
+        btn.disabled=false; btn.textContent='🎉 Start My Free 14-Day Trial';
+        return;
+      }
+      S.vendorToken = signupRes.data.data.token;
+      S.vendor      = signupRes.data.data.vendor;
+      localStorage.setItem('tl_vendor_token', S.vendorToken);
+      localStorage.setItem('tl_vendor', JSON.stringify(S.vendor));
+      S.pendingSignup = null;
+    }
+
+    btn.textContent = '⏳ Saving card details...';
+    // Step 2: Create SetupIntent
     const setupRes = await fetch(API + '/api/vendor/create-setup-intent', {
       method: 'POST',
       headers: {
@@ -2743,7 +2744,7 @@ async function renderTruckDash(){
   setText('ct-streak',streak+' day'+(streak!==1?'s':''));
   const todayKey='spin_used_'+t.id+'_'+new Date().toDateString();
   const checkedInToday=!!localStorage.getItem(todayKey);
-  renderStreakDays('ct-streak-days',streak,checkedInToday);
+  renderStreakDays('ct-streak-days', streak, checkedInToday, S.activeTruck.last_visit_date||null);
   setText('ct-streak-tip',streak>0?`💡 Come back tomorrow to keep your ${streak}-day streak!`:'Visit today to start your streak!');
 
   // Check-in button — show if already checked in today
@@ -2854,16 +2855,44 @@ async function checkInAtTruck(){
 /* ════════════════════════════════════
    CUSTOMER: REDEEM
 ════════════════════════════════════ */
-function openRedeem(i){
+async function openRedeem(i){
   const r=S.rewards[i];
-  const code='STK-'+Math.floor(1000+Math.random()*9000);
-  S.currentRdm={reward:r,code,idx:i};
+  if(!S.customer||!S.activeTruck){showToast('Error — please try again');return}
+  const cost=r.pts_required||r.pts||0;
+  const pts=S.activeTruck.points_balance||0;
+  if(pts<cost){showToast('Not enough points');return}
+
+  showLoad('Generating reward code...');
+  const res=await apiPost('/api/customer/redeem',{
+    customer_id:S.customer.id,
+    reward_id:r.id,
+    reward_value:5.0
+  });
+  hideLoad();
+
+  if(!res.ok){
+    showToast('❌ '+(res.data?.error||'Could not redeem — try again'));
+    return;
+  }
+  const d=res.data.data;
+  const newBal=pts-cost;
+
+  // Update local balance immediately
+  S.activeTruck.points_balance=newBal;
+  const idx2=S.myTrucks.findIndex(t=>t.id===S.activeTruck.id);
+  if(idx2>=0) S.myTrucks[idx2].points_balance=newBal;
+  localStorage.setItem('tl_active_truck',JSON.stringify(S.activeTruck));
+  localStorage.setItem('tl_my_trucks',JSON.stringify(S.myTrucks));
+
+  S.currentRdm={reward:r,code:d.code,idx:i};
   setText('rdm-emo',r.emoji);
   setText('rdm-name',r.name);
   setText('rdm-truck',S.activeTruck?.truck_name||'this truck');
-  setText('rdm-pts-cost','–'+(r.pts_required||r.pts||0)+' pts');
-  setText('rdm-code',code);
-  setText('rdm-code-inline',code);
+  setText('rdm-pts-cost','–'+cost+' pts');
+  setText('rdm-code',d.code);
+  setText('rdm-code-inline',d.code);
+  // Update balance display
+  setText('ct-pts',newBal);
   openSheet('sh-redeem');
 }
 
@@ -3163,17 +3192,40 @@ function weightedRandom(segs){
 /* ════════════════════════════════════
    STREAK DAYS
 ════════════════════════════════════ */
-function renderStreakDays(elId, streak, checkedInToday=false){
+function renderStreakDays(elId, streak, checkedInToday=false, lastVisitDate=null){
   const el=document.getElementById(elId);
   if(!el) return;
-  const days=['M','T','W','T','F','S','S'];
-  const today=new Date().getDay();
-  const todayIdx=today===0?6:today-1;
-  el.innerHTML=days.map((d,i)=>{
+  const dayLetters=['M','T','W','T','F','S','S'];
+  const today=new Date();
+  const todayDow=today.getDay(); // 0=Sun
+  const todayIdx=todayDow===0?6:todayDow-1; // Mon=0, Sun=6
+
+  // Build set of weekday indices that were visited this week
+  const visitedThisWeek=new Set();
+  if(streak>0 && lastVisitDate){
+    const last=new Date(lastVisitDate+'T12:00:00');
+    // Walk back from today (or last visit) for streak days
+    const base = checkedInToday ? today : last;
+    for(let d=0;d<streak;d++){
+      const dt=new Date(base);
+      dt.setDate(base.getDate()-d);
+      // Only count days in the current Mon-Sun week
+      const weekStart=new Date(today);
+      weekStart.setDate(today.getDate()-todayIdx);
+      weekStart.setHours(0,0,0,0);
+      const weekEnd=new Date(weekStart);
+      weekEnd.setDate(weekStart.getDate()+6);
+      weekEnd.setHours(23,59,59,999);
+      if(dt>=weekStart && dt<=weekEnd){
+        const dow=dt.getDay();
+        visitedThisWeek.add(dow===0?6:dow-1);
+      }
+    }
+  }
+
+  el.innerHTML=dayLetters.map((d,i)=>{
     let cls='future';
-    // Days before today that are within the streak = done
-    if(streak>0 && i<todayIdx && i>=todayIdx-streak+(checkedInToday?0:1)) cls='done';
-    // Today is highlighted only if already checked in
+    if(visitedThisWeek.has(i)) cls='done';
     if(i===todayIdx && checkedInToday) cls='today';
     return `<div class="sd ${cls}">${d}</div>`;
   }).join('');
