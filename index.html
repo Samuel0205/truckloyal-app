@@ -574,8 +574,13 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
     <!-- VENDOR HOME -->
     <div class="screen" id="s-v-home">
       <div class="vh-hero">
-        <div class="vh-greet">Dashboard</div>
-        <div class="vh-name" id="v-hero-name">My Truck 🚚</div>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px">
+          <div id="v-hero-pic" style="width:48px;height:48px;border-radius:50%;border:2.5px solid rgba(255,255,255,.6);overflow:hidden;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">🚚</div>
+          <div>
+            <div class="vh-greet">Dashboard</div>
+            <div class="vh-name" id="v-hero-name">My Truck 🚚</div>
+          </div>
+        </div>
         <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
           <div class="live-pill"><div class="ldot"></div> Program Live · <span id="v-hero-members">0</span> members</div>
           <div style="font-size:11px;color:rgba(255,255,255,.75);cursor:pointer;font-weight:700;padding:4px 10px;background:rgba(255,255,255,.15);border-radius:99px" onclick="loadVendorHome();showToast('↻ Refreshed')">↻ Refresh</div>
@@ -1925,8 +1930,18 @@ async function loadVendorHome(){
   if(me.ok && me.data.data){
     S.vendor={...S.vendor,...me.data.data};
     localStorage.setItem('tl_vendor',JSON.stringify(S.vendor));
-    // Update hero name in case truck name changed
     setText('v-hero-name',S.vendor.truck_name+' '+(S.vendor.emoji||'🚚'));
+  }
+
+  // Update hero profile picture
+  const heroPic = document.getElementById('v-hero-pic');
+  if(heroPic){
+    const pic = S.vendor.profile_picture_url || localStorage.getItem('tl_vpic') || '';
+    if(pic){
+      heroPic.innerHTML = `<img src="${pic}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+    } else {
+      heroPic.textContent = S.vendor.emoji || '🚚';
+    }
   }
 
   const r=await apiGet('/api/vendor/stats');
