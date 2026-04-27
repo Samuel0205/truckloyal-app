@@ -920,7 +920,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
         <!-- Profile Picture -->
         <div class="card">
           <div class="card-title">🖼️ Profile Picture</div>
-          <input type="file" id="v-pic-file" accept="image/*" style="display:none" onchange="handleVendorPicFile(this)">
+          <input type="file" id="v-pic-file" accept="image/*" capture="environment" style="display:none;position:fixed;top:-9999px" onchange="handleVendorPicFile(this)">
           <div style="display:flex;align-items:center;gap:16px;margin-bottom:14px">
             <div style="position:relative;flex-shrink:0;cursor:pointer" onclick="document.getElementById('v-pic-file').click()">
               <div style="width:72px;height:72px;border-radius:50%;background:rgba(255,87,34,.12);border:3px solid var(--b2);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:28px" id="v-prof-pic-preview">🚚</div>
@@ -1183,7 +1183,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
             <div style="font-size:11px;color:var(--mu);letter-spacing:1px;margin-bottom:2px;font-weight:700" id="ct-tagline">–</div>
             <div style="font-family:var(--fd);font-size:20px;font-weight:900;line-height:1" id="ct-name">–</div>
           </div>
-          <div style="font-size:34px" id="ct-emoji">🚚</div>
+          <div id="ct-emoji" style="width:44px;height:44px;border-radius:12px;overflow:hidden;background:rgba(255,87,34,.1);display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0">🚚</div>
         </div>
         <!-- Location today -->
         <div id="ct-location-bar" style="background:#E3F2FD;border:1.5px solid #90CAF9;border-radius:10px;padding:8px 12px;font-size:12px;color:#1565C0;margin-bottom:12px;display:none;font-weight:700">
@@ -1464,7 +1464,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
     <div class="sheet-handle"></div>
     <div class="sheet-title">Edit Profile</div>
     <!-- Hidden real file input - triggers native camera/gallery picker -->
-    <input type="file" id="edit-pic-file" accept="image/*" style="display:none" onchange="handleCustomerPicFile(this)">
+    <input type="file" id="edit-pic-file" accept="image/*" capture="environment" style="display:none;position:fixed;top:-9999px" onchange="handleCustomerPicFile(this)">
     <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px">
       <div style="position:relative;cursor:pointer;flex-shrink:0" onclick="document.getElementById('edit-pic-file').click()">
         <div style="width:64px;height:64px;border-radius:50%;background:rgba(255,87,34,.12);border:2px solid var(--b2);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:900" id="edit-prof-preview">?</div>
@@ -2152,7 +2152,46 @@ function resetAwardForm(){
   });
 }
 
-function startQRScan(){showToast('📷 QR scan requires device camera — use phone app')}
+function startQRScan(){
+  const input = document.getElementById('qr-scan-file');
+  if(input){ input.value=''; input.click(); }
+  else { showToast('📷 Camera not available — enter customer ID manually'); }
+}
+
+async function handleQRScanFile(input){
+  const file = input?.files?.[0];
+  if(!file){ return; }
+  input.value = '';
+  showLoad('Reading QR code...');
+  try {
+    await loadScript('https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js');
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    await new Promise((res,rej)=>{ img.onload=res; img.onerror=rej; img.src=url; });
+    const canvas = document.createElement('canvas');
+    canvas.width=img.width; canvas.height=img.height;
+    canvas.getContext('2d').drawImage(img,0,0);
+    URL.revokeObjectURL(url);
+    const imageData = canvas.getContext('2d').getImageData(0,0,canvas.width,canvas.height);
+    hideLoad();
+
+    const code = window.jsQR?.(imageData.data, imageData.width, imageData.height);
+    if(code?.data){
+      // QR could be a rewards_id or customer identifier
+      const rid = code.data.trim().toUpperCase();
+      const ridInput = document.getElementById('award-id-input');
+      if(ridInput){ ridInput.value = rid; }
+      showToast('✅ QR scanned!');
+      // Trigger customer lookup
+      findAwardCustomer({rewards_id: rid});
+    } else {
+      showToast('❌ No QR found — enter customer ID manually');
+    }
+  } catch(e){
+    hideLoad();
+    showToast('❌ Scan failed — enter customer ID manually');
+  }
+}
 
 /* ════════════════════════════════════
    VENDOR: CONFIRM REDEMPTION
@@ -2672,63 +2711,54 @@ function joinDemoTruck(){
   goC('s-c-truck');
 }
 
-async function startCustomerQRScan(){
-  const input = document.createElement('input');
-  input.type = 'file';
-  input.accept = 'image/*';
-  input.capture = 'environment';
-  input.style.cssText = 'position:fixed;top:-200px;left:-200px;width:1px;height:1px;opacity:0';
-  document.body.appendChild(input);
+function startCustomerQRScan(){
+  // Use persistent input — most reliable in Android WebView
+  const input = document.getElementById('c-qr-scan-file');
+  if(input){ input.value=''; input.click(); }
+  else { showToast('❌ Camera not available — enter truck code manually'); }
+}
 
-  input.onchange = async () => {
-    const file = input.files?.[0];
-    if(input.parentNode) document.body.removeChild(input);
-    if(!file){ return; }
+async function handleCustomerQRScanFile(input){
+  const file = input?.files?.[0];
+  if(!file){ return; }
+  input.value = '';
+  showLoad('Reading QR code...');
+  try {
+    await loadScript('https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js');
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    await new Promise((res,rej)=>{ img.onload=res; img.onerror=rej; img.src=url; });
+    const canvas = document.createElement('canvas');
+    canvas.width=img.width; canvas.height=img.height;
+    canvas.getContext('2d').drawImage(img,0,0);
+    URL.revokeObjectURL(url);
+    const imageData=canvas.getContext('2d').getImageData(0,0,canvas.width,canvas.height);
+    hideLoad();
 
-    showLoad('Reading QR code...');
-    try {
-      await loadScript('https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js');
-      const url = URL.createObjectURL(file);
-      const img = new Image();
-      await new Promise((res,rej)=>{ img.onload=res; img.onerror=rej; img.src=url; });
-      const canvas = document.createElement('canvas');
-      canvas.width=img.width; canvas.height=img.height;
-      const ctx=canvas.getContext('2d');
-      ctx.drawImage(img,0,0);
-      URL.revokeObjectURL(url);
-      const imageData=ctx.getImageData(0,0,canvas.width,canvas.height);
-      hideLoad();
-
-      const code = window.jsQR?.(imageData.data, imageData.width, imageData.height);
-      if(code?.data){
-        const data = code.data;
-        let slug = '';
-        // Handle ?truck=slug param
-        const truckParam = data.match(/[?&]truck=([^&\s]+)/);
-        if(truckParam){ slug = truckParam[1]; }
-        else {
-          // Handle trailing /slug path
-          const pathMatch = data.match(/\/([a-z0-9]+)\s*$/i);
-          if(pathMatch) slug = pathMatch[1];
-          else slug = data;
-        }
-        slug = slug.toLowerCase().replace(/[^a-z0-9]/g,'');
-        if(!slug){ showToast('❌ QR not recognized — enter the truck code manually'); return; }
-        const codeInput = document.getElementById('c-truck-code-input');
-        if(codeInput) codeInput.value = slug;
-        showToast('✅ QR scanned!');
-        joinTruckByCode();
-      } else {
-        showToast('❌ No QR found in image — try again or enter the truck code');
+    const code = window.jsQR?.(imageData.data, imageData.width, imageData.height);
+    if(code?.data){
+      const data = code.data;
+      let slug = '';
+      const truckParam = data.match(/[?&]truck=([^&\s]+)/);
+      if(truckParam){ slug = truckParam[1]; }
+      else {
+        const pathMatch = data.match(/\/([a-z0-9]+)\s*$/i);
+        if(pathMatch) slug = pathMatch[1];
+        else slug = data;
       }
-    } catch(e){
-      hideLoad();
-      showToast('❌ Scan failed — enter truck code manually');
+      slug = slug.toLowerCase().replace(/[^a-z0-9]/g,'');
+      if(!slug){ showToast('❌ QR not recognized — enter the truck code manually'); return; }
+      const codeInput = document.getElementById('c-truck-code-input');
+      if(codeInput) codeInput.value = slug;
+      showToast('✅ QR scanned!');
+      joinTruckByCode();
+    } else {
+      showToast('❌ No QR found — try again or enter truck code manually');
     }
-  };
-
-  input.oncancel = () => { if(input.parentNode) document.body.removeChild(input); };
-  input.click();
+  } catch(e){
+    hideLoad();
+    showToast('❌ Scan failed — enter truck code manually');
+  }
 }
 
 function loadScript(src){
@@ -2770,7 +2800,15 @@ async function renderTruckDash(){
   document.getElementById('c-truck-header').style.background=`linear-gradient(180deg,rgba(${hexRGB(p)},.12) 0%,transparent 100%)`;
   setText('ct-name',t.truck_name||'Food Truck');
   setText('ct-tagline',t.tagline||'');
-  setText('ct-emoji',t.emoji||'🚚');
+  // Show vendor profile pic or emoji in top-right slot
+  const emojiEl = document.getElementById('ct-emoji');
+  if(emojiEl){
+    if(t.profile_picture_url){
+      emojiEl.innerHTML = `<img src="${t.profile_picture_url}" style="width:100%;height:100%;object-fit:cover">`;
+    } else {
+      emojiEl.textContent = t.emoji||'🚚';
+    }
+  }
   setText('ct-pts',pts);
   setText('ct-visits',S.activeTruck.visit_count||0);
   setText('ct-saved','$'+(S.activeTruck.total_saved||0).toFixed(0));
@@ -3828,10 +3866,15 @@ function downloadVendorQR(){
     .divider::before,.divider::after{content:'';flex:1;height:1px;background:#eee}
     .download-badge{background:#2D1B0E;color:white;border-radius:12px;padding:10px 20px;font-size:13px;font-weight:700;margin-top:4px;display:inline-block}
     .footer{font-size:11px;color:#bbb;margin-top:16px}
-    @media print{body{padding:0}@page{margin:0.5in}}
+    .close-btn{position:fixed;top:16px;right:16px;width:44px;height:44px;background:#FF5722;color:white;border:none;border-radius:50%;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,.2);z-index:100;font-weight:900}
+    .action-btns{display:flex;gap:10px;margin-top:20px;justify-content:center}
+    .btn-print{background:#FF5722;color:white;border:none;border-radius:10px;padding:12px 20px;font-size:14px;font-weight:700;cursor:pointer;flex:1}
+    .btn-dl{background:white;color:#FF5722;border:2px solid #FF5722;border-radius:10px;padding:12px 20px;font-size:14px;font-weight:700;cursor:pointer;flex:1;text-decoration:none;display:flex;align-items:center;justify-content:center}
+    @media print{.close-btn,.action-btns{display:none}body{padding:0}@page{margin:0.5in}}
   </style>
 </head>
 <body>
+  <button class="close-btn" onclick="window.close()">✕</button>
   <div class="card">
     <div class="flame">🔥</div>
     <div class="app-name">Food Truck Rewards</div>
@@ -3847,6 +3890,10 @@ function downloadVendorQR(){
     <div class="divider">or find us in the app</div>
     <div class="download-badge">🚚 foodtruckrewards.app</div>
     <div class="footer">Powered by Food Truck Rewards · Free to join</div>
+    <div class="action-btns">
+      <button class="btn-print" onclick="window.print()">🖨️ Print</button>
+      <a class="btn-dl" href="${qrApiUrl}" download="${slug}-qr.png">⬇️ Save QR</a>
+    </div>
   </div>
 </body>
 </html>`;
@@ -3856,7 +3903,6 @@ function downloadVendorQR(){
   if(win){
     win.document.write(printHtml);
     win.document.close();
-    setTimeout(()=>win.print(), 800);
   } else {
     // Fallback: download raw QR if popup blocked
     const a = document.createElement('a');
@@ -3959,6 +4005,10 @@ setTimeout(()=>{
 }, 300);
 
 </script>
+<!-- Persistent hidden file inputs — most reliable way to trigger camera in Android WebView -->
+<input type="file" id="qr-scan-file" accept="image/*" style="display:none;position:fixed;top:-9999px" onchange="handleQRScanFile(this)">
+<input type="file" id="c-qr-scan-file" accept="image/*" style="display:none;position:fixed;top:-9999px" onchange="handleCustomerQRScanFile(this)">
+
 <!-- Stripe.js loaded last so it never blocks app rendering -->
 <script src="https://js.stripe.com/v3/" async></script>
 </body>
