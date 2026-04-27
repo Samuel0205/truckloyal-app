@@ -1029,9 +1029,10 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
         <div class="auth-sub">One account works at every food truck in the network. Scan any truck's QR to start earning.</div>
         <div class="auth-err" id="c-signup-err"></div>
         <div class="auth-form">
-          <div class="field"><label>Full Name</label><input type="text" id="c-su-name" placeholder="Your name" autocomplete="name"></div>
-          <div class="field"><label>Phone Number</label><input type="tel" id="c-su-phone" placeholder="(555) 000-0000" maxlength="14" oninput="formatPhone(this)" autocomplete="tel"></div>
-          <div class="field"><label>Email Address</label><input type="email" id="c-su-email" placeholder="you@email.com" autocomplete="email"></div>
+          <div class="field"><label>Full Name</label><input type="text" id="c-su-name" placeholder="Your name" autocomplete="name" required></div>
+          <div class="field"><label>Email Address</label><input type="email" id="c-su-email" placeholder="you@email.com" autocomplete="email" required></div>
+          <div class="field"><label>Password</label><input type="password" id="c-su-pass" placeholder="8+ characters" autocomplete="new-password" required></div>
+          <div class="field"><label>Confirm Password</label><input type="password" id="c-su-confirm" placeholder="Repeat password" autocomplete="new-password" required></div>
           <button class="btn btn-p" id="c-signup-btn" onclick="customerSignup()">Create My Account →</button>
           <div class="auth-switch">Already have an account? <span onclick="goC('s-c-login')">Sign in</span></div>
         </div>
@@ -1043,12 +1044,15 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
       <div class="auth-wrap">
         <div class="auth-logo">👤</div>
         <div class="auth-title">Sign In</div>
-        <div class="auth-sub">Welcome back! Sign in with your phone number and email.</div>
+        <div class="auth-sub">Welcome back! Sign in with your email and password.</div>
         <div class="auth-err" id="c-login-err"></div>
         <div class="auth-form">
-          <div class="field"><label>Phone Number</label><input type="tel" id="c-login-phone" placeholder="(555) 000-0000" maxlength="14" oninput="formatPhone(this)" autocomplete="tel"></div>
           <div class="field"><label>Email Address</label><input type="email" id="c-login-email" placeholder="you@email.com" autocomplete="email"></div>
+          <div class="field"><label>Password</label><input type="password" id="c-login-pass" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')customerLogin()"></div>
           <button class="btn btn-p" id="c-login-btn" onclick="customerLogin()">Sign In</button>
+          <div style="text-align:center;margin-top:12px">
+            <span style="font-size:13px;color:var(--brand);font-weight:700;cursor:pointer;text-decoration:underline" onclick="goC('s-c-forgot')">Forgot password?</span>
+          </div>
           <div class="auth-switch">No account? <span onclick="goC('s-c-signup')">Create one free</span></div>
         </div>
       </div>
@@ -2452,16 +2456,18 @@ function shareVendorLink(){
    CUSTOMER AUTH
 ════════════════════════════════════ */
 async function customerSignup(){
-  const name=document.getElementById('c-su-name').value.trim();
-  const phone=document.getElementById('c-su-phone').value.replace(/\D/g,'');
-  const email=document.getElementById('c-su-email').value.trim();
-  const errEl=document.getElementById('c-signup-err');
+  const name    = document.getElementById('c-su-name').value.trim();
+  const email   = document.getElementById('c-su-email').value.trim();
+  const pass    = document.getElementById('c-su-pass').value;
+  const confirm = document.getElementById('c-su-confirm').value;
+  const errEl   = document.getElementById('c-signup-err');
   errEl.classList.remove('show');
   if(!name){showErr(errEl,'Please enter your name');return}
-  if(phone.length<10){showErr(errEl,'Please enter a valid phone number');return}
   if(!email||!email.includes('@')){showErr(errEl,'Please enter a valid email address');return}
+  if(!pass||pass.length<8){showErr(errEl,'Password must be at least 8 characters');return}
+  if(pass!==confirm){showErr(errEl,'Passwords do not match');return}
   showLoad('Creating your account...');
-  const r=await apiPost('/api/customer/signup',{name,phone,email});
+  const r=await apiPost('/api/customer/signup',{name,email,password:pass});
   hideLoad();
   if(!r.ok){showErr(errEl,r.data.error||'Signup failed');return}
   const ctoken = r.data.data.token;
@@ -2474,15 +2480,16 @@ async function customerSignup(){
 }
 
 async function customerLogin(){
-  const phone=document.getElementById('c-login-phone').value.replace(/\D/g,'');
-  const email=document.getElementById('c-login-email').value.trim();
-  const errEl=document.getElementById('c-login-err');
+  const email = document.getElementById('c-login-email').value.trim();
+  const pass  = document.getElementById('c-login-pass').value;
+  const errEl = document.getElementById('c-login-err');
   errEl.classList.remove('show');
-  if(phone.length<10&&!email){showErr(errEl,'Enter your phone number or email');return}
+  if(!email||!email.includes('@')){showErr(errEl,'Please enter your email address');return}
+  if(!pass){showErr(errEl,'Please enter your password');return}
   showLoad('Signing in...');
-  const r=await apiPost('/api/customer/login',{phone:phone||undefined,email:email||undefined});
+  const r=await apiPost('/api/customer/login',{email,password:pass});
   hideLoad();
-  if(!r.ok){showErr(errEl,r.data.error||'Account not found — please sign up');return}
+  if(!r.ok){showErr(errEl,r.data.error||'Invalid email or password');return}
   const ctoken = r.data.data.token;
   S.customer={...r.data.data.customer, token: ctoken};
   localStorage.setItem('tl_customer', JSON.stringify(S.customer));
