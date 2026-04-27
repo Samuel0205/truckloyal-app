@@ -2513,6 +2513,14 @@ async function customerLogin(){
   localStorage.setItem('tl_my_trucks',JSON.stringify(S.myTrucks));
   S.cScreen='s-c-home'; show('s-c-home'); renderNav(CNAV,'s-c-home');
   renderMyTrucks();
+  // Fetch fresh truck data in background (includes profile_picture_url)
+  apiGet('/api/customer/'+S.customer.id+'/trucks').then(tr=>{
+    if(tr.ok && tr.data.data){
+      S.myTrucks=tr.data.data;
+      localStorage.setItem('tl_my_trucks',JSON.stringify(S.myTrucks));
+      renderMyTrucks();
+    }
+  });
   showToast('👋 Welcome back, '+S.customer.name+'!');
 }
 
