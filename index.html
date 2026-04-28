@@ -600,7 +600,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
           <div><div class="qa-lbl" style="color:var(--gn)">Award Points</div><div class="qa-sub">Customer bought something — give them their points</div></div>
         </div>
         <!-- SECONDARY ACTION: Confirm a redemption -->
-        <div class="qa wide accent-gd" onclick="goV('s-v-confirm')">
+        <div class="qa wide accent-gd" onclick="goV('s-v-award')">
           <div class="qa-ico">✅</div>
           <div><div class="qa-lbl" style="color:var(--gd)">Confirm Redemption</div><div class="qa-sub">Customer is claiming a reward — verify their code</div></div>
         </div>
@@ -623,58 +623,54 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
     </div>
 
     <!-- VENDOR: AWARD POINTS (used at the window every day) -->
+    <!-- VENDOR: AT THE WINDOW — Award Points + Confirm Redemption unified -->
     <div class="screen" id="s-v-award">
-      <div class="sh sh-row"><div class="back-btn" onclick="goV('s-v-home')">←</div><div><h1>⚡ Award Points</h1><p>Customer made a purchase — give them their points</p></div></div>
+      <div class="sh sh-row"><div class="back-btn" onclick="goV('s-v-home')">←</div><div><h1>🪟 At the Window</h1><p>Award points or confirm a reward</p></div></div>
       <div class="bp">
-        <!-- Three ways to identify the customer -->
-        <div class="award-tabs">
-          <button class="award-tab on" onclick="switchAwardTab('phone')">📱 Phone</button>
-          <button class="award-tab" onclick="switchAwardTab('id')">🔢 Rewards ID</button>
-          <button class="award-tab" onclick="switchAwardTab('qr')">📷 Scan QR</button>
+
+        <!-- Step 1: Find the customer -->
+        <div id="award-find-section">
+          <div style="font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--mu);margin-bottom:10px">Step 1 — Find the customer</div>
+          <div class="award-tabs">
+            <button class="award-tab on" onclick="switchAwardTab('phone')">📱 Phone</button>
+            <button class="award-tab" onclick="switchAwardTab('id')">🔢 Rewards ID</button>
+            <button class="award-tab" onclick="switchAwardTab('qr')">📷 Scan QR</button>
+          </div>
+
+          <div class="award-method on" id="award-phone">
+            <div class="field"><label>Customer Phone Number</label>
+              <input type="tel" id="award-phone-input" placeholder="(555) 000-0000" maxlength="14" oninput="formatAwardPhone(this)" autocomplete="off">
+            </div>
+            <button class="btn btn-s" onclick="lookupByPhone()">Find Customer →</button>
+          </div>
+
+          <div class="award-method" id="award-id">
+            <div class="field"><label>Customer Rewards ID</label>
+              <input type="text" id="award-id-input" placeholder="e.g. FTR-000001" autocomplete="off" style="font-family:monospace;letter-spacing:2px;font-size:18px;text-transform:uppercase">
+            </div>
+            <button class="btn btn-s" onclick="lookupByID()">Find Customer →</button>
+          </div>
+
+          <div class="award-method" id="award-qr">
+            <div style="background:var(--s2);border:1.5px dashed var(--b2);border-radius:14px;padding:32px 20px;text-align:center;cursor:pointer;margin-bottom:12px" onclick="startQRScan()">
+              <div style="font-size:36px;margin-bottom:6px">📷</div>
+              <div style="font-size:14px;font-weight:700">Tap to scan customer QR</div>
+              <div style="font-size:12px;color:var(--mu);margin-top:4px">Ask them to open their Profile tab and show their QR</div>
+            </div>
+            <div style="font-size:12px;color:var(--mu);text-align:center;margin-bottom:8px">— or enter their ID —</div>
+            <div class="field"><input type="text" id="award-qr-manual" placeholder="FTR-000001" autocomplete="off" style="font-family:monospace;letter-spacing:2px;text-transform:uppercase;font-size:16px" oninput="this.value=this.value.toUpperCase()"></div>
+            <button class="btn btn-s" onclick="lookupByQRManual()">Find Customer →</button>
+          </div>
         </div>
 
-        <!-- Method 1: Phone number lookup -->
-        <div class="award-method on" id="award-phone">
-          <div class="field">
-            <label>Customer Phone Number</label>
-            <input type="tel" id="award-phone-input" placeholder="(555) 000-0000" maxlength="14" oninput="formatAwardPhone(this)" autocomplete="off">
-          </div>
-          <button class="btn btn-s" onclick="lookupByPhone()">Find Customer →</button>
-        </div>
-
-        <!-- Method 2: Rewards ID number -->
-        <div class="award-method" id="award-id">
-          <div class="field">
-            <label>Customer Rewards ID</label>
-            <input type="text" id="award-id-input" placeholder="e.g. FTR-000001" autocomplete="off" style="font-family:monospace;letter-spacing:2px;font-size:18px;text-transform:uppercase">
-          </div>
-          <button class="btn btn-s" onclick="lookupByID()">Find Customer →</button>
-        </div>
-
-        <!-- Method 3: QR code (uses camera) -->
-        <div class="award-method" id="award-qr">
-          <div class="callout co-bl">
-            <div class="co-icon">📷</div>
-            <div><div class="co-title">Scan customer's QR code</div><div class="co-desc">Ask the customer to open their app and show their QR code from the Profile tab. Point your camera at it.</div></div>
-          </div>
-          <div style="background:var(--s2);border:1.5px dashed var(--b2);border-radius:14px;padding:40px 20px;text-align:center;margin-bottom:14px;cursor:pointer" onclick="startQRScan()">
-            <div style="font-size:40px;margin-bottom:8px">📷</div>
-            <div style="font-size:14px;font-weight:600;margin-bottom:4px">Tap to open camera</div>
-            <div style="font-size:12px;color:var(--mu)">Scan the customer's QR code</div>
-          </div>
-          <div style="font-size:12px;color:var(--mu);text-align:center">— or enter their ID manually —</div>
-          <div class="field" style="margin-top:12px">
-            <input type="text" id="award-qr-manual" placeholder="FTR-000001" autocomplete="off" style="font-family:monospace;letter-spacing:2px;text-transform:uppercase;font-size:16px" oninput="this.value=this.value.toUpperCase()">
-          </div>
-          <button class="btn btn-s" onclick="lookupByQRManual()">Find Customer →</button>
-        </div>
-
-        <!-- Customer found — award points form -->
+        <!-- Step 2: Customer found — show everything in one place -->
         <div id="award-customer-found" style="display:none">
-          <div class="card" style="border-color:rgba(46,204,142,.3);background:rgba(46,204,142,.04)">
+
+          <!-- Customer info card -->
+          <div class="card" style="border-color:rgba(46,204,142,.3);background:rgba(46,204,142,.04);margin-bottom:14px">
             <div style="display:flex;align-items:center;gap:12px">
-              <div style="width:48px;height:48px;border-radius:50%;background:rgba(46,204,142,.15);color:var(--gn);display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-size:20px;font-weight:800;flex-shrink:0" id="award-cust-av">J</div>
-              <div>
+              <div style="width:48px;height:48px;border-radius:50%;background:rgba(46,204,142,.15);color:var(--gn);display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-size:20px;font-weight:800;flex-shrink:0" id="award-cust-av">?</div>
+              <div style="flex:1">
                 <div style="font-family:var(--fd);font-size:18px;font-weight:800" id="award-cust-name">Customer Name</div>
                 <div style="font-size:12px;color:var(--mu)" id="award-cust-sub">FTR-000001 · 250 pts</div>
               </div>
@@ -682,75 +678,84 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
             </div>
           </div>
 
-          <div class="card">
-            <div class="card-title">💰 Order Amount</div>
-            <div style="font-size:12px;color:var(--mu);margin-bottom:12px;line-height:1.5">Enter what the customer spent. Points are calculated automatically based on your rate (<span id="award-rate-label">10 pts per $1</span>).</div>
+          <!-- SECTION A: Award Points for this order -->
+          <div class="card" style="margin-bottom:14px">
+            <div class="card-title">⚡ Award Order Points</div>
+            <div style="font-size:12px;color:var(--mu);margin-bottom:12px">Enter what they spent — points are added automatically at your rate (<span id="award-rate-label">10 pts/$1</span>).</div>
             <div class="field">
               <label>Order Total ($)</label>
               <input type="number" id="award-order-total" placeholder="0.00" min="0" step="0.01" oninput="calcAwardPts()" style="font-size:24px;font-family:var(--fd);font-weight:800;text-align:center">
             </div>
-            <div style="background:var(--s2);border-radius:12px;padding:14px;margin-bottom:14px">
-              <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+            <div style="background:var(--s2);border-radius:12px;padding:12px 14px;margin-bottom:14px">
+              <div style="display:flex;justify-content:space-between;margin-bottom:4px">
                 <div style="font-size:13px;color:var(--mu)">Order points</div>
                 <div style="font-family:var(--fd);font-weight:800;color:var(--gd)" id="award-pts-calc">+0 pts</div>
               </div>
-              <div style="display:flex;justify-content:space-between;margin-bottom:6px" id="award-visit-bonus-row">
+              <div style="display:flex;justify-content:space-between;margin-bottom:4px" id="award-visit-bonus-row">
                 <div style="font-size:13px;color:var(--mu)">Visit bonus</div>
                 <div style="font-family:var(--fd);font-weight:800;color:var(--gd)" id="award-visit-pts">+50 pts</div>
               </div>
-              <div style="height:1px;background:var(--b1);margin-bottom:8px"></div>
+              <div style="height:1px;background:var(--b1);margin:6px 0"></div>
               <div style="display:flex;justify-content:space-between">
-                <div style="font-size:13px;font-weight:600">Total awarded</div>
+                <div style="font-size:13px;font-weight:700">Total awarded</div>
                 <div style="font-family:var(--fd);font-weight:800;color:var(--brand)" id="award-total-pts">+50 pts</div>
               </div>
             </div>
-            <button class="btn btn-gn" onclick="awardPoints()">Award Points ✓</button>
-            <button class="btn btn-g" style="margin-top:10px" onclick="resetAwardForm()">Find Different Customer</button>
+            <button class="btn btn-gn" onclick="awardPoints()">✓ Award Points</button>
           </div>
+
+          <!-- DIVIDER -->
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+            <div style="flex:1;height:1.5px;background:var(--b2)"></div>
+            <div style="font-size:12px;font-weight:800;color:var(--mu);letter-spacing:.8px">OR — REDEEMING A REWARD?</div>
+            <div style="flex:1;height:1.5px;background:var(--b2)"></div>
+          </div>
+
+          <!-- SECTION B: Confirm Redemption Code -->
+          <div class="card" style="margin-bottom:14px">
+            <div class="card-title">🎁 Confirm Reward Redemption</div>
+            <div style="font-size:12px;color:var(--mu);margin-bottom:12px">Ask the customer to show their reward code from the app. Enter it below to verify and confirm.</div>
+            <div class="field">
+              <input type="text" id="confirm-code-input" placeholder="STK-0000" maxlength="8" autocomplete="off"
+                oninput="this.value=this.value.toUpperCase()"
+                style="font-family:monospace;letter-spacing:4px;font-size:24px;text-align:center;text-transform:uppercase">
+            </div>
+            <button class="btn btn-s" onclick="lookupRedemptionCode()" style="margin-bottom:10px">Look Up Code →</button>
+
+            <!-- Code found -->
+            <div id="confirm-found" style="display:none">
+              <div class="confirm-card">
+                <div style="font-size:40px;margin-bottom:8px" id="confirm-reward-emo">🎁</div>
+                <div class="confirm-reward-name" id="confirm-reward-name">Free Item</div>
+                <div class="confirm-customer" id="confirm-customer-name">Customer Name</div>
+                <div class="confirm-pts" id="confirm-pts-cost">–400 points</div>
+                <div style="margin-top:10px"><div class="tag tag-gd" id="confirm-code-display">STK-0000</div></div>
+              </div>
+              <div class="callout co-or" style="margin-top:12px">
+                <div class="co-icon">⚠️</div>
+                <div><div class="co-desc">Make sure you've given the customer this item before confirming. This cannot be undone.</div></div>
+              </div>
+              <button class="btn btn-gn" onclick="confirmRedemption()" style="margin-top:10px">✓ I Gave Them the Item — Confirm</button>
+              <button class="btn btn-g" style="margin-top:8px" onclick="resetConfirmForm()">Cancel</button>
+            </div>
+
+            <!-- Code not found -->
+            <div id="confirm-notfound" style="display:none">
+              <div class="callout co-or">
+                <div class="co-icon">❌</div>
+                <div><div class="co-desc">Code not found, already used, or expired. Ask the customer to generate a new code from their app.</div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Find different customer -->
+          <button class="btn btn-g" onclick="resetAwardForm()">← Find Different Customer</button>
         </div>
       </div>
     </div>
 
-    <!-- VENDOR: CONFIRM REDEMPTION -->
-    <div class="screen" id="s-v-confirm">
-      <div class="sh sh-row"><div class="back-btn" onclick="goV('s-v-home')">←</div><div><h1>✅ Confirm Reward</h1><p>Customer is claiming a reward</p></div></div>
-      <div class="bp">
-        <div class="callout co-gd">
-          <div class="co-icon">💡</div>
-          <div><div class="co-title">How this works</div><div class="co-desc">The customer shows a 7-character code from their app. Enter it below to verify it's valid, see what reward they earned, and confirm it was given to them.</div></div>
-        </div>
-        <div class="field">
-          <label>Customer's Redemption Code</label>
-          <input type="text" id="confirm-code-input" placeholder="STK-0000" maxlength="8" autocomplete="off" oninput="this.value=this.value.toUpperCase()" style="font-family:monospace;letter-spacing:4px;font-size:24px;text-align:center;text-transform:uppercase">
-        </div>
-        <button class="btn btn-s" onclick="lookupRedemptionCode()">Look Up Code →</button>
-
-        <!-- Found — show details and confirm -->
-        <div id="confirm-found" style="display:none;margin-top:16px">
-          <div class="confirm-card">
-            <div style="font-size:40px;margin-bottom:8px" id="confirm-reward-emo">🎁</div>
-            <div class="confirm-reward-name" id="confirm-reward-name">Free Item</div>
-            <div class="confirm-customer" id="confirm-customer-name">Customer Name</div>
-            <div class="confirm-pts" id="confirm-pts-cost">–400 points will be deducted</div>
-            <div style="margin-top:10px"><div class="tag tag-gd" id="confirm-code-display">STK-0000</div></div>
-          </div>
-          <div class="callout co-or">
-            <div class="co-icon">⚠️</div>
-            <div><div class="co-title">Before you confirm</div><div class="co-desc">Make sure you have given the customer this item. Confirming cannot be undone and will deduct the points from their account.</div></div>
-          </div>
-          <button class="btn btn-gn" onclick="confirmRedemption()">✓ I Gave Them the Item — Confirm</button>
-          <button class="btn btn-g" style="margin-top:10px" onclick="resetConfirmForm()">Cancel</button>
-        </div>
-
-        <!-- Not found -->
-        <div id="confirm-notfound" style="display:none;margin-top:16px">
-          <div class="callout co-or">
-            <div class="co-icon">❌</div>
-            <div><div class="co-title">Code not found</div><div class="co-desc">This code is invalid, already used, or expired. Ask the customer to generate a new code from their app.</div></div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <!-- s-v-confirm now redirects to s-v-award -->
+    <div class="screen" id="s-v-confirm" style="display:none"></div>
 
     <!-- VENDOR: REWARDS -->
     <div class="screen" id="s-v-rewards">
@@ -1652,7 +1657,7 @@ function goV(id){
   if(id==='s-v-brand')    populateBrandForm();
   if(id==='s-v-points')   populatePointsForm();
   if(id==='s-v-award')    resetAwardForm();
-  if(id==='s-v-confirm')  resetConfirmForm();
+  if(id==='s-v-confirm'){ goV('s-v-award'); return; }  // merged into At the Window
   if(id==='s-v-customers') loadCustomers();
 }
 
@@ -2409,10 +2414,13 @@ async function loadCustomers(){
   }
   el.innerHTML = members.map(m=>{
     const last = m.last_visit ? fmtMemberDate(m.last_visit) : 'Never';
+    const avatarInner = m.profile_picture_url
+      ? `<img src="${m.profile_picture_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`
+      : m.name.charAt(0).toUpperCase();
     return `
     <div class="card" style="margin-bottom:10px">
       <div style="display:flex;align-items:center;gap:12px">
-        <div style="width:44px;height:44px;border-radius:50%;background:rgba(255,87,34,.12);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900;color:var(--brand);flex-shrink:0">${m.name.charAt(0).toUpperCase()}</div>
+        <div style="width:44px;height:44px;border-radius:50%;background:rgba(255,87,34,.12);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900;color:var(--brand);flex-shrink:0;overflow:hidden">${avatarInner}</div>
         <div style="flex:1;min-width:0">
           <div style="font-weight:800;font-size:14px">${m.name}</div>
           <div style="font-size:11px;color:var(--mu);font-weight:600">Last visit: ${last} · Streak: ${m.current_streak}🔥</div>
@@ -2611,7 +2619,7 @@ function renderMyTrucks(){
     const tier = DEFAULT_TIERS.slice().reverse().find(tr=>pts>=tr.pts_threshold)||DEFAULT_TIERS[0];
     const p    = t.color_primary||'#FF5722';
     const todayKey = 'spin_used_'+t.id+'_'+new Date().toDateString();
-    const checkedIn = localStorage.getItem(todayKey);
+    const checkedIn = localStorage.getItem(todayKey); // only show after full spin
     return `
     <div class="truck-card ${t.id===S.activeTruck?.id?'active-truck':''}" onclick="openTruck(${i})">
       <div class="tc-top">
@@ -2834,20 +2842,31 @@ async function renderTruckDash(){
   // Streak
   const streak=S.activeTruck.current_streak||0;
   setText('ct-streak',streak+' day'+(streak!==1?'s':''));
-  const todayKey='spin_used_'+t.id+'_'+new Date().toDateString();
-  const checkedInToday=!!localStorage.getItem(todayKey);
-  renderStreakDays('ct-streak-days', streak, checkedInToday, S.activeTruck.last_visit_date||null);
+  const spunKey='spin_used_'+t.id+'_'+new Date().toDateString();
+  const visitedKey='visited_'+t.id+'_'+new Date().toDateString();
+  const spunToday=!!localStorage.getItem(spunKey);
+  const visitedToday=!!localStorage.getItem(visitedKey)||spunToday;
+  // Only count today in streak if spin is complete
+  renderStreakDays('ct-streak-days', streak, spunToday, S.activeTruck.last_visit_date||null);
   setText('ct-streak-tip',streak>0?`💡 Come back tomorrow to keep your ${streak}-day streak!`:'Visit today to start your streak!');
 
   // Check-in button — show if already checked in today
   const checkinBtn=document.getElementById('ct-checkin-btn');
   if(checkinBtn){
-    if(checkedInToday){
+    if(spunToday){
+      // Fully done for today
       checkinBtn.textContent='✅ Checked In Today · Come Back Tomorrow!';
       checkinBtn.style.background='#E8F5E9';
       checkinBtn.style.color='#2E7D32';
       checkinBtn.style.boxShadow='none';
       checkinBtn.disabled=true;
+    } else if(visitedToday){
+      // Visited but not spun yet
+      checkinBtn.textContent='🎰 Spin the Wheel for Bonus Points!';
+      checkinBtn.style.background='';
+      checkinBtn.style.color='';
+      checkinBtn.style.boxShadow='';
+      checkinBtn.disabled=false;
     } else {
       checkinBtn.textContent='⚡ Check In & Spin the Wheel';
       checkinBtn.style.background='';
@@ -2940,6 +2959,9 @@ async function checkInAtTruck(){
   localStorage.setItem('tl_my_trucks',JSON.stringify(S.myTrucks));
   localStorage.setItem('tl_active_truck',JSON.stringify(S.activeTruck));
 
+  // Mark as visited (not yet spun) so streak doesn't count until spin done
+  const visitKey='visited_'+S.activeTruck.id+'_'+new Date().toDateString();
+  localStorage.setItem(visitKey,'1');
   if(d.tier_upgraded) showToast('🎉 You leveled up to a new tier!');
   goC('s-c-spin');
 }
