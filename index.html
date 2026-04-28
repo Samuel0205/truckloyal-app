@@ -3970,6 +3970,11 @@ async function submitCustomerReset(){
    VENDOR: NOTIFICATIONS
 ════════════════════════════════════ */
 async function loadNotifications(){
+  // Wire char counter immediately
+  const ta = document.getElementById('notif-body');
+  const counter = document.getElementById('notif-char');
+  if(ta && counter) ta.oninput = () => counter.textContent = ta.value.length+'/150';
+
   const r = await apiGet('/api/vendor/notifications');
   const el = document.getElementById('notif-history');
   if(!el) return;
@@ -3984,10 +3989,6 @@ async function loadNotifications(){
       <div style="font-size:12px;color:var(--mu);margin-top:2px">${n.message}</div>
       <div style="font-size:11px;color:var(--mu);margin-top:4px">Sent to ${n.sent_to||0} members · ${fmtMemberDate(n.created_at)}</div>
     </div>`).join('');
-  // char counter
-  const ta = document.getElementById('notif-body');
-  const counter = document.getElementById('notif-char');
-  if(ta && counter) ta.oninput = () => counter.textContent = ta.value.length+'/150';
 }
 
 async function sendNotification(){
