@@ -594,18 +594,18 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
         </div>
       </div>
       <div class="qa-grid">
-        <!-- PRIMARY ACTION: Award points is #1 — vendors use this at the window every day -->
+        <!-- PRIMARY ACTION: At the Window — award points + confirm rewards in one screen -->
         <div class="qa wide accent-gn" onclick="goV('s-v-award')">
-          <div class="qa-ico">⚡</div>
-          <div><div class="qa-lbl" style="color:var(--gn)">Award Points</div><div class="qa-sub">Customer bought something — give them their points</div></div>
-        </div>
-        <!-- SECONDARY ACTION: Confirm a redemption -->
-        <div class="qa wide accent-gd" onclick="goV('s-v-award')">
-          <div class="qa-ico">✅</div>
-          <div><div class="qa-lbl" style="color:var(--gd)">Confirm Redemption</div><div class="qa-sub">Customer is claiming a reward — verify their code</div></div>
+          <div class="qa-ico">🪟</div>
+          <div><div class="qa-lbl" style="color:var(--gn)">At the Window</div><div class="qa-sub">Award points &amp; confirm rewards at checkout</div></div>
         </div>
         <div class="qa" onclick="goV('s-v-rewards')"><div class="qa-ico">🎁</div><div class="qa-lbl">Rewards</div><div class="qa-sub">What customers earn</div></div>
         <div class="qa" onclick="goV('s-v-spin')"><div class="qa-ico">🎰</div><div class="qa-lbl">Spin Prizes</div><div class="qa-sub">Bonus points on wheel</div></div>
+        <div class="qa" onclick="goV('s-v-notify')"><div class="qa-ico">📣</div><div class="qa-lbl">Notify</div><div class="qa-sub">Message your members</div></div>
+        <div class="qa" onclick="goV('s-v-promos')"><div class="qa-ico">🎉</div><div class="qa-lbl">Promos</div><div class="qa-sub">Flash deals & codes</div></div>
+        <div class="qa" onclick="goV('s-v-schedule')"><div class="qa-ico">📅</div><div class="qa-lbl">Schedule</div><div class="qa-sub">Weekly locations</div></div>
+        <div class="qa" onclick="goV('s-v-feed')"><div class="qa-ico">📸</div><div class="qa-lbl">Feed Posts</div><div class="qa-sub">Share updates</div></div>
+        <div class="qa" onclick="goV('s-v-reviews-screen')"><div class="qa-ico">⭐</div><div class="qa-lbl">Reviews</div><div class="qa-sub">What customers say</div></div>
         <div class="qa" onclick="goV('s-v-points')"><div class="qa-ico">⚙️</div><div class="qa-lbl">Points Rules</div><div class="qa-sub">Rates & bonuses</div></div>
         <div class="qa" onclick="goV('s-v-brand')"><div class="qa-ico">🎨</div><div class="qa-lbl">Brand</div><div class="qa-sub">Emoji, colors & name</div></div>
       </div>
@@ -904,6 +904,98 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
             <div>📲 Share your truck number so customers can find you</div>
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- VENDOR: NOTIFICATIONS / PUSH -->
+    <div class="screen" id="s-v-notify">
+      <div class="sh sh-row"><div class="back-btn" onclick="goV('s-v-home')">←</div><div><h1>📣 Notify Customers</h1><p>Send a message to all your members</p></div></div>
+      <div class="bp">
+        <div class="callout co-bl"><div class="co-icon">💡</div><div><div class="co-desc">Members who have notifications enabled will get an alert instantly. Great for posting your location, announcing specials, or driving traffic on slow days.</div></div></div>
+        <div class="card">
+          <div class="card-title">New Message</div>
+          <div class="field"><label>Title (short &amp; punchy)</label><input type="text" id="notif-title" placeholder="We're open! 🔥" maxlength="50"></div>
+          <div class="field"><label>Message</label><textarea id="notif-body" placeholder="Come get your tacos — we're at 5th & Main until 3pm today!" maxlength="150" style="height:80px;resize:none;width:100%;padding:12px;border-radius:12px;border:1.5px solid var(--b2);background:var(--s2);font-family:var(--fb);font-size:14px"></textarea></div>
+          <div class="field"><label>Type</label>
+            <select id="notif-type" style="width:100%;padding:12px;border-radius:12px;border:1.5px solid var(--b2);background:var(--s2);font-family:var(--fb);font-size:14px">
+              <option value="broadcast">📢 General Broadcast</option>
+              <option value="location">📍 Location Update</option>
+              <option value="promo">🎁 Promo / Deal</option>
+            </select>
+          </div>
+          <div id="notif-char" style="font-size:11px;color:var(--mu);text-align:right;margin-bottom:12px">0/150</div>
+          <button class="btn btn-p" onclick="sendNotification()">📣 Send to All Members</button>
+        </div>
+        <div class="card">
+          <div class="card-title">📋 Notification History</div>
+          <div id="notif-history"><div style="text-align:center;padding:16px;color:var(--mu);font-size:13px">Loading...</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VENDOR: PROMOS & FLASH DEALS -->
+    <div class="screen" id="s-v-promos">
+      <div class="sh sh-row"><div class="back-btn" onclick="goV('s-v-home')">←</div><div><h1>🎉 Promos & Deals</h1><p>Drive traffic with limited-time offers</p></div></div>
+      <div class="bp">
+        <div class="card">
+          <div class="card-title">Create New Promo</div>
+          <div class="field"><label>Promo Title</label><input type="text" id="promo-title" placeholder="Double Points Tuesday!"></div>
+          <div class="field"><label>Description</label><input type="text" id="promo-desc" placeholder="Earn 2x points on all orders today only"></div>
+          <div class="field"><label>Type</label>
+            <select id="promo-type" onchange="updatePromoValueLabel()" style="width:100%;padding:12px;border-radius:12px;border:1.5px solid var(--b2);background:var(--s2);font-family:var(--fb);font-size:14px">
+              <option value="bonus_points">⚡ Bonus Points</option>
+              <option value="free_item">🎁 Free Item Unlock</option>
+            </select>
+          </div>
+          <div class="field"><label id="promo-val-label">Bonus Points to Award</label><input type="number" id="promo-value" placeholder="100" min="1" style="font-size:20px;font-family:var(--fd);font-weight:800;text-align:center"></div>
+          <div class="field"><label>Promo Code (auto-generated if blank)</label><input type="text" id="promo-code" placeholder="e.g. TACO2X" style="text-transform:uppercase;font-family:monospace;font-size:18px;letter-spacing:3px" oninput="this.value=this.value.toUpperCase()"></div>
+          <div class="field"><label>Expires (leave blank = never)</label><input type="datetime-local" id="promo-expires"></div>
+          <button class="btn btn-p" onclick="createPromo()">✓ Create Promo</button>
+        </div>
+        <div class="card">
+          <div class="card-title">Active Promos</div>
+          <div id="promo-list"><div style="text-align:center;padding:16px;color:var(--mu);font-size:13px">Loading...</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VENDOR: SCHEDULE -->
+    <div class="screen" id="s-v-schedule">
+      <div class="sh sh-row"><div class="back-btn" onclick="goV('s-v-home')">←</div><div><h1>📅 Weekly Schedule</h1><p>Let customers know where you'll be</p></div></div>
+      <div class="bp">
+        <div class="callout co-bl"><div class="co-icon">💡</div><div><div class="co-desc">Customers can see your weekly schedule in the app. Fill in the days you operate — leave blank for days you're closed.</div></div></div>
+        <div id="schedule-days"></div>
+        <button class="btn btn-p" onclick="saveSchedule()">💾 Save Schedule</button>
+      </div>
+    </div>
+
+    <!-- VENDOR: SOCIAL FEED POSTS -->
+    <div class="screen" id="s-v-feed">
+      <div class="sh sh-row"><div class="back-btn" onclick="goV('s-v-home')">←</div><div><h1>📸 Social Feed</h1><p>Share updates with your followers</p></div></div>
+      <div class="bp">
+        <div class="card">
+          <div class="card-title">New Post</div>
+          <div class="field"><label>What's happening at your truck?</label>
+            <textarea id="post-content" placeholder="Today's special: spicy birria tacos with consommé 🌮🔥 Come find us at the Farmer's Market!" maxlength="500" style="height:100px;resize:none;width:100%;padding:12px;border-radius:12px;border:1.5px solid var(--b2);background:var(--s2);font-family:var(--fb);font-size:14px"></textarea>
+          </div>
+          <div class="field"><label>Emoji</label><input type="text" id="post-emoji" placeholder="🚚" maxlength="4" style="font-size:24px;text-align:center;width:80px"></div>
+          <div id="post-char" style="font-size:11px;color:var(--mu);text-align:right;margin-bottom:12px">0/500</div>
+          <button class="btn btn-p" onclick="createPost()">📸 Post Update</button>
+        </div>
+        <div id="vendor-posts-list"></div>
+      </div>
+    </div>
+
+    <!-- VENDOR: REVIEWS -->
+    <div class="screen" id="s-v-reviews-screen">
+      <div class="sh sh-row"><div class="back-btn" onclick="goV('s-v-home')">←</div><div><h1>⭐ Reviews</h1><p>What customers are saying</p></div></div>
+      <div class="bp">
+        <div class="card" style="text-align:center;padding:24px">
+          <div style="font-size:48px;font-family:var(--fd);font-weight:900;color:var(--gd)" id="v-avg-rating">–</div>
+          <div style="font-size:14px;color:var(--mu);margin-top:4px" id="v-review-count">No reviews yet</div>
+          <div id="v-star-display" style="font-size:24px;margin-top:8px"></div>
+        </div>
+        <div id="v-reviews-list"></div>
       </div>
     </div>
 
@@ -1235,8 +1327,13 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
 
         <!-- Check in button -->
         <button class="btn btn-p" id="ct-checkin-btn" style="margin-bottom:8px" onclick="checkInAtTruck()">⚡ Check In & Spin the Wheel</button>
-        <div style="font-size:11px;color:var(--mu);text-align:center;margin-bottom:16px;line-height:1.5;font-weight:600">
+        <div style="font-size:11px;color:var(--mu);text-align:center;margin-bottom:12px;line-height:1.5;font-weight:600">
           Points earned here are only for <strong id="ct-pts-note">this truck</strong>
+        </div>
+        <div style="display:flex;gap:8px;margin-bottom:16px">
+          <button class="btn btn-s" style="flex:1;font-size:12px;padding:10px 6px" onclick="goC('s-c-leaderboard')">🏆 Top Fans</button>
+          <button class="btn btn-s" style="flex:1;font-size:12px;padding:10px 6px" onclick="goC('s-c-review')">⭐ Review</button>
+          <button class="btn btn-s" style="flex:1;font-size:12px;padding:10px 6px" onclick="goC('s-c-promo')">🎉 Promo</button>
         </div>
 
         <!-- Rewards -->
@@ -1354,6 +1451,66 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
         </div>
 
         <button class="btn btn-g" style="margin-top:4px" onclick="customerLogout()">Sign Out</button>
+      </div>
+    </div>
+
+    <!-- CUSTOMER: DISCOVER TRUCKS -->
+    <div class="screen" id="s-c-discover">
+      <div class="sh sh-row"><div class="back-btn" onclick="goC('s-c-home')">←</div><div><h1>🗺️ Discover Trucks</h1><p>Find food trucks near you</p></div></div>
+      <div class="bp">
+        <div id="discover-list"><div style="text-align:center;padding:40px;color:var(--mu)"><div style="font-size:40px;margin-bottom:12px">🔍</div><div style="font-size:15px;font-weight:700">Loading trucks...</div></div></div>
+      </div>
+    </div>
+
+    <!-- CUSTOMER: SOCIAL FEED -->
+    <div class="screen" id="s-c-feed">
+      <div class="sh"><h1>📰 Feed</h1><p>Latest from your trucks</p></div>
+      <div class="bp">
+        <div id="c-feed-list"><div style="text-align:center;padding:40px;color:var(--mu)"><div style="font-size:40px;margin-bottom:12px">📰</div><div style="font-size:15px;font-weight:700">Loading feed...</div></div></div>
+      </div>
+    </div>
+
+    <!-- CUSTOMER: LEADERBOARD -->
+    <div class="screen" id="s-c-leaderboard">
+      <div class="sh sh-row"><div class="back-btn" onclick="goC('s-c-truck')">←</div><div><h1>🏆 Leaderboard</h1><p id="c-lb-truck-name">Top fans at this truck</p></div></div>
+      <div class="bp">
+        <div id="c-lb-list"></div>
+      </div>
+    </div>
+
+    <!-- CUSTOMER: LEAVE REVIEW -->
+    <div class="screen" id="s-c-review">
+      <div class="sh sh-row"><div class="back-btn" onclick="goC('s-c-truck')">←</div><div><h1>⭐ Leave a Review</h1><p id="c-review-truck-name">Rate this truck</p></div></div>
+      <div class="bp">
+        <div class="card">
+          <div class="card-title">Your Rating</div>
+          <div id="star-picker" style="display:flex;gap:12px;justify-content:center;margin:16px 0;font-size:40px">
+            <span onclick="setRating(1)" class="star" data-r="1">☆</span>
+            <span onclick="setRating(2)" class="star" data-r="2">☆</span>
+            <span onclick="setRating(3)" class="star" data-r="3">☆</span>
+            <span onclick="setRating(4)" class="star" data-r="4">☆</span>
+            <span onclick="setRating(5)" class="star" data-r="5">☆</span>
+          </div>
+          <div class="field"><label>Comment (optional)</label>
+            <textarea id="review-comment" placeholder="Amazing tacos, super friendly crew! Will definitely be back 🔥" maxlength="300" style="height:90px;resize:none;width:100%;padding:12px;border-radius:12px;border:1.5px solid var(--b2);background:var(--s2);font-family:var(--fb);font-size:14px"></textarea>
+          </div>
+          <button class="btn btn-p" onclick="submitReview()">⭐ Submit Review</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CUSTOMER: PROMO CODE ENTRY -->
+    <div class="screen" id="s-c-promo">
+      <div class="sh sh-row"><div class="back-btn" onclick="goC('s-c-truck')">←</div><div><h1>🎉 Enter Promo Code</h1><p>Unlock a special deal</p></div></div>
+      <div class="bp">
+        <div class="callout co-gd"><div class="co-icon">💡</div><div><div class="co-desc">Ask your food truck vendor for their promo code. Enter it here to unlock bonus points or special rewards!</div></div></div>
+        <div class="card">
+          <div class="field"><label>Promo Code</label>
+            <input type="text" id="c-promo-input" placeholder="e.g. TACO2X" maxlength="10" autocomplete="off" oninput="this.value=this.value.toUpperCase()" style="font-family:monospace;letter-spacing:4px;font-size:24px;text-align:center;text-transform:uppercase">
+          </div>
+          <button class="btn btn-p" onclick="applyPromo()">✓ Apply Code</button>
+        </div>
+        <div id="promo-result" style="display:none"></div>
       </div>
     </div>
 
@@ -1552,8 +1709,13 @@ const DEFAULT_TIERS = [
 ];
 const EMOJIS = ['🚚','🌮','🍔','🍕','🥩','🍜','🫔','🥗','🍦','☕','🌯','🧆'];
 const PRESETS = [['#FF5A1F','#F5B800'],['#8B5CF6','#EC4899'],['#059669','#34D399'],['#0EA5E9','#38BDF8'],['#DC2626','#F97316'],['#1D4ED8','#FBBF24']];
-const VNAV = [{id:'s-v-home',icon:'🏠',label:'Home'},{id:'s-v-analytics',icon:'📊',label:'Analytics'},{id:'s-v-customers',icon:'👥',label:'Members'},{id:'s-v-settings',icon:'⚙️',label:'Settings'}];
-const CNAV = [{id:'s-c-home',icon:'🏠',label:'Home'},{id:'s-c-history',icon:'📋',label:'History'},{id:'s-c-profile',icon:'👤',label:'Profile'}];
+const VNAV = [
+  {id:'s-v-home',icon:'🏠',label:'Home'},
+  {id:'s-v-analytics',icon:'📊',label:'Analytics'},
+  {id:'s-v-customers',icon:'👥',label:'Members'},
+  {id:'s-v-settings',icon:'⚙️',label:'Settings'}
+];
+const CNAV = [{id:'s-c-home',icon:'🏠',label:'Home'},{id:'s-c-feed',icon:'📰',label:'Feed'},{id:'s-c-discover',icon:'🗺️',label:'Discover'},{id:'s-c-history',icon:'📋',label:'History'},{id:'s-c-profile',icon:'👤',label:'Profile'}];
 
 /* ════════════════════════════════════
    API HELPERS
@@ -1652,7 +1814,11 @@ function goV(id){
   if(id==='s-v-home')     loadVendorHome();
   if(id==='s-v-rewards')  loadVRewards();
   if(id==='s-v-spin')     loadVPrizes();
-  if(id==='s-v-analytics')loadAnalytics();
+  if(id==='s-v-notify')   loadNotifications();
+  if(id==='s-v-promos')   loadPromos();
+  if(id==='s-v-schedule') loadSchedule();
+  if(id==='s-v-feed')     loadVendorFeed();
+  if(id==='s-v-reviews-screen') loadVendorReviews();
   if(id==='s-v-settings') renderVSettings();
   if(id==='s-v-brand')    populateBrandForm();
   if(id==='s-v-points')   populatePointsForm();
@@ -1663,7 +1829,10 @@ function goV(id){
 
 function goC(id){
   S.cScreen=id; show(id); renderNav(CNAV,id);
-  if(id==='s-c-home')    renderMyTrucks();
+  if(id==='s-c-feed')      loadCustomerFeed();
+  if(id==='s-c-discover')  loadDiscover();
+  if(id==='s-c-leaderboard') loadLeaderboard();
+  if(id==='s-c-review')    renderReviewScreen();
   if(id==='s-c-truck')   renderTruckDash();
   if(id==='s-c-spin')    {renderSpinPreview();drawWheel(S.spinAngle)}
   if(id==='s-c-history') renderHistory();
@@ -2962,6 +3131,8 @@ async function checkInAtTruck(){
   // Mark as visited (not yet spun) so streak doesn't count until spin done
   const visitKey='visited_'+S.activeTruck.id+'_'+new Date().toDateString();
   localStorage.setItem(visitKey,'1');
+  // Auto-complete referral on first visit
+  checkReferral(S.customer.id, S.activeTruck.id);
   if(d.tier_upgraded) showToast('🎉 You leveled up to a new tier!');
   goC('s-c-spin');
 }
@@ -3793,6 +3964,416 @@ async function submitCustomerReset(){
   sessionStorage.removeItem('_rt'); sessionStorage.removeItem('_re');
   history.replaceState(null,'',window.location.pathname);
   goC('s-c-login');
+}
+
+/* ════════════════════════════════════
+   VENDOR: NOTIFICATIONS
+════════════════════════════════════ */
+async function loadNotifications(){
+  const r = await apiGet('/api/vendor/notifications');
+  const el = document.getElementById('notif-history');
+  if(!el) return;
+  const items = r.ok ? (r.data.data||[]) : [];
+  if(!items.length){
+    el.innerHTML='<div style="text-align:center;padding:16px;color:var(--mu);font-size:13px">No notifications sent yet</div>';
+    return;
+  }
+  el.innerHTML = items.map(n=>`
+    <div style="padding:10px 0;border-bottom:1px solid var(--b1)">
+      <div style="font-weight:700;font-size:13px">${n.title}</div>
+      <div style="font-size:12px;color:var(--mu);margin-top:2px">${n.message}</div>
+      <div style="font-size:11px;color:var(--mu);margin-top:4px">Sent to ${n.sent_to||0} members · ${fmtMemberDate(n.created_at)}</div>
+    </div>`).join('');
+  // char counter
+  const ta = document.getElementById('notif-body');
+  const counter = document.getElementById('notif-char');
+  if(ta && counter) ta.oninput = () => counter.textContent = ta.value.length+'/150';
+}
+
+async function sendNotification(){
+  const title = document.getElementById('notif-title')?.value.trim();
+  const body  = document.getElementById('notif-body')?.value.trim();
+  const type  = document.getElementById('notif-type')?.value;
+  if(!title || !body){ showToast('Add a title and message first'); return; }
+  showLoad('Sending...');
+  const r = await apiPost('/api/vendor/push', {title, message:body, type});
+  hideLoad();
+  if(r.ok){
+    const sent = r.data.data?.sent || 0;
+    const total = r.data.data?.total_members || 0;
+    showToast(`📣 Sent! ${sent}/${total} members notified`);
+    document.getElementById('notif-title').value='';
+    document.getElementById('notif-body').value='';
+    loadNotifications();
+  } else {
+    showToast('❌ '+(r.data?.error||'Send failed'));
+  }
+}
+
+/* ════════════════════════════════════
+   VENDOR: PROMOS
+════════════════════════════════════ */
+async function loadPromos(){
+  const r = await apiGet('/api/vendor/promos');
+  const el = document.getElementById('promo-list');
+  if(!el) return;
+  const items = r.ok ? (r.data.data||[]) : [];
+  if(!items.length){
+    el.innerHTML='<div style="text-align:center;padding:16px;color:var(--mu);font-size:13px">No promos yet — create one above!</div>';
+    return;
+  }
+  el.innerHTML = items.map(p=>`
+    <div style="display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--b1)">
+      <div style="flex:1">
+        <div style="font-weight:800;font-size:14px">${p.title}</div>
+        <div style="font-size:12px;color:var(--mu);margin-top:2px">Code: <strong style="font-family:monospace;color:var(--brand)">${p.code}</strong> · Used ${p.used_count||0}x</div>
+        <div style="font-size:11px;color:var(--mu)">${p.expires_at ? 'Expires: '+new Date(p.expires_at).toLocaleDateString() : 'No expiry'}</div>
+      </div>
+      <button onclick="deletePromo('${p.id}')" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--mu)">🗑️</button>
+    </div>`).join('');
+}
+
+async function createPromo(){
+  const title   = document.getElementById('promo-title')?.value.trim();
+  const desc    = document.getElementById('promo-desc')?.value.trim();
+  const type    = document.getElementById('promo-type')?.value;
+  const value   = parseFloat(document.getElementById('promo-value')?.value||0);
+  const code    = document.getElementById('promo-code')?.value.trim().toUpperCase();
+  const expires = document.getElementById('promo-expires')?.value;
+  if(!title || !value){ showToast('Fill in title and value'); return; }
+  showLoad('Creating...');
+  const r = await apiPost('/api/vendor/promos', {title, description:desc, promo_type:type, value, code, expires_at:expires||null});
+  hideLoad();
+  if(r.ok){
+    showToast('✅ Promo created! Code: '+r.data.data.code);
+    ['promo-title','promo-desc','promo-value','promo-code','promo-expires'].forEach(id=>{
+      const el=document.getElementById(id); if(el) el.value='';
+    });
+    loadPromos();
+  } else showToast('❌ '+(r.data?.error||'Failed'));
+}
+
+async function deletePromo(id){
+  await apiDel('/api/vendor/promos/'+id);
+  showToast('🗑️ Promo removed');
+  loadPromos();
+}
+
+function updatePromoValueLabel(){
+  const type = document.getElementById('promo-type')?.value;
+  const lbl  = document.getElementById('promo-val-label');
+  if(lbl) lbl.textContent = type==='bonus_points' ? 'Bonus Points to Award' : 'Free Item (reward index)';
+}
+
+/* ════════════════════════════════════
+   VENDOR: SCHEDULE
+════════════════════════════════════ */
+const DAY_NAMES = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+
+async function loadSchedule(){
+  const r   = await apiGet('/api/vendor/schedule');
+  const data = r.ok ? (r.data.data||[]) : [];
+  const el   = document.getElementById('schedule-days');
+  if(!el) return;
+  el.innerHTML = DAY_NAMES.map((day, i)=>{
+    const existing = data.find(d=>d.day_of_week===i)||{};
+    return `
+    <div class="card" style="margin-bottom:10px">
+      <div style="font-weight:800;font-size:14px;margin-bottom:10px">${day}</div>
+      <div class="two-col">
+        <div class="field"><label>Location</label><input type="text" id="sched-loc-${i}" placeholder="Downtown Market" value="${existing.location||''}"></div>
+        <div class="field"><label>Hours</label><input type="text" id="sched-hrs-${i}" placeholder="11am–3pm" value="${existing.hours||''}"></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function saveSchedule(){
+  const days = DAY_NAMES.map((_,i)=>{
+    const loc = document.getElementById(`sched-loc-${i}`)?.value.trim();
+    const hrs = document.getElementById(`sched-hrs-${i}`)?.value.trim();
+    return {day_of_week: i, location: loc, hours: hrs};
+  }).filter(d=>d.location || d.hours);
+  showLoad('Saving...');
+  const r = await apiPost('/api/vendor/schedule', {days});
+  hideLoad();
+  if(r.ok) showToast('✅ Schedule saved! Customers can now see when you\'ll be around.');
+  else showToast('❌ Save failed');
+}
+
+/* ════════════════════════════════════
+   VENDOR: SOCIAL FEED
+════════════════════════════════════ */
+async function loadVendorFeed(){
+  const r    = await apiGet('/api/vendor/posts');
+  const el   = document.getElementById('vendor-posts-list');
+  if(!el) return;
+  const posts = r.ok ? (r.data.data||[]) : [];
+  if(!posts.length){
+    el.innerHTML='<div style="text-align:center;padding:24px;color:var(--mu);font-size:13px">No posts yet — share your first update!</div>';
+    return;
+  }
+  el.innerHTML = posts.map(p=>`
+    <div class="card" style="margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div style="font-size:24px;margin-bottom:8px">${p.emoji||'🚚'}</div>
+        <button onclick="deletePost('${p.id}')" style="background:none;border:none;font-size:18px;cursor:pointer;color:var(--mu)">🗑️</button>
+      </div>
+      <div style="font-size:14px;line-height:1.6;color:var(--tx)">${p.content}</div>
+      <div style="font-size:11px;color:var(--mu);margin-top:8px">${fmtMemberDate(p.created_at)}</div>
+    </div>`).join('');
+  const ta = document.getElementById('post-content');
+  const counter = document.getElementById('post-char');
+  if(ta && counter) ta.oninput = ()=> counter.textContent = ta.value.length+'/500';
+}
+
+async function createPost(){
+  const content = document.getElementById('post-content')?.value.trim();
+  const emoji   = document.getElementById('post-emoji')?.value.trim()||'🚚';
+  if(!content){ showToast('Write something first!'); return; }
+  showLoad('Posting...');
+  const r = await apiPost('/api/vendor/posts', {content, emoji});
+  hideLoad();
+  if(r.ok){
+    showToast('📸 Posted!');
+    document.getElementById('post-content').value='';
+    document.getElementById('post-emoji').value='';
+    loadVendorFeed();
+  } else showToast('❌ Post failed');
+}
+
+async function deletePost(id){
+  await apiDel('/api/vendor/posts/'+id);
+  showToast('🗑️ Post deleted');
+  loadVendorFeed();
+}
+
+/* ════════════════════════════════════
+   VENDOR: REVIEWS
+════════════════════════════════════ */
+async function loadVendorReviews(){
+  const r = await apiGet('/api/vendor/reviews');
+  if(!r.ok) return;
+  const d = r.data.data;
+  const avg = d.avg_rating;
+  setText('v-avg-rating', avg||'–');
+  setText('v-review-count', d.total ? `${d.total} reviews` : 'No reviews yet');
+  const stars = document.getElementById('v-star-display');
+  if(stars) stars.textContent = avg ? '★'.repeat(Math.round(avg))+'☆'.repeat(5-Math.round(avg)) : '';
+  const el = document.getElementById('v-reviews-list');
+  if(!el) return;
+  if(!d.reviews?.length){
+    el.innerHTML='<div style="text-align:center;padding:24px;color:var(--mu);font-size:13px">No reviews yet — your customers can review after visiting!</div>';
+    return;
+  }
+  el.innerHTML = d.reviews.map(rev=>{
+    const cust = rev.customers||{};
+    const pic = cust.profile_picture_url;
+    const av = pic ? `<img src="${pic}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">` : (cust.name||'?')[0].toUpperCase();
+    return `
+    <div class="card" style="margin-bottom:10px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+        <div style="width:36px;height:36px;border-radius:50%;background:rgba(255,87,34,.12);display:flex;align-items:center;justify-content:center;font-weight:900;color:var(--brand);font-size:14px;overflow:hidden;flex-shrink:0">${av}</div>
+        <div style="flex:1"><div style="font-weight:800;font-size:13px">${cust.name||'Customer'}</div>
+        <div style="font-size:13px;color:var(--gd)">${'★'.repeat(rev.rating)}${'☆'.repeat(5-rev.rating)}</div></div>
+        <div style="font-size:11px;color:var(--mu)">${fmtMemberDate(rev.created_at)}</div>
+      </div>
+      ${rev.comment ? `<div style="font-size:13px;color:var(--tx);line-height:1.6">"${rev.comment}"</div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+/* ════════════════════════════════════
+   CUSTOMER: SOCIAL FEED
+════════════════════════════════════ */
+async function loadCustomerFeed(){
+  if(!S.customer){ show('s-c-login'); return; }
+  const r = await apiGet('/api/customer/feed?customer_id='+S.customer.id);
+  const el = document.getElementById('c-feed-list');
+  if(!el) return;
+  const posts = r.ok ? (r.data.data||[]) : [];
+  if(!posts.length){
+    el.innerHTML='<div style="text-align:center;padding:40px 20px;color:var(--mu)"><div style="font-size:48px;margin-bottom:12px">📰</div><div style="font-size:15px;font-weight:700">Nothing here yet</div><div style="font-size:13px;margin-top:6px">Join more trucks to see their updates here!</div></div>';
+    return;
+  }
+  el.innerHTML = posts.map(p=>{
+    const v = p.vendors||{};
+    const pic = v.profile_picture_url;
+    const av = pic ? `<img src="${pic}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">` : (v.emoji||'🚚');
+    return `
+    <div class="card" style="margin-bottom:12px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+        <div style="width:40px;height:40px;border-radius:50%;background:rgba(255,87,34,.12);display:flex;align-items:center;justify-content:center;font-size:18px;overflow:hidden;flex-shrink:0">${av}</div>
+        <div style="flex:1"><div style="font-weight:800;font-size:14px">${v.truck_name||'Food Truck'}</div>
+        <div style="font-size:11px;color:var(--mu)">${fmtMemberDate(p.created_at)}</div></div>
+        <div style="font-size:22px">${p.emoji||'🚚'}</div>
+      </div>
+      <div style="font-size:14px;line-height:1.6;color:var(--tx)">${p.content}</div>
+    </div>`;
+  }).join('');
+}
+
+/* ════════════════════════════════════
+   CUSTOMER: DISCOVER
+════════════════════════════════════ */
+async function loadDiscover(){
+  const r = await apiGet('/api/discover');
+  const el = document.getElementById('discover-list');
+  if(!el) return;
+  const trucks = r.ok ? (r.data.data||[]) : [];
+  if(!trucks.length){
+    el.innerHTML='<div style="text-align:center;padding:40px;color:var(--mu)"><div style="font-size:48px">🔍</div><div style="font-weight:700;margin-top:12px">No trucks found yet</div></div>';
+    return;
+  }
+  el.innerHTML = trucks.map(t=>{
+    const pic = t.profile_picture_url;
+    const av = pic ? `<img src="${pic}" style="width:100%;height:100%;object-fit:cover;border-radius:14px">` : (t.emoji||'🚚');
+    const stars = t.avg_rating ? '★'.repeat(Math.round(t.avg_rating)) : '';
+    const loc = t.location_today ? `📍 ${t.location_today}` : 'Location not posted today';
+    return `
+    <div class="card" style="margin-bottom:12px;cursor:pointer" onclick="joinFromDiscover('${t.slug}')">
+      <div style="display:flex;gap:14px;align-items:center">
+        <div style="width:56px;height:56px;border-radius:14px;background:rgba(255,87,34,.1);display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;overflow:hidden">${av}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:900;font-size:16px">${t.truck_name}</div>
+          <div style="font-size:12px;color:var(--mu);margin-top:2px">${loc}</div>
+          <div style="display:flex;gap:10px;margin-top:4px;font-size:12px">
+            ${stars ? `<span style="color:var(--gd)">${stars} ${t.avg_rating}</span>` : ''}
+            <span style="color:var(--mu)">${t.member_count||0} members</span>
+          </div>
+        </div>
+        <div style="font-size:12px;font-weight:700;color:var(--brand)">Join →</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function joinFromDiscover(slug){
+  if(!S.customer){ goC('s-c-login'); return; }
+  showLoad('Joining...');
+  const r = await apiPost('/api/customer/join-truck', {customer_id:S.customer.id, slug});
+  hideLoad();
+  if(r.ok){
+    showToast('✅ Joined! Find it in My Trucks.');
+    const trucks = await apiGet('/api/customer/'+S.customer.id+'/trucks');
+    if(trucks.ok){ S.myTrucks=trucks.data.data||[]; localStorage.setItem('tl_my_trucks',JSON.stringify(S.myTrucks)); }
+    goC('s-c-home'); renderMyTrucks();
+  } else showToast('❌ '+(r.data?.error||'Could not join'));
+}
+
+/* ════════════════════════════════════
+   CUSTOMER: LEADERBOARD
+════════════════════════════════════ */
+async function loadLeaderboard(){
+  if(!S.activeTruck) return;
+  setText('c-lb-truck-name', 'Top fans at '+S.activeTruck.truck_name);
+  const r = await apiGet('/api/truck/'+S.activeTruck.slug+'/leaderboard');
+  const el = document.getElementById('c-lb-list');
+  if(!el) return;
+  const board = r.ok ? (r.data.data||[]) : [];
+  const medals = ['🥇','🥈','🥉'];
+  const myId = S.customer?.rewards_id;
+
+  el.innerHTML = board.map(m=>{
+    const isMe = m.name === S.customer?.name;
+    const pic = m.profile_picture_url;
+    const av = pic ? `<img src="${pic}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">` : m.name[0].toUpperCase();
+    return `
+    <div class="card" style="margin-bottom:10px;${isMe?'border-color:var(--brand);background:rgba(255,87,34,.04)':''}">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="font-size:28px;width:36px;text-align:center">${medals[m.rank-1]||m.rank}</div>
+        <div style="width:40px;height:40px;border-radius:50%;background:rgba(255,87,34,.12);display:flex;align-items:center;justify-content:center;font-weight:900;color:var(--brand);overflow:hidden;flex-shrink:0">${av}</div>
+        <div style="flex:1"><div style="font-weight:800;font-size:14px">${m.name}${isMe?' (You)':''}</div>
+        <div style="font-size:12px;color:var(--mu)">${m.visit_count} visits</div></div>
+        <div style="font-family:var(--fd);font-size:16px;font-weight:900;color:var(--brand)">${m.points_total} pts</div>
+      </div>
+    </div>`;
+  }).join('') || '<div style="text-align:center;padding:24px;color:var(--mu)">No data yet — be the first!</div>';
+}
+
+/* ════════════════════════════════════
+   CUSTOMER: REVIEWS
+════════════════════════════════════ */
+let _selectedRating = 0;
+
+function renderReviewScreen(){
+  if(!S.activeTruck) return;
+  setText('c-review-truck-name', 'Rate '+S.activeTruck.truck_name);
+  _selectedRating = 0;
+  setRating(0);
+  const ta = document.getElementById('review-comment');
+  if(ta) ta.value='';
+}
+
+function setRating(n){
+  _selectedRating = n;
+  document.querySelectorAll('.star').forEach(s=>{
+    s.textContent = parseInt(s.dataset.r) <= n ? '★' : '☆';
+    s.style.color = parseInt(s.dataset.r) <= n ? '#FFB300' : '#ccc';
+  });
+}
+
+async function submitReview(){
+  if(!_selectedRating){ showToast('Tap a star to rate'); return; }
+  if(!S.customer||!S.activeTruck){ return; }
+  const comment = document.getElementById('review-comment')?.value.trim();
+  showLoad('Submitting...');
+  const r = await apiPost('/api/customer/review', {
+    customer_id: S.customer.id, vendor_id: S.activeTruck.id,
+    rating: _selectedRating, comment
+  });
+  hideLoad();
+  if(r.ok){
+    showToast('⭐ Thanks for your review!');
+    goC('s-c-truck');
+  } else showToast('❌ '+(r.data?.error||'Failed'));
+}
+
+/* ════════════════════════════════════
+   CUSTOMER: PROMO CODES
+════════════════════════════════════ */
+async function applyPromo(){
+  if(!S.customer||!S.activeTruck){ showToast('Open a truck first'); return; }
+  const code = document.getElementById('c-promo-input')?.value.trim().toUpperCase();
+  if(!code){ showToast('Enter a promo code'); return; }
+  showLoad('Checking code...');
+  const r = await apiPost('/api/customer/apply-promo', {
+    customer_id: S.customer.id, vendor_id: S.activeTruck.id, code
+  });
+  hideLoad();
+  const el = document.getElementById('promo-result');
+  if(r.ok){
+    const d = r.data.data;
+    const p = d.promo;
+    if(el){
+      el.style.display='block';
+      el.innerHTML=`
+      <div class="callout co-gn">
+        <div class="co-icon">🎉</div>
+        <div><div class="co-title">${p.title}</div>
+        <div class="co-desc">${d.bonus_pts ? '+'+d.bonus_pts+' bonus points added!' : p.description}</div></div>
+      </div>`;
+    }
+    // Refresh truck balance
+    const trucks = await apiGet('/api/customer/'+S.customer.id+'/trucks');
+    if(trucks.ok){ S.myTrucks=trucks.data.data||[]; localStorage.setItem('tl_my_trucks',JSON.stringify(S.myTrucks)); }
+    showToast('🎉 Promo applied!');
+  } else {
+    if(el){
+      el.style.display='block';
+      el.innerHTML=`<div class="callout co-or"><div class="co-icon">❌</div><div><div class="co-desc">${r.data?.error||'Invalid or expired promo code'}</div></div></div>`;
+    }
+  }
+}
+
+/* ════════════════════════════════════
+   REFERRAL — auto-complete on first visit
+════════════════════════════════════ */
+async function checkReferral(customer_id, vendor_id){
+  const key = 'ref_done_'+customer_id;
+  if(localStorage.getItem(key)) return;
+  await apiPost('/api/customer/referral-complete', {customer_id, vendor_id});
+  localStorage.setItem(key, '1');
 }
 
 function checkResetDeepLink(){
