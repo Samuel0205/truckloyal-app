@@ -28,7 +28,7 @@
   --sh1:0 1px 4px rgba(180,100,40,.10);
   --sh2:0 4px 16px rgba(180,100,40,.13);
   --sh3:0 8px 32px rgba(180,100,40,.18);
-  --nav:66px;--sb:env(safe-area-inset-bottom,0px);
+  --nav:72px;--sb:env(safe-area-inset-bottom,0px);
   --fd:'Nunito',sans-serif;--fd-weight:900;--fb:'Nunito',sans-serif;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -47,13 +47,14 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
 .mb.on{background:white;color:var(--brand);box-shadow:var(--sh1)}
 .scroll{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:none}
 .scroll::-webkit-scrollbar{display:none}
-.bnav{display:flex;align-items:center;justify-content:space-around;background:white;border-top:1px solid var(--b1);padding-bottom:var(--sb);height:var(--nav);flex-shrink:0;box-shadow:0 -2px 24px rgba(180,100,40,.08);padding-top:6px}
+.bnav{display:flex;align-items:center;justify-content:space-around;background:white;border-top:1px solid var(--b1);padding-bottom:var(--sb);height:var(--nav);flex-shrink:0;box-shadow:0 -2px 24px rgba(180,100,40,.08);padding-top:4px}
 .ni{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;cursor:pointer;border:none;background:transparent;color:var(--mu);font-size:10px;font-weight:700;font-family:var(--fb);transition:color .2s;padding:0;text-align:center;min-width:0;-webkit-tap-highlight-color:transparent}
-.ni-bubble{width:48px;height:32px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:20px;transition:all .25s cubic-bezier(.34,1.56,.64,1);background:transparent;margin-bottom:3px}
-.ni span{display:block;text-align:center;white-space:nowrap;font-size:10px;font-weight:700;transition:color .2s}
-.ni.on .ni-bubble{background:rgba(255,87,34,.12);transform:translateY(-2px)}
+.ni-bubble{width:52px;height:34px;border-radius:17px;display:flex;align-items:center;justify-content:center;font-size:22px;transition:all .25s cubic-bezier(.34,1.56,.64,1);background:var(--s2);border:1.5px solid var(--b1);margin-bottom:3px}
+.ni span{display:block;text-align:center;white-space:nowrap;font-size:10px;font-weight:700;transition:color .2s;color:var(--mu)}
+.ni.on .ni-bubble{background:rgba(255,87,34,.15);border-color:rgba(255,87,34,.3);transform:translateY(-3px);box-shadow:0 4px 12px rgba(255,87,34,.2)}
 .ni.on span{color:var(--brand)}
 .ni.on{color:var(--brand)}
+.ni:active .ni-bubble{transform:scale(.92)}
 .screen{display:none;min-height:100%}
 .screen.on{display:block}
 .sh{padding:18px 20px 14px;position:sticky;top:0;background:white;z-index:10;border-bottom:2px solid var(--b1);box-shadow:var(--sh1)}
