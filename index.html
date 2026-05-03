@@ -1351,6 +1351,11 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
           <div>📍 <span id="ct-location-text">–</span></div>
           <button onclick="openInMaps(document.getElementById('ct-location-text').textContent)" style="background:#1565C0;color:white;border:none;border-radius:8px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0">🗺️ Maps</button>
         </div>
+        <!-- Weekly schedule -->
+        <div id="ct-schedule-bar" style="display:none;background:white;border:1.5px solid var(--b2);border-radius:12px;padding:10px 14px;margin-bottom:12px">
+          <div style="font-size:11px;font-weight:800;color:var(--mu);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">📅 Weekly Schedule</div>
+          <div id="ct-schedule-list" style="display:flex;flex-direction:column;gap:4px"></div>
+        </div>
         <!-- Points hero card -->
         <div style="background:white;border:2px solid var(--b2);border-radius:16px;padding:16px;display:flex;align-items:center;gap:0;box-shadow:var(--sh1)">
           <div style="flex:1;text-align:center;border-right:1.5px solid var(--b1)">
@@ -3192,16 +3197,55 @@ async function renderTruckDash(){
   setText('ct-saved','$'+(S.activeTruck.total_saved||0).toFixed(0));
   setText('ct-pts-note',t.truck_name||'this truck');
 
-  // Location
-  const loc=t.location_today||localStorage.getItem('tl_location_'+(t.id==='demo'?'':t.id))||'';
+  // Location + Today's Schedule Hours
+  const loc=t.location_today||'';
   const locBar=document.getElementById('ct-location-bar');
-  if(locBar){
-    if(loc){
-      locBar.style.display='flex';
-      setText('ct-location-text',loc);
+
+  // Fetch today's schedule from API
+  const today_dow = new Date().getDay() === 0 ? 6 : new Date().getDay() - 1; // Mon=0
+  try {
+    const schedR = await apiGet('/api/truck/'+t.slug+'/schedule');
+    if(schedR.ok && schedR.data.data){
+      const todaySched = schedR.data.data.find(d=>d.day_of_week===today_dow);
+      const schedLoc   = todaySched?.location || '';
+      const schedHrs   = todaySched?.hours || '';
+      const displayLoc = loc || schedLoc;
+      const displayHrs = schedHrs;
+
+      if(locBar){
+        if(displayLoc || displayHrs){
+          locBar.style.display='flex';
+          let txt = '';
+          if(displayLoc) txt += displayLoc;
+          if(displayHrs) txt += (txt ? ' · ' : '') + '🕐 '+displayHrs;
+          setText('ct-location-text', txt || '–');
+        } else {
+          locBar.style.display='none';
+        }
+      }
+      const schedBar  = document.getElementById('ct-schedule-bar');
+      const schedList = document.getElementById('ct-schedule-list');
+      const allDays   = schedR.data.data || [];
+      if(schedBar && schedList && allDays.length){
+        const DAY_SHORT = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+        schedList.innerHTML = allDays.map(d=>{
+          const isToday = d.day_of_week === today_dow;
+          return `<div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;${isToday?'font-weight:800;color:var(--brand)':'color:var(--mu);font-weight:600'}">
+            <span>${isToday?'🔥 ':''}<strong>${DAY_SHORT[d.day_of_week]}</strong></span>
+            <span>${d.location||''}${d.location&&d.hours?' · ':''}${d.hours||''}</span>
+          </div>`;
+        }).join('');
+        schedBar.style.display = 'block';
+      } else if(schedBar){
+        schedBar.style.display = 'none';
+      }
     } else {
-      locBar.style.display='none';
+      if(locBar){ locBar.style.display=loc?'flex':'none'; if(loc) setText('ct-location-text',loc); }
+      const schedBar=document.getElementById('ct-schedule-bar');
+      if(schedBar) schedBar.style.display='none';
     }
+  } catch(e){
+    if(locBar){ locBar.style.display=loc?'flex':'none'; if(loc) setText('ct-location-text',loc); }
   }
 
   // Tier
