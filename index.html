@@ -136,6 +136,9 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
 /* TOAST */
 .toast{position:fixed;bottom:calc(var(--nav) + 14px);left:50%;transform:translateX(-50%);background:var(--tx);color:white;padding:11px 22px;border-radius:99px;font-size:13px;font-weight:700;white-space:nowrap;opacity:0;transition:opacity .25s;z-index:500;pointer-events:none;box-shadow:0 8px 32px rgba(45,27,14,.25)}
 .toast.show{opacity:1}
+.rfsh-btn{position:fixed;bottom:calc(var(--nav)+16px);right:16px;width:44px;height:44px;background:var(--brand);color:white;border:none;border-radius:50%;font-size:20px;cursor:pointer;box-shadow:0 4px 16px rgba(255,87,34,.4);z-index:300;display:none;align-items:center;justify-content:center;transition:transform .15s}
+.rfsh-btn:active{transform:scale(.92)}
+.rfsh-btn.show{display:flex}
 /* CONFETTI */
 .cc-wrap{position:fixed;inset:0;pointer-events:none;z-index:400;overflow:hidden}
 .cp{position:absolute;top:-20px;border-radius:2px;animation:fall linear forwards}
@@ -181,18 +184,48 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
 .qa-lbl{font-size:13px;font-weight:800;line-height:1.3}
 .qa-sub{font-size:11px;color:var(--mu);font-weight:600}
 
-/* CUSTOMER MY TRUCKS */
-.truck-card{background:white;border:2px solid var(--b2);border-radius:18px;padding:16px;margin-bottom:12px;cursor:pointer;transition:all .15s;box-shadow:var(--sh2)}
-.truck-card:active{transform:scale(.98)}
-.truck-card.active-truck{border-color:#FFCC80;background:#FFFDE7}
-.tc-top{display:flex;align-items:center;gap:12px;margin-bottom:12px}
-.tc-icon{width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;box-shadow:var(--sh1)}
-.tc-name{font-family:var(--fd);font-weight:900;font-size:18px;color:var(--tx);margin-bottom:2px}
-.tc-sub{font-size:12px;color:var(--mu);font-weight:600}
-.tc-stats{display:flex;gap:8px}
-.tc-stat{flex:1;background:var(--s2);border-radius:12px;padding:10px 8px;text-align:center;border:1.5px solid var(--b1)}
-.tc-stat-val{font-family:var(--fd);font-weight:900;font-size:18px;line-height:1}
-.tc-stat-lbl{font-size:10px;color:var(--mu);margin-top:2px;text-transform:uppercase;letter-spacing:.4px;font-weight:700}
+/* CUSTOMER MY TRUCKS — StreetEats layout, light mode */
+.c-hero-card{background:white;border:1.5px solid var(--b2);border-radius:22px;padding:18px 20px;margin-bottom:20px;cursor:pointer;position:relative;overflow:hidden;box-shadow:0 4px 24px rgba(180,100,40,.08);transition:transform .15s;-webkit-tap-highlight-color:transparent}
+.c-hero-card:active{transform:scale(.98)}
+.c-hero-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,87,34,.06) 0%,transparent 60%);pointer-events:none}
+.c-hero-shimmer{position:absolute;top:0;left:-100%;width:40%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,200,100,.07),transparent);animation:shimmer 3s ease-in-out infinite}
+@keyframes shimmer{0%{left:-100%}100%{left:220%}}
+.c-hero-inner{display:flex;align-items:center;gap:16px}
+.c-hero-icon{width:54px;height:54px;border-radius:16px;background:rgba(255,87,34,.1);border:1.5px solid rgba(255,87,34,.2);display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;overflow:hidden}
+.c-hero-info{flex:1;min-width:0}
+.c-hero-title{font-family:var(--fd);font-weight:900;font-size:16px;color:var(--tx);margin-bottom:3px}
+.c-hero-sub{font-size:12px;color:var(--mu);margin-bottom:8px}
+.c-hero-badges{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.c-badge-rdm{display:inline-flex;align-items:center;gap:5px;background:rgba(46,125,50,.1);border:1px solid rgba(46,125,50,.25);border-radius:20px;padding:4px 10px;font-size:11px;font-weight:700;color:#2E7D32}
+.c-badge-dot{width:6px;height:6px;background:#4CAF50;border-radius:50%;animation:bdot 2s ease-in-out infinite}
+@keyframes bdot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.7)}}
+.c-badge-pts{display:inline-flex;align-items:center;gap:4px;background:rgba(255,152,0,.1);border:1px solid rgba(255,152,0,.25);border-radius:20px;padding:4px 10px;font-size:11px;font-weight:700;color:#E65100}
+
+/* Truck cards — StreetEats image card layout */
+.truck-card{background:white;border:1.5px solid var(--b2);border-radius:20px;margin-bottom:14px;cursor:pointer;transition:all .15s;box-shadow:0 2px 16px rgba(180,100,40,.06);overflow:hidden;-webkit-tap-highlight-color:transparent;animation:fadeUp .35s ease both}
+.truck-card:active{transform:scale(.985)}
+.truck-card.active-truck{border-color:rgba(255,152,0,.5)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.tc-banner{width:100%;height:100px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:54px}
+.tc-banner-grad{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 40%,rgba(255,248,240,.95) 100%)}
+.tc-status{position:absolute;top:10px;right:10px;padding:4px 10px;border-radius:20px;font-size:10px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;z-index:2}
+.tc-status.open{background:rgba(46,125,50,.12);border:1px solid rgba(46,125,50,.3);color:#2E7D32}
+.tc-status.away{background:rgba(180,100,40,.1);border:1px solid rgba(180,100,40,.2);color:#BF6000}
+.tc-body{padding:10px 14px 14px}
+.tc-row1{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:2px}
+.tc-name{font-family:var(--fd);font-weight:900;font-size:15px;color:var(--tx)}
+.tc-rating{font-size:12px;font-weight:700;color:#E65100}
+.tc-cuisine{font-size:12px;color:var(--mu);margin-bottom:8px;font-weight:600}
+.tc-meta{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.tc-meta-item{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--mu);font-weight:600}
+.tc-visits-badge{margin-left:auto;display:inline-flex;align-items:center;gap:4px;background:rgba(255,87,34,.08);border:1px solid rgba(255,87,34,.18);border-radius:20px;padding:3px 9px;font-size:10px;font-weight:700;color:var(--brand)}
+.tc-checked{display:inline-flex;align-items:center;gap:4px;background:rgba(46,125,50,.1);border:1px solid rgba(46,125,50,.25);border-radius:20px;padding:3px 9px;font-size:10px;font-weight:700;color:#2E7D32}
+
+/* Filter chips */
+.c-chips{display:flex;gap:8px;margin-bottom:16px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:2px}
+.c-chips::-webkit-scrollbar{display:none}
+.c-chip{flex-shrink:0;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:700;border:1.5px solid var(--b2);background:white;color:var(--mu);cursor:pointer;transition:all .2s;white-space:nowrap}
+.c-chip.on{background:rgba(255,87,34,.1);border-color:rgba(255,87,34,.35);color:var(--brand)}
 
 /* CUSTOMER QR */
 .my-qr-wrap{background:white;border-radius:20px;padding:20px;display:inline-flex;flex-direction:column;align-items:center;gap:10px;border:3px solid var(--b2);box-shadow:var(--sh3)}
@@ -976,7 +1009,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
         <div class="card">
           <div class="card-title">New Post</div>
           <div class="field"><label>What's happening at your truck?</label>
-            <textarea id="post-content" placeholder="Today's special: spicy birria tacos with consommé 🌮🔥 Come find us at the Farmer's Market!" maxlength="500" style="height:100px;resize:none;width:100%;padding:12px;border-radius:12px;border:1.5px solid var(--b2);background:var(--s2);font-family:var(--fb);font-size:14px"></textarea>
+            <textarea id="post-content" placeholder="Today's special: spicy birria tacos with consommé 🌮🔥 Come find us at the Farmer's Market!" maxlength="500" oninput="document.getElementById('post-char').textContent=this.value.length+'/500'" style="height:100px;resize:none;width:100%;padding:12px;border-radius:12px;border:1.5px solid var(--b2);background:var(--s2);font-family:var(--fb);font-size:14px"></textarea>
           </div>
           <div class="field"><label>Emoji</label><input type="text" id="post-emoji" placeholder="🚚" maxlength="4" style="font-size:24px;text-align:center;width:80px"></div>
           <div id="post-char" style="font-size:11px;color:var(--mu);text-align:right;margin-bottom:12px">0/500</div>
@@ -1199,30 +1232,64 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
 
     <!-- CUSTOMER HOME — my trucks list -->
     <div class="screen" id="s-c-home">
-      <div class="sh">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start">
+      <!-- Header -->
+      <div style="padding:16px 20px 0;flex-shrink:0">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px">
           <div>
-            <h1 id="c-home-greeting">My Trucks</h1>
-            <p id="c-home-sub">Scan a QR code to add your first truck</p>
+            <div style="font-family:var(--fd);font-size:22px;font-weight:900;color:var(--tx)" id="c-home-greeting">My Trucks</div>
+            <div style="font-size:13px;color:var(--mu);font-weight:600;margin-top:1px" id="c-home-sub">Join a truck to start earning</div>
           </div>
-          <div style="font-family:var(--fd);font-size:13px;font-weight:700;color:var(--gd)" id="c-home-total-pts"></div>
+          <div id="c-home-avatar" onclick="goC('s-c-profile')" style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--brand),#FF8A50);display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-size:17px;font-weight:900;color:white;cursor:pointer;flex-shrink:0;overflow:hidden">?</div>
         </div>
       </div>
-      <div class="bp">
+
+      <div class="bp" style="padding-top:14px">
+
+        <!-- MY CARD hero button -->
+        <div class="c-hero-card" onclick="goC('s-c-qr')">
+          <div class="c-hero-shimmer"></div>
+          <div class="c-hero-inner">
+            <div class="c-hero-icon" id="c-hero-pic">🪪</div>
+            <div class="c-hero-info">
+              <div class="c-hero-title">My Rewards Card</div>
+              <div class="c-hero-sub">Tap to show QR at the truck</div>
+              <div class="c-hero-badges">
+                <div class="c-badge-rdm" id="c-hero-rdm" style="display:none"><div class="c-badge-dot"></div><span id="c-hero-rdm-txt">1 reward ready</span></div>
+                <div class="c-badge-pts" id="c-hero-pts">⭐ 0 pts</div>
+              </div>
+            </div>
+            <div style="font-size:22px;color:var(--brand);flex-shrink:0">›</div>
+          </div>
+        </div>
+
+        <!-- Filter chips -->
+        <div class="c-chips" id="c-filter-chips">
+          <div class="c-chip on" onclick="filterTrucks('all',this)">All Trucks</div>
+          <div class="c-chip" onclick="filterTrucks('visited',this)">✅ Visited Today</div>
+          <div class="c-chip" onclick="filterTrucks('most',this)">🔥 Most Visited</div>
+        </div>
+
+        <!-- Section header -->
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px">
+          <div style="font-family:var(--fd);font-size:18px;font-weight:900;color:var(--tx)" id="c-trucks-section-title">My Trucks</div>
+          <div style="font-size:12px;color:var(--brand);font-weight:700;cursor:pointer" onclick="goC('s-c-scan')">+ Add Truck</div>
+        </div>
+
         <!-- Empty state -->
-        <div id="c-no-trucks" style="text-align:center;padding:40px 20px">
+        <div id="c-no-trucks" style="text-align:center;padding:48px 20px">
           <div style="font-size:52px;margin-bottom:12px">🚚</div>
           <div style="font-family:var(--fd);font-size:20px;font-weight:800;margin-bottom:8px">No trucks yet</div>
           <div style="font-size:14px;color:var(--mu);margin-bottom:24px;line-height:1.6">Scan a food truck's QR code to join their loyalty program and start earning points.</div>
           <button class="btn btn-p" onclick="goC('s-c-scan')">📷 Scan a Truck QR Code</button>
+          <div style="margin-top:12px"><span style="font-size:13px;color:var(--brand);font-weight:700;cursor:pointer" onclick="goC('s-c-discover')">Or browse nearby trucks 🗺️</span></div>
         </div>
 
         <!-- Trucks list -->
         <div id="c-trucks-list"></div>
 
-        <!-- Scan button when trucks exist -->
+        <!-- Add more -->
         <div id="c-scan-more" style="display:none;margin-top:4px">
-          <button class="btn btn-s" onclick="goC('s-c-scan')">📷 Scan Another Truck</button>
+          <button class="btn btn-s" style="width:100%" onclick="goC('s-c-scan')">+ Join Another Truck</button>
         </div>
       </div>
     </div>
@@ -1283,8 +1350,9 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
           <div id="ct-emoji" style="width:44px;height:44px;border-radius:12px;overflow:hidden;background:rgba(255,87,34,.1);display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0">🚚</div>
         </div>
         <!-- Location today -->
-        <div id="ct-location-bar" style="background:#E3F2FD;border:1.5px solid #90CAF9;border-radius:10px;padding:8px 12px;font-size:12px;color:#1565C0;margin-bottom:12px;display:none;font-weight:700">
-          📍 <span id="ct-location-text">–</span>
+        <div id="ct-location-bar" style="background:#E3F2FD;border:1.5px solid #90CAF9;border-radius:10px;padding:8px 12px;font-size:12px;color:#1565C0;margin-bottom:12px;display:none;font-weight:700;display:flex;align-items:center;justify-content:space-between;gap:8px">
+          <div>📍 <span id="ct-location-text">–</span></div>
+          <button onclick="openInMaps(document.getElementById('ct-location-text').textContent)" style="background:#1565C0;color:white;border:none;border-radius:8px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0">🗺️ Maps</button>
         </div>
         <!-- Points hero card -->
         <div style="background:white;border:2px solid var(--b2);border-radius:16px;padding:16px;display:flex;align-items:center;gap:0;box-shadow:var(--sh1)">
@@ -1646,6 +1714,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
   </div>
 </div>
 <div class="toast" id="toast"></div>
+<button class="rfsh-btn" id="rfsh-btn" onclick="refreshCurrentScreen()" title="Refresh">↻</button>
 
 <script>
 /* ════════════════════════════════════
@@ -1779,6 +1848,7 @@ function setMode(mode){
       const authScreens=['s-v-login','s-v-signup','s-v-forgot','s-v-reset'];
       const dest=authScreens.includes(S.vScreen)?'s-v-home':S.vScreen;
       S.vScreen=dest; show(dest); renderNav(VNAV,dest); loadVendorHome();
+      updateRefreshBtn();
     } else {
       // Not logged in — allow forgot/reset screens without redirecting to login
       const allowedUnauth=['s-v-login','s-v-signup','s-v-forgot','s-v-reset','s-v-card-setup','s-v-terms','s-v-privacy'];
@@ -1825,6 +1895,7 @@ function goV(id){
   if(id==='s-v-award')    resetAwardForm();
   if(id==='s-v-confirm'){ goV('s-v-award'); return; }  // merged into At the Window
   if(id==='s-v-customers') loadCustomers();
+  updateRefreshBtn();
 }
 
 function goC(id){
@@ -1838,6 +1909,7 @@ function goC(id){
   if(id==='s-c-history') renderHistory();
   if(id==='s-c-profile') renderProfile();
   if(id==='s-c-qr')      renderMyQR();
+  updateRefreshBtn();
 }
 
 function renderNav(tabs,activeId){
@@ -2750,59 +2822,190 @@ function customerLogout(){
 /* ════════════════════════════════════
    CUSTOMER: MY TRUCKS
 ════════════════════════════════════ */
-function renderMyTrucks(){
+/* ════════════════════════════════════
+   UNIVERSAL REFRESH
+════════════════════════════════════ */
+function openInMaps(address){
+  if(!address || address==='–') return;
+  const encoded = encodeURIComponent(address);
+  const url = `https://www.google.com/maps/search/?api=1&query=${encoded}`;
+  window.open(url, '_blank');
+}
+
+function refreshCurrentScreen(){
+  showToast('↻ Refreshing...');
+  if(S.mode==='vendor'){
+    const fn = {
+      's-v-home':           ()=>loadVendorHome(),
+      's-v-analytics':      ()=>loadAnalytics(),
+      's-v-notify':         ()=>loadNotifications(),
+      's-v-promos':         ()=>loadPromos(),
+      's-v-schedule':       ()=>loadSchedule(),
+      's-v-feed':           ()=>loadVendorFeed(),
+      's-v-reviews-screen': ()=>loadVendorReviews(),
+      's-v-customers':      ()=>loadCustomers(),
+      's-v-rewards':        ()=>loadVRewards(),
+      's-v-spin':           ()=>loadVPrizes(),
+      's-v-award':          ()=>{ if(S.awardCustomer) showAwardCustomer(S.awardCustomer); },
+    }[S.vScreen];
+    if(fn) fn();
+  } else {
+    const fn = {
+      's-c-home':        ()=>renderMyTrucks(),
+      's-c-truck':       ()=>renderTruckDash(),
+      's-c-feed':        ()=>loadCustomerFeed(),
+      's-c-discover':    ()=>loadDiscover(),
+      's-c-leaderboard': ()=>loadLeaderboard(),
+      's-c-history':     ()=>renderHistory(),
+      's-c-profile':     ()=>renderProfile(),
+    }[S.cScreen];
+    if(fn) fn();
+  }
+}
+
+function updateRefreshBtn(){
+  const btn = document.getElementById('rfsh-btn');
+  if(!btn) return;
+  // Show refresh on screens that load data, hide on auth/form screens
+  const noRefresh = new Set([
+    's-v-login','s-v-signup','s-v-forgot','s-v-reset','s-v-card-setup',
+    's-v-terms','s-v-privacy','s-v-brand','s-v-points',
+    's-c-login','s-c-signup','s-c-forgot','s-c-reset',
+    's-c-scan','s-c-spin','s-c-qr','s-c-review','s-c-promo',
+  ]);
+  const screen = S.mode==='vendor' ? S.vScreen : S.cScreen;
+  btn.classList.toggle('show', !noRefresh.has(screen));
+}
+
+function filterTrucks(type, el){
+  document.querySelectorAll('.c-chip').forEach(c=>c.classList.remove('on'));
+  if(el) el.classList.add('on');
+  renderMyTrucks(type);
+}
+
+function renderMyTrucks(filter='all'){
   if(!S.customer) return;
-  const firstName = S.customer.name ? S.customer.name.split(' ')[0] : '';
+
+  const firstName  = S.customer.name ? S.customer.name.split(' ')[0] : '';
   setText('c-home-greeting', firstName ? firstName+"'s Trucks" : 'My Trucks');
 
-  const totalPts = S.myTrucks.reduce((s,t)=>s+(t.points_balance||0),0);
-  const totalVisits = S.myTrucks.reduce((s,t)=>s+(t.visit_count||0),0);
-  const totalPtsEl = document.getElementById('c-home-total-pts');
-  if(totalPtsEl && S.myTrucks.length){
-    totalPtsEl.textContent = totalPts + ' total pts';
-    totalPtsEl.style.display = 'block';
-  } else if(totalPtsEl){
-    totalPtsEl.style.display = 'none';
-  }
-
+  const totalPts   = S.myTrucks.reduce((s,t)=>s+(t.points_balance||0),0);
+  const totalVisits= S.myTrucks.reduce((s,t)=>s+(t.visit_count||0),0);
   setText('c-home-sub', S.myTrucks.length
     ? S.myTrucks.length+' truck'+(S.myTrucks.length!==1?'s':'')+' joined · '+totalVisits+' visits'
     : 'Scan a QR code to join your first truck');
 
-  const noTrucks  = document.getElementById('c-no-trucks');
-  const trucksList= document.getElementById('c-trucks-list');
-  const scanMore  = document.getElementById('c-scan-more');
+  // Update hero card pts
+  const heroPts = document.getElementById('c-hero-pts');
+  if(heroPts) heroPts.textContent = '⭐ '+totalPts.toLocaleString()+' pts';
+
+  // Update avatar
+  const avatarEl = document.getElementById('c-home-avatar');
+  if(avatarEl){
+    if(S.customer.profile_picture_url){
+      avatarEl.innerHTML=`<img src="${S.customer.profile_picture_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+    } else {
+      avatarEl.textContent=(S.customer.name||'?').charAt(0).toUpperCase();
+    }
+  }
+
+  // Update hero icon with customer pic
+  const heroPic = document.getElementById('c-hero-pic');
+  if(heroPic && S.customer.profile_picture_url){
+    heroPic.innerHTML=`<img src="${S.customer.profile_picture_url}" style="width:100%;height:100%;object-fit:cover;border-radius:14px">`;
+  }
+
+  // Redeemable badge
+  const rdmEl  = document.getElementById('c-hero-rdm');
+  const rdmTxt = document.getElementById('c-hero-rdm-txt');
+  if(rdmEl && rdmTxt){
+    let redeemable=0;
+    S.myTrucks.forEach(t=>{
+      const pts=t.points_balance||0;
+      DEFAULT_REWARDS.forEach(r=>{ if(pts>=(r.pts_required||999)) redeemable++; });
+    });
+    rdmEl.style.display = redeemable>0 ? 'inline-flex' : 'none';
+    if(redeemable>0) rdmTxt.textContent=redeemable+' reward'+(redeemable!==1?'s':'')+' ready';
+  }
+
+  const noTrucks   = document.getElementById('c-no-trucks');
+  const trucksList = document.getElementById('c-trucks-list');
+  const scanMore   = document.getElementById('c-scan-more');
+  const secTitle   = document.getElementById('c-trucks-section-title');
 
   if(!S.myTrucks.length){
-    if(noTrucks)  noTrucks.style.display='block';
+    if(noTrucks)   noTrucks.style.display='block';
     if(trucksList) trucksList.innerHTML='';
-    if(scanMore)  scanMore.style.display='none';
+    if(scanMore)   scanMore.style.display='none';
     return;
   }
   if(noTrucks)  noTrucks.style.display='none';
   if(scanMore)  scanMore.style.display='block';
   if(!trucksList) return;
 
-  trucksList.innerHTML = S.myTrucks.map((t,i)=>{
-    const pts  = t.points_balance||0;
-    const tier = DEFAULT_TIERS.slice().reverse().find(tr=>pts>=tr.pts_threshold)||DEFAULT_TIERS[0];
-    const p    = t.color_primary||'#FF5722';
-    const todayKey = 'spin_used_'+t.id+'_'+new Date().toDateString();
-    const checkedIn = localStorage.getItem(todayKey); // only show after full spin
+  // Apply filter
+  let trucks = [...S.myTrucks];
+  if(filter==='visited') trucks=trucks.filter(t=>localStorage.getItem('spin_used_'+t.id+'_'+new Date().toDateString()));
+  if(filter==='most')    trucks=trucks.slice().sort((a,b)=>(b.visit_count||0)-(a.visit_count||0));
+  if(secTitle) secTitle.textContent = filter==='visited'?'Visited Today':filter==='most'?'Most Visited':'My Trucks';
+
+  // Banner gradient backgrounds per truck (warm palette)
+  const bgs = [
+    'linear-gradient(135deg,#fff3e0,#ffe0b2)',
+    'linear-gradient(135deg,#fce4ec,#f8bbd0)',
+    'linear-gradient(135deg,#e8f5e9,#c8e6c9)',
+    'linear-gradient(135deg,#e3f2fd,#bbdefb)',
+    'linear-gradient(135deg,#f3e5f5,#e1bee7)',
+    'linear-gradient(135deg,#fff8e1,#ffecb3)',
+  ];
+
+  const today = new Date().toDateString();
+  trucksList.innerHTML = trucks.map((t,i)=>{
+    const pts     = t.points_balance||0;
+    const tier    = DEFAULT_TIERS.slice().reverse().find(tr=>pts>=tr.pts_threshold)||DEFAULT_TIERS[0];
+    const p       = t.color_primary||'#FF5722';
+    const spunKey = 'spin_used_'+t.id+'_'+today;
+    const spunToday = !!localStorage.getItem(spunKey);
+    const visits  = t.visit_count||0;
+    const saved   = (t.total_saved||0).toFixed(0);
+    const loc     = t.location_today ? `📍 ${t.location_today}` : '';
+    const bannerBg= t.profile_picture_url ? '' : (bgs[i%bgs.length]);
+
+    // Find index in original S.myTrucks for openTruck
+    const origIdx = S.myTrucks.findIndex(x=>x.id===t.id);
+
     return `
-    <div class="truck-card ${t.id===S.activeTruck?.id?'active-truck':''}" onclick="openTruck(${i})">
-      <div class="tc-top">
-        <div class="tc-icon" style="background:rgba(${hexRGB(p)},.15);font-size:26px;overflow:hidden">${t.profile_picture_url ? `<img src="${t.profile_picture_url}" style="width:100%;height:100%;object-fit:cover;border-radius:14px">` : (t.emoji||'🚚')}</div>
-        <div style="flex:1;min-width:0">
-          <div class="tc-name">${t.truck_name||'Food Truck'}</div>
-          <div class="tc-sub">${tier.icon} ${tier.name}${checkedIn?' · <span style="color:#2E7D32;font-weight:800">✅ Checked in today</span>':''}</div>
-        </div>
-        <div style="font-family:var(--fd);font-size:20px;font-weight:900;color:${p};flex-shrink:0">${pts}<span style="font-size:11px;font-weight:700;color:var(--mu)"> pts</span></div>
+    <div class="truck-card${t.id===S.activeTruck?.id?' active-truck':''}" onclick="openTruck(${origIdx})" style="animation-delay:${i*0.05}s">
+      <!-- Banner image area -->
+      <div class="tc-banner" style="${bannerBg?'background:'+bannerBg:''}">
+        ${t.profile_picture_url
+          ? `<img src="${t.profile_picture_url}" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0">`
+          : `<span style="font-size:54px;z-index:1">${t.emoji||'🚚'}</span>`}
+        <div class="tc-banner-grad"></div>
+        ${spunToday
+          ? `<div class="tc-status open">✅ Checked in</div>`
+          : visits>0 ? `<div class="tc-status away">🔥 ${visits} visit${visits!==1?'s':''}</div>` : ''}
       </div>
-      <div class="tc-stats">
-        <div class="tc-stat"><div class="tc-stat-val" style="color:${p}">${pts}</div><div class="tc-stat-lbl">Points</div></div>
-        <div class="tc-stat"><div class="tc-stat-val">${t.visit_count||0}</div><div class="tc-stat-lbl">Visits</div></div>
-        <div class="tc-stat"><div class="tc-stat-val" style="color:var(--gn)">$${(t.total_saved||0).toFixed(0)}</div><div class="tc-stat-lbl">Saved</div></div>
+      <!-- Card body -->
+      <div class="tc-body">
+        <div class="tc-row1">
+          <div class="tc-name">${t.truck_name||'Food Truck'}</div>
+          <div class="tc-rating" style="color:${p}">${pts.toLocaleString()} pts</div>
+        </div>
+        <div class="tc-cuisine">${tier.icon} ${tier.name}${loc?' · '+loc:''}</div>
+        <div class="tc-meta">
+          <div class="tc-meta-item">
+            <span style="font-size:13px">🏪</span>
+            ${visits} visit${visits!==1?'s':''}
+          </div>
+          <div class="tc-meta-item">
+            <span style="font-size:13px">💰</span>
+            $${saved} saved
+          </div>
+          ${spunToday
+            ? `<div class="tc-checked">✅ Done today</div>`
+            : `<div class="tc-visits-badge" style="border-color:rgba(${hexRGB(p)},.25);color:${p}">Spin available →</div>`}
+        </div>
       </div>
     </div>`;
   }).join('');
@@ -2994,7 +3197,14 @@ async function renderTruckDash(){
   // Location
   const loc=t.location_today||localStorage.getItem('tl_location_'+(t.id==='demo'?'':t.id))||'';
   const locBar=document.getElementById('ct-location-bar');
-  if(locBar){locBar.style.display=loc?'block':'none';setText('ct-location-text',loc)}
+  if(locBar){
+    if(loc){
+      locBar.style.display='flex';
+      setText('ct-location-text',loc);
+    } else {
+      locBar.style.display='none';
+    }
+  }
 
   // Tier
   const tier=DEFAULT_TIERS.slice().reverse().find(tr=>pts>=tr.pts_threshold)||DEFAULT_TIERS[0];
@@ -4194,7 +4404,7 @@ async function loadCustomerFeed(){
   if(!el) return;
   const posts = r.ok ? (r.data.data||[]) : [];
   if(!posts.length){
-    el.innerHTML='<div style="text-align:center;padding:40px 20px;color:var(--mu)"><div style="font-size:48px;margin-bottom:12px">📰</div><div style="font-size:15px;font-weight:700">Nothing here yet</div><div style="font-size:13px;margin-top:6px">Join more trucks to see their updates here!</div></div>';
+    el.innerHTML='<div style="text-align:center;padding:40px 20px;color:var(--mu)"><div style="font-size:48px;margin-bottom:12px">📰</div><div style="font-size:15px;font-weight:700">No posts yet</div><div style="font-size:13px;margin-top:6px;line-height:1.6">When trucks post updates they will appear here. Join trucks to follow their feed.</div></div>';
     return;
   }
   el.innerHTML = posts.map(p=>{
@@ -4223,7 +4433,7 @@ async function loadDiscover(){
   if(!el) return;
   const trucks = r.ok ? (r.data.data||[]) : [];
   if(!trucks.length){
-    el.innerHTML='<div style="text-align:center;padding:40px;color:var(--mu)"><div style="font-size:48px">🔍</div><div style="font-weight:700;margin-top:12px">No trucks found yet</div></div>';
+    el.innerHTML='<div style="text-align:center;padding:40px 20px;color:var(--mu)"><div style="font-size:48px;margin-bottom:12px">🔍</div><div style="font-size:15px;font-weight:700;margin-bottom:8px">No trucks found yet</div><div style="font-size:13px;line-height:1.6">Active food trucks appear here once vendors sign up and go live.</div></div>';
     return;
   }
   el.innerHTML = trucks.map(t=>{
@@ -4238,6 +4448,7 @@ async function loadDiscover(){
         <div style="flex:1;min-width:0">
           <div style="font-weight:900;font-size:16px">${t.truck_name}</div>
           <div style="font-size:12px;color:var(--mu);margin-top:2px">${loc}</div>
+          ${t.location_today ? `<button onclick="event.stopPropagation();openInMaps('${t.location_today.replace(/'/g,"\\'")}',true)" style="margin-top:6px;background:#E3F2FD;color:#1565C0;border:1.5px solid #90CAF9;border-radius:8px;padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer">🗺️ Open in Maps</button>` : ''}
           <div style="display:flex;gap:10px;margin-top:4px;font-size:12px">
             ${stars ? `<span style="color:var(--gd)">${stars} ${t.avg_rating}</span>` : ''}
             <span style="color:var(--mu)">${t.member_count||0} members</span>
