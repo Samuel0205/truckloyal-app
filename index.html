@@ -388,6 +388,10 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
           <div class="field"><label>Your Name <span style="color:var(--rd)">*</span></label><input type="text" id="v-su-owner" placeholder="First and last name" required></div>
           <div class="field"><label>Email <span style="color:var(--rd)">*</span></label><input type="email" id="v-su-email" placeholder="you@yourtruck.com" autocomplete="email" required></div>
           <div class="field"><label>Password <span style="color:var(--rd)">*</span></label><input type="password" id="v-su-pass" placeholder="8+ characters (required)" autocomplete="new-password" required></div>
+          <div class="field"><label>State(s) You Operate In <span style="color:var(--rd)">*</span></label>
+            <input type="text" id="v-su-states" placeholder="e.g. OH or OH, IN, KY" style="text-transform:uppercase" oninput="this.value=this.value.toUpperCase()">
+            <div style="font-size:11px;color:var(--mu);margin-top:4px">Use 2-letter state codes, comma separated. Helps customers find local trucks.</div>
+          </div>
           <button class="btn btn-p" id="v-signup-btn" onclick="vendorSignup()">Continue to Payment Setup →</button>
           <div class="auth-switch">Already have an account? <span onclick="goV('s-v-login')">Sign in</span></div>
         </div>
@@ -862,6 +866,10 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
           <div class="card-title">🏷️ Identity</div>
           <div class="field"><label>Truck Name</label><input type="text" id="v-brand-name" placeholder="Your truck name"></div>
           <div class="field"><label>Tagline</label><input type="text" id="v-brand-tag" placeholder="e.g. Best BBQ on wheels"></div>
+          <div class="field"><label>States You Operate In</label>
+            <input type="text" id="v-brand-states" placeholder="e.g. OH or OH, IN, KY" oninput="this.value=this.value.toUpperCase()" style="text-transform:uppercase;letter-spacing:1px">
+            <div style="font-size:11px;color:var(--mu);margin-top:4px">2-letter codes, comma separated. Customers use this to find local trucks.</div>
+          </div>
         </div>
         <div class="card">
           <div class="card-title">🚚 Icon</div>
@@ -1526,8 +1534,12 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
 
     <!-- CUSTOMER: DISCOVER TRUCKS -->
     <div class="screen" id="s-c-discover">
-      <div class="sh sh-row"><div class="back-btn" onclick="goC('s-c-home')">←</div><div><h1>🗺️ Discover Trucks</h1><p>Find food trucks near you</p></div></div>
+      <div class="sh sh-row"><div class="back-btn" onclick="goC('s-c-home')">←</div><div><h1>🗺️ Discover Trucks</h1><p>Active food trucks using Food Truck Rewards</p></div></div>
       <div class="bp">
+        <div style="display:flex;gap:8px;margin-bottom:14px;align-items:center">
+          <input type="text" id="discover-state-filter" placeholder="Filter by state e.g. OH" maxlength="10" oninput="this.value=this.value.toUpperCase()" style="flex:1;padding:10px 14px;border-radius:12px;border:1.5px solid var(--b2);background:white;font-family:var(--fb);font-size:14px;letter-spacing:1px">
+          <button onclick="loadDiscover()" style="background:var(--brand);color:white;border:none;border-radius:12px;padding:10px 16px;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--fb)">Go</button>
+        </div>
         <div id="discover-list"><div style="text-align:center;padding:40px;color:var(--mu)"><div style="font-size:40px;margin-bottom:12px">🔍</div><div style="font-size:15px;font-weight:700">Loading trucks...</div></div></div>
       </div>
     </div>
@@ -1963,19 +1975,21 @@ let stripeInstance = null;
 let stripeCardElement = null;
 
 async function vendorSignup(){
-  const name  = document.getElementById('v-su-name').value.trim();
-  const owner = document.getElementById('v-su-owner').value.trim();
-  const email = document.getElementById('v-su-email').value.trim();
-  const pass  = document.getElementById('v-su-pass').value;
-  const errEl = document.getElementById('v-signup-err');
+  const name   = document.getElementById('v-su-name').value.trim();
+  const owner  = document.getElementById('v-su-owner').value.trim();
+  const email  = document.getElementById('v-su-email').value.trim();
+  const pass   = document.getElementById('v-su-pass').value;
+  const states = (document.getElementById('v-su-states')?.value||'').trim().toUpperCase();
+  const errEl  = document.getElementById('v-signup-err');
   errEl.classList.remove('show');
 
   if(!name||!owner||!email||!pass){showErr(errEl,'Please fill in all fields');return}
   if(pass.length<8){showErr(errEl,'Password must be at least 8 characters');return}
   if(!email.includes('@')){showErr(errEl,'Enter a valid email address');return}
+  if(!states){showErr(errEl,'Enter at least one state you operate in (e.g. OH)');return}
 
   // Store signup info — account is NOT created until payment succeeds
-  S.pendingSignup = {email, password:pass, truck_name:name, owner_name:owner};
+  S.pendingSignup = {email, password:pass, truck_name:name, owner_name:owner, service_states:states};
 
   // Show trial end date
   const trialEnd = new Date();
@@ -2499,6 +2513,7 @@ function populateBrandForm(){
   if(!S.vendor) return;
   setVal('v-brand-name',S.vendor.truck_name||'');
   setVal('v-brand-tag',S.vendor.tagline||'');
+  setVal('v-brand-states',(S.vendor.service_states||'').toUpperCase());
   S.selectedEmoji=S.vendor.emoji||'🚚';
   renderVEP(); renderVPresets();
 }
@@ -2529,12 +2544,13 @@ function applyPreset(p,s){
 }
 
 async function saveBrand(){
-  const name=document.getElementById('v-brand-name')?.value.trim();
-  const tag=document.getElementById('v-brand-tag')?.value.trim();
-  const p=document.getElementById('cdot-p')?.querySelector('input').value;
-  const s=document.getElementById('cdot-s')?.querySelector('input').value;
+  const name   = document.getElementById('v-brand-name')?.value.trim();
+  const tag    = document.getElementById('v-brand-tag')?.value.trim();
+  const states = (document.getElementById('v-brand-states')?.value||'').trim().toUpperCase();
+  const p      = document.getElementById('cdot-p')?.querySelector('input').value;
+  const s      = document.getElementById('cdot-s')?.querySelector('input').value;
   showLoad('Saving...');
-  const r=await apiPatch('/api/vendor/brand',{truck_name:name,tagline:tag,emoji:S.selectedEmoji,color_primary:p,color_secondary:s});
+  const r=await apiPatch('/api/vendor/brand',{truck_name:name,tagline:tag,emoji:S.selectedEmoji,color_primary:p,color_secondary:s,service_states:states});
   hideLoad();
   if(r.ok){
     S.vendor=r.data.data; localStorage.setItem('tl_vendor',JSON.stringify(S.vendor));
@@ -4470,33 +4486,46 @@ async function loadCustomerFeed(){
    CUSTOMER: DISCOVER
 ════════════════════════════════════ */
 async function loadDiscover(){
-  const r = await apiGet('/api/discover');
+  const stateFilter = (document.getElementById('discover-state-filter')?.value||'').trim().toUpperCase();
+  const url = '/api/discover' + (stateFilter ? '?state='+stateFilter : '');
+  const r = await apiGet(url);
   const el = document.getElementById('discover-list');
   if(!el) return;
   const trucks = r.ok ? (r.data.data||[]) : [];
   if(!trucks.length){
-    el.innerHTML='<div style="text-align:center;padding:40px 20px;color:var(--mu)"><div style="font-size:48px;margin-bottom:12px">🔍</div><div style="font-size:15px;font-weight:700;margin-bottom:8px">No trucks found yet</div><div style="font-size:13px;line-height:1.6">Active food trucks appear here once vendors sign up and go live.</div></div>';
+    const msg = stateFilter ? `No trucks found in ${stateFilter}` : 'No trucks found yet';
+    el.innerHTML=`<div style="text-align:center;padding:40px 20px;color:var(--mu)"><div style="font-size:48px;margin-bottom:12px">🔍</div><div style="font-size:15px;font-weight:700;margin-bottom:8px">${msg}</div><div style="font-size:13px;line-height:1.6">Try a different state or check back later as more vendors join.</div></div>`;
     return;
   }
+
   el.innerHTML = trucks.map(t=>{
     const pic = t.profile_picture_url;
-    const av = pic ? `<img src="${pic}" style="width:100%;height:100%;object-fit:cover;border-radius:14px">` : (t.emoji||'🚚');
+    const av = pic ? `<img src="${pic}" style="width:100%;height:100%;object-fit:cover;border-radius:14px">` : `<span style="font-size:28px">${t.emoji||'🚚'}</span>`;
     const stars = t.avg_rating ? '★'.repeat(Math.round(t.avg_rating)) : '';
-    const loc = t.location_today ? `📍 ${t.location_today}` : 'Location not posted today';
+    const displayLoc = t.display_location || '';
+    const displayHrs = t.display_hours || '';
+    const locLine = displayLoc ? `📍 ${displayLoc}${displayHrs?' · 🕐 '+displayHrs:''}` : displayHrs ? `🕐 ${displayHrs}` : 'Location not posted today';
+    const hasLoc = !!(displayLoc || displayHrs);
+    const mapsAddr = displayLoc || displayHrs;
+    const states = t.service_states ? `<span style="font-size:10px;background:rgba(255,87,34,.1);color:var(--brand);border-radius:8px;padding:2px 7px;font-weight:700">${t.service_states}</span>` : '';
+
     return `
-    <div class="card" style="margin-bottom:12px;cursor:pointer" onclick="joinFromDiscover('${t.slug}')">
-      <div style="display:flex;gap:14px;align-items:center">
-        <div style="width:56px;height:56px;border-radius:14px;background:rgba(255,87,34,.1);display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;overflow:hidden">${av}</div>
+    <div class="card" style="margin-bottom:12px">
+      <div style="display:flex;gap:14px;align-items:flex-start">
+        <div style="width:56px;height:56px;border-radius:14px;background:rgba(255,87,34,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden">${av}</div>
         <div style="flex:1;min-width:0">
-          <div style="font-weight:900;font-size:16px">${t.truck_name}</div>
-          <div style="font-size:12px;color:var(--mu);margin-top:2px">${loc}</div>
-          ${t.location_today ? `<button onclick="event.stopPropagation();openInMaps('${t.location_today.replace(/'/g,"\\'")}',true)" style="margin-top:6px;background:#E3F2FD;color:#1565C0;border:1.5px solid #90CAF9;border-radius:8px;padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer">🗺️ Open in Maps</button>` : ''}
-          <div style="display:flex;gap:10px;margin-top:4px;font-size:12px">
-            ${stars ? `<span style="color:var(--gd)">${stars} ${t.avg_rating}</span>` : ''}
-            <span style="color:var(--mu)">${t.member_count||0} members</span>
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">
+            <div style="font-weight:900;font-size:16px">${t.truck_name}</div>
+            ${states}
+          </div>
+          <div style="font-size:12px;color:${hasLoc?'var(--tx)':'var(--mu)'};margin-top:2px;font-weight:${hasLoc?'600':'400'}">${locLine}</div>
+          <div style="display:flex;gap:8px;margin-top:6px;align-items:center;flex-wrap:wrap">
+            ${stars ? `<span style="font-size:12px;color:var(--gd);font-weight:700">${stars} ${t.avg_rating}</span>` : ''}
+            <span style="font-size:12px;color:var(--mu);font-weight:600">👥 ${t.member_count||0} members</span>
+            ${hasLoc ? `<button onclick="openInMaps('${mapsAddr.replace(/'/g,"\\'")}')" style="background:#E3F2FD;color:#1565C0;border:1.5px solid #90CAF9;border-radius:8px;padding:3px 9px;font-size:11px;font-weight:700;cursor:pointer">🗺️ Maps</button>` : ''}
           </div>
         </div>
-        <div style="font-size:12px;font-weight:700;color:var(--brand)">Join →</div>
+        <button onclick="joinFromDiscover('${t.slug}')" style="background:var(--brand);color:white;border:none;border-radius:10px;padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer;flex-shrink:0;font-family:var(--fb)">Join</button>
       </div>
     </div>`;
   }).join('');
