@@ -135,7 +135,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
 /* TOAST */
 .toast{position:fixed;bottom:calc(var(--nav) + 14px);left:50%;transform:translateX(-50%);background:var(--tx);color:white;padding:11px 22px;border-radius:99px;font-size:13px;font-weight:700;white-space:nowrap;opacity:0;transition:opacity .25s;z-index:500;pointer-events:none;box-shadow:0 8px 32px rgba(45,27,14,.25)}
 .toast.show{opacity:1}
-.rfsh-btn{position:fixed;bottom:calc(var(--nav) + 20px);right:16px;width:48px;height:48px;background:var(--brand);color:white;border:none;border-radius:50%;font-size:22px;cursor:pointer;box-shadow:0 4px 20px rgba(255,87,34,.5);z-index:400;display:none;align-items:center;justify-content:center;transition:transform .15s}
+.sheet-x{width:32px;height:32px;background:var(--s2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;color:var(--mu);border:1.5px solid var(--b2);flex-shrink:0}width:48px;height:48px;background:var(--brand);color:white;border:none;border-radius:50%;font-size:22px;cursor:pointer;box-shadow:0 4px 20px rgba(255,87,34,.5);z-index:400;display:none;align-items:center;justify-content:center;transition:transform .15s}
 .rfsh-btn:active{transform:scale(.88)}
 .rfsh-btn.show{display:flex}
 /* CONFETTI */
@@ -309,9 +309,12 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
 <div id="app">
   <div class="topbar">
     <div class="tl-logo">🔥 Food Truck Rewards</div>
-    <div class="mode-tog">
-      <button class="mb on" id="mb-v" onclick="setMode('vendor')">🏪 Vendor</button>
-      <button class="mb" id="mb-c" onclick="setMode('customer')">👤 Customer</button>
+    <div style="display:flex;align-items:center;gap:8px">
+      <button onclick="showHelp()" style="width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.2);border:1.5px solid rgba(255,255,255,.4);color:white;font-size:14px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0">?</button>
+      <div class="mode-tog">
+        <button class="mb on" id="mb-v" onclick="setMode('vendor')">🏪 Vendor</button>
+        <button class="mb" id="mb-c" onclick="setMode('customer')">👤 Customer</button>
+      </div>
     </div>
   </div>
   <div class="scroll" id="scroll">
@@ -652,11 +655,18 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
         <!-- Today's location — posted here, shows on customer dashboard -->
         <div class="card">
           <div class="card-title">📍 Today's Location</div>
-          <div style="font-size:12px;color:var(--mu);margin-bottom:10px;line-height:1.5">Post where you're parked today. Your members will see this when they open the app.</div>
-          <div class="field" style="margin-bottom:10px">
-            <input type="text" id="v-location-input" placeholder="e.g. Downtown Market, 5th & Main, 11am–3pm" oninput="debounceSaveLocation()" style="background:var(--s2);border:1.5px solid var(--b2);border-radius:12px;padding:12px 14px;color:var(--tx);font-size:15px;font-family:var(--fb);outline:none;width:100%">
+          <div style="font-size:12px;color:var(--mu);margin-bottom:6px;line-height:1.6">Post where you're parked <strong>right now</strong>. This shows at the top of your customers' truck page.</div>
+          <div class="callout co-bl" style="margin-bottom:10px;padding:8px 12px">
+            <div class="co-icon" style="font-size:16px">⚠️</div>
+            <div style="font-size:12px;color:var(--mu);line-height:1.5">This field does <strong>not</strong> reset automatically. Tap <strong>Clear</strong> at the end of your day so customers don't see yesterday's location. Your weekly schedule shows separately and is always visible.</div>
           </div>
-          <button class="btn btn-sm btn-p" onclick="saveLocation()">Post Location</button>
+          <div class="field" style="margin-bottom:10px">
+            <input type="text" id="v-location-input" placeholder="e.g. Downtown Market, 5th & Main" oninput="debounceSaveLocation()" style="background:var(--s2);border:1.5px solid var(--b2);border-radius:12px;padding:12px 14px;color:var(--tx);font-size:15px;font-family:var(--fb);outline:none;width:100%">
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-sm btn-p" style="flex:1" onclick="saveLocation()">📍 Post Location</button>
+            <button class="btn btn-sm btn-s" onclick="clearLocation()" style="flex:0 0 auto">✕ Clear</button>
+          </div>
         </div>
       </div>
     </div>
@@ -2191,17 +2201,17 @@ function vendorLogout(){
 async function loadVendorHome(){
   if(!S.vendor) return;
   setText('v-hero-name',S.vendor.truck_name+' '+(S.vendor.emoji||'🚚'));
-  const saved=localStorage.getItem('tl_location')||'';
-  const el=document.getElementById('v-location-input');
-  if(el) el.value=saved;
 
   // Always refresh vendor from API to pick up vendor_number + any new fields
   const me=await apiGet('/api/vendor/me');
   if(me.ok && me.data.data){
-    S.vendor={...S.vendor,...me.data.data};
+    S.vendor=me.data.data;
     localStorage.setItem('tl_vendor',JSON.stringify(S.vendor));
-    setText('v-hero-name',S.vendor.truck_name+' '+(S.vendor.emoji||'🚚'));
   }
+
+  // Populate location input from API (not localStorage — may be stale)
+  const el=document.getElementById('v-location-input');
+  if(el) el.value=S.vendor.location_today||'';
 
   // Update hero profile picture
   const heroPic = document.getElementById('v-hero-pic');
@@ -2226,14 +2236,25 @@ async function loadVendorHome(){
 }
 
 function debounceSaveLocation(){clearTimeout(window._locTimer);window._locTimer=setTimeout(saveLocation,1000)}
+
 async function saveLocation(){
-  const v=document.getElementById('v-location-input')?.value||'';
+  const v=document.getElementById('v-location-input')?.value.trim()||'';
   localStorage.setItem('tl_location',v);
-  // Save to API so customers can see it
   const r=await apiPatch('/api/vendor/brand',{location_today:v});
   if(r.ok){
     if(S.vendor) S.vendor.location_today=v;
-    showToast(v?'📍 Location posted — customers can see it!':'📍 Location cleared');
+    if(v) showToast('📍 Location posted — customers can see it!');
+  }
+}
+
+async function clearLocation(){
+  const el=document.getElementById('v-location-input');
+  if(el) el.value='';
+  localStorage.removeItem('tl_location');
+  const r=await apiPatch('/api/vendor/brand',{location_today:''});
+  if(r.ok){
+    if(S.vendor) S.vendor.location_today='';
+    showToast('✅ Location cleared');
   }
 }
 
@@ -2854,6 +2875,10 @@ function customerLogout(){
 /* ════════════════════════════════════
    UNIVERSAL REFRESH
 ════════════════════════════════════ */
+function showHelp(){
+  document.getElementById('sh-help')?.classList.add('open');
+}
+
 function openInMaps(address){
   if(!address || address==='–') return;
   const encoded = encodeURIComponent(address);
@@ -2895,15 +2920,15 @@ function refreshCurrentScreen(){
 function updateRefreshBtn(){
   const btn = document.getElementById('rfsh-btn');
   if(!btn) return;
-  // Show refresh on screens that load data, hide on auth/form screens
   const noRefresh = new Set([
     's-v-login','s-v-signup','s-v-forgot','s-v-reset','s-v-card-setup',
     's-v-terms','s-v-privacy','s-v-brand','s-v-points',
     's-c-login','s-c-signup','s-c-forgot','s-c-reset',
     's-c-scan','s-c-spin','s-c-qr','s-c-review','s-c-promo',
   ]);
-  const screen = S.mode==='vendor' ? S.vScreen : S.cScreen;
-  btn.classList.toggle('show', !noRefresh.has(screen));
+  // Check BOTH screens — hide if either current screen is an auth screen
+  const visibleScreen = document.querySelector('.screen.on')?.id || '';
+  btn.classList.toggle('show', !!visibleScreen && !noRefresh.has(visibleScreen));
 }
 
 function filterTrucks(type, el){
@@ -3235,16 +3260,21 @@ async function renderTruckDash(){
       const todaySched = schedR.data.data.find(d=>d.day_of_week===today_dow);
       const schedLoc   = todaySched?.location || '';
       const schedHrs   = todaySched?.hours || '';
-      const displayLoc = loc || schedLoc;
-      const displayHrs = schedHrs;
 
       if(locBar){
-        if(displayLoc || displayHrs){
+        if(loc){
+          // Vendor posted a live location today — show it with live indicator
+          locBar.style.display='flex';
+          let txt = '🟢 Live: '+loc;
+          if(schedHrs) txt += ' · 🕐 '+schedHrs;
+          setText('ct-location-text', txt);
+        } else if(schedLoc || schedHrs){
+          // No live location — show from schedule
           locBar.style.display='flex';
           let txt = '';
-          if(displayLoc) txt += displayLoc;
-          if(displayHrs) txt += (txt ? ' · ' : '') + '🕐 '+displayHrs;
-          setText('ct-location-text', txt || '–');
+          if(schedLoc) txt += schedLoc;
+          if(schedHrs) txt += (txt?' · ':'')+'🕐 '+schedHrs;
+          setText('ct-location-text', '📅 '+txt);
         } else {
           locBar.style.display='none';
         }
@@ -4833,18 +4863,28 @@ function fallbackCopy(text){
 async function saveVendorProfile(){
   const owner = document.getElementById('v-set-owner')?.value.trim();
   const truck = document.getElementById('v-set-truck')?.value.trim();
+  const phone = document.getElementById('v-set-phone')?.value.replace(/\D/g,'');
+  const email = document.getElementById('v-set-email')?.value.trim();
   if(!truck){showToast('Truck name is required');return}
+  if(email && !email.includes('@')){showToast('Enter a valid email');return}
   showLoad('Saving...');
+  // Save truck name + states via brand endpoint
   const r1 = await apiPatch('/api/vendor/brand', {truck_name: truck});
-  const r2 = await apiPatch('/api/vendor/profile', {owner_name: owner||undefined});
+  // Save owner name, phone, email via profile endpoint
+  const r2 = await apiPatch('/api/vendor/profile', {
+    owner_name: owner||undefined,
+    phone:      phone||undefined,
+    email:      email||undefined,
+  });
   hideLoad();
-  if(r1.ok||r2.ok){
-    const fresh=await apiGet('/api/vendor/me');
+  if(r1.ok || r2.ok){
+    const fresh = await apiGet('/api/vendor/me');
     if(fresh.ok){S.vendor=fresh.data.data;localStorage.setItem('tl_vendor',JSON.stringify(S.vendor));}
     showToast('✅ Profile saved!');
     renderVSettings();
+    loadVendorHome();
   } else {
-    showToast('❌ Error saving — try again');
+    showToast('❌ '+(r2.data?.error||r1.data?.error||'Error saving'));
   }
 }
 
@@ -4904,6 +4944,40 @@ setTimeout(()=>{
 <!-- Persistent hidden file inputs — most reliable way to trigger camera in Android WebView -->
 <input type="file" id="qr-scan-file" accept="image/*" style="display:none;position:fixed;top:-9999px" onchange="handleQRScanFile(this)">
 <input type="file" id="c-qr-scan-file" accept="image/*" style="display:none;position:fixed;top:-9999px" onchange="handleCustomerQRScanFile(this)">
+
+<!-- HELP SHEET -->
+<div class="sheet-overlay" id="sh-help" onclick="if(event.target===this)closeSheet('sh-help')">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+      <div style="font-family:var(--fd);font-size:22px;font-weight:900">Need Help? 👋</div>
+      <div class="sheet-x" onclick="closeSheet('sh-help')">✕</div>
+    </div>
+    <div class="callout co-bl" style="margin-bottom:16px">
+      <div class="co-icon">💬</div>
+      <div><div class="co-title">Contact Support</div><div class="co-desc">Having an issue? Tap below to email us directly.</div></div>
+    </div>
+    <a href="mailto:support@foodtruckrewards.app" style="display:block;text-decoration:none">
+      <div class="card" style="display:flex;align-items:center;gap:14px;margin-bottom:12px;cursor:pointer">
+        <div style="font-size:28px">📧</div>
+        <div style="flex:1"><div style="font-weight:800;font-size:14px">Email Support</div><div style="font-size:12px;color:var(--mu)">support@foodtruckrewards.app</div></div>
+        <div style="color:var(--brand);font-size:18px">→</div>
+      </div>
+    </a>
+    <div class="card" style="margin-bottom:12px">
+      <div style="font-weight:800;font-size:14px;margin-bottom:10px">📚 Quick Guide</div>
+      <div style="font-size:13px;color:var(--mu);line-height:2">
+        <div>🪟 <strong>Award points</strong> — tap "At the Window" on vendor home</div>
+        <div>📷 <strong>Add customers</strong> — they scan your QR code to join</div>
+        <div>🎁 <strong>Rewards</strong> — set up in Rewards, customers redeem from their app</div>
+        <div>📣 <strong>Notify</strong> — message all members from Notify screen</div>
+        <div>📅 <strong>Schedule</strong> — post weekly locations so customers find you</div>
+        <div>🎉 <strong>Promos</strong> — create codes for bonus points or deals</div>
+      </div>
+    </div>
+    <div style="text-align:center;font-size:11px;color:var(--mu)">Food Truck Rewards · v1.0.5</div>
+  </div>
+</div>
 
 <!-- Stripe.js loaded last so it never blocks app rendering -->
 <script src="https://js.stripe.com/v3/" async></script>
