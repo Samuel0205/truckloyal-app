@@ -40,10 +40,10 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
 #app::before{content:'';position:fixed;inset:0;max-width:430px;margin:0 auto;background-image:radial-gradient(circle,rgba(255,87,34,.08) 1px,transparent 1px);background-size:20px 20px;pointer-events:none;z-index:0}
 .scroll,#scroll{position:relative;z-index:1}
 
-.topbar{display:flex;align-items:center;justify-content:space-between;padding:8px 18px 8px;padding-top:calc(8px + env(safe-area-inset-top,0px));background:var(--brand);flex-shrink:0;z-index:60;box-shadow:0 2px 12px rgba(255,87,34,.3)}
-.tl-logo{font-family:var(--fd);font-weight:900;font-size:18px;letter-spacing:.3px;color:white;text-shadow:0 1px 3px rgba(0,0,0,.2)}
-.mode-tog{display:flex;background:rgba(255,255,255,.2);border:1.5px solid rgba(255,255,255,.35);border-radius:99px;padding:3px;gap:2px}
-.mb{padding:5px 12px;border-radius:99px;font-size:11px;font-weight:700;border:none;cursor:pointer;font-family:var(--fb);transition:all .2s;background:transparent;color:rgba(255,255,255,.8)}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:6px 14px;padding-top:calc(6px + env(safe-area-inset-top,0px));background:var(--brand);flex-shrink:0;z-index:60;box-shadow:0 2px 12px rgba(255,87,34,.3);min-height:0}
+.tl-logo{font-family:var(--fd);font-weight:900;font-size:15px;letter-spacing:.2px;color:white;white-space:nowrap;text-shadow:0 1px 3px rgba(0,0,0,.2);flex-shrink:1;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.mode-tog{display:flex;background:rgba(255,255,255,.2);border:1.5px solid rgba(255,255,255,.35);border-radius:99px;padding:3px;gap:2px;flex-shrink:0}
+.mb{padding:5px 10px;border-radius:99px;font-size:11px;font-weight:700;border:none;cursor:pointer;font-family:var(--fb);transition:all .2s;background:transparent;color:rgba(255,255,255,.8);white-space:nowrap}
 .mb.on{background:white;color:var(--brand);box-shadow:var(--sh1)}
 .scroll{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:none}
 .scroll::-webkit-scrollbar{display:none}
@@ -301,7 +301,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
   <img src="https://truckloyal-app.onrender.com/assets/logo.png" style="width:220px;height:220px;object-fit:contain" alt="Food Truck Rewards" onerror="this.style.display='none'">
 </div>
 <div id="app">
-  <div class="topbar">
+  <div class="topbar" style="gap:10px">
     <div class="tl-logo">🔥 Food Truck Rewards</div>
     <div class="mode-tog">
       <button class="mb on" id="mb-v" onclick="setMode('vendor')">🏪 Vendor</button>
@@ -387,7 +387,11 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
           <div class="field"><label>Password <span style="color:var(--rd)">*</span></label><input type="password" id="v-su-pass" placeholder="8+ characters (required)" autocomplete="new-password" required></div>
           <div class="field"><label>State(s) You Operate In <span style="color:var(--rd)">*</span></label>
             <input type="text" id="v-su-states" placeholder="e.g. OH or OH, IN, KY" style="text-transform:uppercase" oninput="this.value=this.value.toUpperCase()">
-            <div style="font-size:11px;color:var(--mu);margin-top:4px">Use 2-letter state codes, comma separated. Helps customers find local trucks.</div>
+            <div style="font-size:11px;color:var(--mu);margin-top:4px">2-letter codes, comma separated. Helps customers find local trucks.</div>
+          </div>
+          <div class="field"><label>Home Base ZIP Code <span style="color:var(--rd)">*</span></label>
+            <input type="text" id="v-su-zip" placeholder="e.g. 44906" maxlength="5" inputmode="numeric" pattern="[0-9]*">
+            <div style="font-size:11px;color:var(--mu);margin-top:4px">Your primary area. Used to show your truck to nearby customers.</div>
           </div>
           <button class="btn btn-p" id="v-signup-btn" onclick="vendorSignup()">Continue to Payment Setup →</button>
           <div class="auth-switch">Already have an account? <span onclick="goV('s-v-login')">Sign in</span></div>
@@ -646,13 +650,13 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
         <!-- Today's location — posted here, shows on customer dashboard -->
         <div class="card">
           <div class="card-title">📍 Today's Location</div>
-          <div style="font-size:12px;color:var(--mu);margin-bottom:6px;line-height:1.6">Post where you're parked <strong>right now</strong>. This shows at the top of your customers' truck page.</div>
-          <div class="callout co-bl" style="margin-bottom:10px;padding:8px 12px">
-            <div class="co-icon" style="font-size:16px">⚠️</div>
-            <div style="font-size:12px;color:var(--mu);line-height:1.5">This field does <strong>not</strong> reset automatically. Tap <strong>Clear</strong> at the end of your day so customers don't see yesterday's location. Your weekly schedule shows separately and is always visible.</div>
-          </div>
+          <div style="font-size:12px;color:var(--mu);margin-bottom:8px;line-height:1.6">Post where you're parked <strong>right now</strong>. Customers see this on their truck page. <strong>Resets automatically at midnight</strong> — or tap Clear to remove it early.</div>
           <div class="field" style="margin-bottom:10px">
             <input type="text" id="v-location-input" placeholder="e.g. Downtown Market, 5th & Main" oninput="debounceSaveLocation()" style="background:var(--s2);border:1.5px solid var(--b2);border-radius:12px;padding:12px 14px;color:var(--tx);font-size:15px;font-family:var(--fb);outline:none;width:100%">
+          </div>
+          <div class="field" style="margin-bottom:10px">
+            <label style="font-size:11px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.5px">ZIP Code (helps customers find you)</label>
+            <input type="text" id="v-location-zip" placeholder="e.g. 44906" maxlength="5" inputmode="numeric" oninput="debounceSaveLocation()" style="background:var(--s2);border:1.5px solid var(--b2);border-radius:12px;padding:12px 14px;color:var(--tx);font-size:15px;font-family:var(--fb);outline:none;width:100%">
           </div>
           <div style="display:flex;gap:8px">
             <button class="btn btn-sm btn-p" style="flex:1" onclick="saveLocation()">📍 Post Location</button>
@@ -873,6 +877,10 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
           <div class="field"><label>States You Operate In</label>
             <input type="text" id="v-brand-states" placeholder="e.g. OH or OH, IN, KY" oninput="this.value=this.value.toUpperCase()" style="text-transform:uppercase;letter-spacing:1px">
             <div style="font-size:11px;color:var(--mu);margin-top:4px">2-letter codes, comma separated. Customers use this to find local trucks.</div>
+          </div>
+          <div class="field"><label>Home Base ZIP Code</label>
+            <input type="text" id="v-brand-zip" placeholder="e.g. 44906" maxlength="5" inputmode="numeric" pattern="[0-9]*">
+            <div style="font-size:11px;color:var(--mu);margin-top:4px">Your primary area ZIP. Used to match you with nearby customers.</div>
           </div>
         </div>
         <div class="card">
@@ -1549,10 +1557,59 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
     <div class="screen" id="s-c-discover">
       <div class="sh sh-row"><div class="back-btn" onclick="goC('s-c-home')">←</div><div><h1>🗺️ Discover Trucks</h1><p>Active food trucks using Food Truck Rewards</p></div></div>
       <div class="bp">
-        <div style="display:flex;gap:8px;margin-bottom:14px;align-items:center">
-          <input type="text" id="discover-state-filter" placeholder="Filter by state e.g. OH" maxlength="10" oninput="this.value=this.value.toUpperCase()" style="flex:1;padding:10px 14px;border-radius:12px;border:1.5px solid var(--b2);background:white;font-family:var(--fb);font-size:14px;letter-spacing:1px">
-          <button onclick="loadDiscover()" style="background:var(--brand);color:white;border:none;border-radius:12px;padding:10px 16px;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--fb)">Go</button>
-        </div>
+        <select id="discover-state-filter" onchange="loadDiscover()" style="width:100%;padding:12px 14px;border-radius:12px;border:1.5px solid var(--b2);background:white;font-family:var(--fb);font-size:14px;color:var(--tx);margin-bottom:14px;-webkit-appearance:none;appearance:none;background-image:url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%2212%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%23FF5722%22 stroke-width=%222.5%22><polyline points=%226 9 12 15 18 9%22/></svg>');background-repeat:no-repeat;background-position:right 14px center;padding-right:36px">
+          <option value="">🗺️ All States</option>
+          <option value="AL">Alabama</option>
+          <option value="AK">Alaska</option>
+          <option value="AZ">Arizona</option>
+          <option value="AR">Arkansas</option>
+          <option value="CA">California</option>
+          <option value="CO">Colorado</option>
+          <option value="CT">Connecticut</option>
+          <option value="DE">Delaware</option>
+          <option value="FL">Florida</option>
+          <option value="GA">Georgia</option>
+          <option value="HI">Hawaii</option>
+          <option value="ID">Idaho</option>
+          <option value="IL">Illinois</option>
+          <option value="IN">Indiana</option>
+          <option value="IA">Iowa</option>
+          <option value="KS">Kansas</option>
+          <option value="KY">Kentucky</option>
+          <option value="LA">Louisiana</option>
+          <option value="ME">Maine</option>
+          <option value="MD">Maryland</option>
+          <option value="MA">Massachusetts</option>
+          <option value="MI">Michigan</option>
+          <option value="MN">Minnesota</option>
+          <option value="MS">Mississippi</option>
+          <option value="MO">Missouri</option>
+          <option value="MT">Montana</option>
+          <option value="NE">Nebraska</option>
+          <option value="NV">Nevada</option>
+          <option value="NH">New Hampshire</option>
+          <option value="NJ">New Jersey</option>
+          <option value="NM">New Mexico</option>
+          <option value="NY">New York</option>
+          <option value="NC">North Carolina</option>
+          <option value="ND">North Dakota</option>
+          <option value="OH">Ohio</option>
+          <option value="OK">Oklahoma</option>
+          <option value="OR">Oregon</option>
+          <option value="PA">Pennsylvania</option>
+          <option value="RI">Rhode Island</option>
+          <option value="SC">South Carolina</option>
+          <option value="SD">South Dakota</option>
+          <option value="TN">Tennessee</option>
+          <option value="TX">Texas</option>
+          <option value="UT">Utah</option>
+          <option value="VT">Vermont</option>
+          <option value="VA">Virginia</option>
+          <option value="WA">Washington</option>
+          <option value="WV">West Virginia</option>
+          <option value="WI">Wisconsin</option>
+          <option value="WY">Wyoming</option>
+        </select>
         <div id="discover-list"><div style="text-align:center;padding:40px;color:var(--mu)"><div style="font-size:40px;margin-bottom:12px">🔍</div><div style="font-size:15px;font-weight:700">Loading trucks...</div></div></div>
       </div>
     </div>
@@ -1994,6 +2051,7 @@ async function vendorSignup(){
   const email  = document.getElementById('v-su-email').value.trim();
   const pass   = document.getElementById('v-su-pass').value;
   const states = (document.getElementById('v-su-states')?.value||'').trim().toUpperCase();
+  const zip    = (document.getElementById('v-su-zip')?.value||'').trim();
   const errEl  = document.getElementById('v-signup-err');
   errEl.classList.remove('show');
 
@@ -2001,9 +2059,10 @@ async function vendorSignup(){
   if(pass.length<8){showErr(errEl,'Password must be at least 8 characters');return}
   if(!email.includes('@')){showErr(errEl,'Enter a valid email address');return}
   if(!states){showErr(errEl,'Enter at least one state you operate in (e.g. OH)');return}
+  if(!zip||zip.length!==5||!/^\d{5}$/.test(zip)){showErr(errEl,'Enter a valid 5-digit ZIP code');return}
 
   // Store signup info — account is NOT created until payment succeeds
-  S.pendingSignup = {email, password:pass, truck_name:name, owner_name:owner, service_states:states};
+  S.pendingSignup = {email, password:pass, truck_name:name, owner_name:owner, service_states:states, home_zip:zip};
 
   // Show trial end date
   const trialEnd = new Date();
@@ -2206,9 +2265,11 @@ async function loadVendorHome(){
     localStorage.setItem('tl_vendor',JSON.stringify(S.vendor));
   }
 
-  // Populate location input from API (not localStorage — may be stale)
+  // Populate location input from API
   const el=document.getElementById('v-location-input');
   if(el) el.value=S.vendor.location_today||'';
+  const zipEl=document.getElementById('v-location-zip');
+  if(zipEl) zipEl.value=S.vendor.location_zip||'';
 
   // Update hero profile picture
   const heroPic = document.getElementById('v-hero-pic');
@@ -2235,22 +2296,23 @@ async function loadVendorHome(){
 function debounceSaveLocation(){clearTimeout(window._locTimer);window._locTimer=setTimeout(saveLocation,1000)}
 
 async function saveLocation(){
-  const v=document.getElementById('v-location-input')?.value.trim()||'';
-  localStorage.setItem('tl_location',v);
-  const r=await apiPatch('/api/vendor/brand',{location_today:v});
+  const v   = document.getElementById('v-location-input')?.value.trim()||'';
+  const zip = document.getElementById('v-location-zip')?.value.trim()||'';
+  const r   = await apiPatch('/api/vendor/brand',{location_today:v, location_zip:zip, location_updated_date: new Date().toISOString().split('T')[0]});
   if(r.ok){
-    if(S.vendor) S.vendor.location_today=v;
+    if(S.vendor){ S.vendor.location_today=v; S.vendor.location_zip=zip; }
     if(v) showToast('📍 Location posted — customers can see it!');
   }
 }
 
 async function clearLocation(){
-  const el=document.getElementById('v-location-input');
-  if(el) el.value='';
-  localStorage.removeItem('tl_location');
-  const r=await apiPatch('/api/vendor/brand',{location_today:''});
+  const el  = document.getElementById('v-location-input');
+  const zip = document.getElementById('v-location-zip');
+  if(el)  el.value='';
+  if(zip) zip.value='';
+  const r = await apiPatch('/api/vendor/brand',{location_today:'', location_zip:'', location_updated_date: new Date().toISOString().split('T')[0]});
   if(r.ok){
-    if(S.vendor) S.vendor.location_today='';
+    if(S.vendor){ S.vendor.location_today=''; S.vendor.location_zip=''; }
     showToast('✅ Location cleared');
   }
 }
@@ -2539,6 +2601,7 @@ function populateBrandForm(){
   setVal('v-brand-name',S.vendor.truck_name||'');
   setVal('v-brand-tag',S.vendor.tagline||'');
   setVal('v-brand-states',(S.vendor.service_states||'').toUpperCase());
+  setVal('v-brand-zip',S.vendor.home_zip||'');
   S.selectedEmoji=S.vendor.emoji||'🚚';
   renderVEP(); renderVPresets();
 }
@@ -2572,10 +2635,12 @@ async function saveBrand(){
   const name   = document.getElementById('v-brand-name')?.value.trim();
   const tag    = document.getElementById('v-brand-tag')?.value.trim();
   const states = (document.getElementById('v-brand-states')?.value||'').trim().toUpperCase();
+  const zip    = (document.getElementById('v-brand-zip')?.value||'').trim();
   const p      = document.getElementById('cdot-p')?.querySelector('input').value;
   const s      = document.getElementById('cdot-s')?.querySelector('input').value;
+  if(zip && (zip.length!==5||!/^\d{5}$/.test(zip))){showToast('ZIP must be 5 digits');return}
   showLoad('Saving...');
-  const r=await apiPatch('/api/vendor/brand',{truck_name:name,tagline:tag,emoji:S.selectedEmoji,color_primary:p,color_secondary:s,service_states:states});
+  const r=await apiPatch('/api/vendor/brand',{truck_name:name,tagline:tag,emoji:S.selectedEmoji,color_primary:p,color_secondary:s,service_states:states,home_zip:zip||undefined});
   hideLoad();
   if(r.ok){
     S.vendor=r.data.data; localStorage.setItem('tl_vendor',JSON.stringify(S.vendor));
@@ -4390,6 +4455,7 @@ async function loadSchedule(){
         <div class="field"><label>Location</label><input type="text" id="sched-loc-${i}" placeholder="Downtown Market" value="${existing.location||''}"></div>
         <div class="field"><label>Hours</label><input type="text" id="sched-hrs-${i}" placeholder="11am–3pm" value="${existing.hours||''}"></div>
       </div>
+      <div class="field" style="margin-top:6px"><label>ZIP Code</label><input type="text" id="sched-zip-${i}" placeholder="e.g. 44906" maxlength="5" inputmode="numeric" value="${existing.zip_code||''}" style="width:140px"></div>
     </div>`;
   }).join('');
 }
@@ -4398,8 +4464,9 @@ async function saveSchedule(){
   const days = DAY_NAMES.map((_,i)=>{
     const loc = document.getElementById(`sched-loc-${i}`)?.value.trim();
     const hrs = document.getElementById(`sched-hrs-${i}`)?.value.trim();
-    return {day_of_week: i, location: loc, hours: hrs};
-  }).filter(d=>d.location || d.hours);
+    const zip = document.getElementById(`sched-zip-${i}`)?.value.trim();
+    return {day_of_week: i, location: loc, hours: hrs, zip_code: zip};
+  }).filter(d=>d.location || d.hours || d.zip_code);
   showLoad('Saving...');
   const r = await apiPost('/api/vendor/schedule', {days});
   hideLoad();
