@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#FFF8F0">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <style>
-  html,body{background:#FFF8F0 !important}
-  #splash-cover{position:fixed;inset:0;background:#FFF8F0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:99999;transition:opacity .4s .2s}
+  html,body{background:#FF5722 !important}
+  #splash-cover{position:fixed;inset:0;background:#FF5722;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:99999;transition:opacity .4s .2s}
   #splash-cover.hidden{opacity:0;pointer-events:none}
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -296,25 +296,16 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
 </style>
 </head>
 <body>
-<!-- Splash screen — matches native orange splash exactly -->
+<!-- Splash screen — orange background with logo, fades when app loads -->
 <div id="splash-cover">
-  <img src="./assets/logo.png" onerror="this.style.display='none';document.getElementById('splash-emoji').style.display='block'" style="width:200px;height:200px;object-fit:contain" alt="Food Truck Rewards">
-  <span id="splash-emoji" style="display:none;font-size:80px">🔥</span>
+  <img src="https://truckloyal-app.onrender.com/assets/logo.png" style="width:220px;height:220px;object-fit:contain" alt="Food Truck Rewards" onerror="this.style.display='none'">
 </div>
-<style>
-  #splash-cover{position:fixed;inset:0;background:#FF5722;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:99999;transition:opacity .4s .2s}
-  #splash-cover.hidden{opacity:0;pointer-events:none}
-  @keyframes splspin{to{transform:rotate(360deg)}}
-</style>
 <div id="app">
   <div class="topbar">
     <div class="tl-logo">🔥 Food Truck Rewards</div>
-    <div style="display:flex;align-items:center;gap:8px">
-      <button onclick="showHelp()" style="width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.2);border:1.5px solid rgba(255,255,255,.4);color:white;font-size:14px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0">?</button>
-      <div class="mode-tog">
-        <button class="mb on" id="mb-v" onclick="setMode('vendor')">🏪 Vendor</button>
-        <button class="mb" id="mb-c" onclick="setMode('customer')">👤 Customer</button>
-      </div>
+    <div class="mode-tog">
+      <button class="mb on" id="mb-v" onclick="setMode('vendor')">🏪 Vendor</button>
+      <button class="mb" id="mb-c" onclick="setMode('customer')">👤 Customer</button>
     </div>
   </div>
   <div class="scroll" id="scroll">
@@ -1067,7 +1058,10 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
 
     <!-- VENDOR: SETTINGS -->
     <div class="screen" id="s-v-settings">
-      <div class="sh"><h1>⚙️ Settings</h1></div>
+      <div class="sh sh-row">
+        <div><h1>⚙️ Settings</h1></div>
+        <button onclick="showHelp()" style="background:var(--s2);border:1.5px solid var(--b2);border-radius:12px;padding:7px 14px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--fb);color:var(--mu)">❓ Help</button>
+      </div>
       <div class="bp">
 
         <!-- Profile Picture -->
@@ -1497,7 +1491,10 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
 
     <!-- CUSTOMER: PROFILE -->
     <div class="screen" id="s-c-profile">
-      <div class="sh"><h1>👤 Profile</h1></div>
+      <div class="sh sh-row">
+        <div><h1>👤 Profile</h1></div>
+        <button onclick="showHelp()" style="background:var(--s2);border:1.5px solid var(--b2);border-radius:12px;padding:7px 14px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--fb);color:var(--mu)">❓ Help</button>
+      </div>
       <div class="bp">
 
         <!-- Profile picture + name -->
@@ -4946,7 +4943,7 @@ setTimeout(()=>{
 <input type="file" id="c-qr-scan-file" accept="image/*" style="display:none;position:fixed;top:-9999px" onchange="handleCustomerQRScanFile(this)">
 
 <!-- HELP SHEET -->
-<div class="sheet-overlay" id="sh-help" onclick="if(event.target===this)closeSheet('sh-help')">
+<div class="overlay" id="sh-help" onclick="if(event.target===this)closeSheet('sh-help')">
   <div class="sheet">
     <div class="sheet-handle"></div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
