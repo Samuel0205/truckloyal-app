@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>FTR Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--brand:#FF5722;--bg:#0F0E0C;--s1:#1A1814;--s2:#242018;--border:rgba(255,255,255,.08);--tx:#F5F0E8;--mu:rgba(245,240,232,.45);--gn:#4ADE80;--rd:#FF5252;--gd:#FFB300}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh}
+.topbar{background:var(--brand);padding:14px 24px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100;box-shadow:0 2px 20px rgba(255,87,34,.4)}
+.topbar-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:900;color:white}
+.topbar-sub{font-size:12px;color:rgba(255,255,255,.7);margin-top:2px}
+.logout-btn{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);color:white;padding:8px 16px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:600;font-family:'Inter',sans-serif}
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.login-card{background:var(--s1);border:1px solid var(--border);border-radius:24px;padding:40px;width:100%;max-width:380px;text-align:center}
+.login-logo{font-size:48px;margin-bottom:12px}
+.login-title{font-family:'Syne',sans-serif;font-size:24px;font-weight:900;margin-bottom:4px}
+.login-sub{color:var(--mu);font-size:13px;margin-bottom:28px}
+.field{margin-bottom:16px;text-align:left}
+.field label{display:block;font-size:12px;font-weight:600;color:var(--mu);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.field input{width:100%;padding:12px 16px;background:var(--s2);border:1.5px solid var(--border);border-radius:12px;color:var(--tx);font-size:15px;font-family:'Inter',sans-serif;outline:none}
+.field input:focus{border-color:var(--brand)}
+.btn-p{width:100%;padding:14px;background:var(--brand);color:white;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;margin-top:8px}
+.err{color:var(--rd);font-size:13px;margin-top:10px;display:none}
+.main{padding:24px;max-width:1200px;margin:0 auto}
+.page-title{font-family:'Syne',sans-serif;font-size:28px;font-weight:900;margin-bottom:4px}
+.page-sub{color:var(--mu);font-size:14px;margin-bottom:24px}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:24px}
+.sc{background:var(--s1);border:1px solid var(--border);border-radius:16px;padding:18px}
+.sv{font-family:'Syne',sans-serif;font-size:30px;font-weight:900}
+.sl{font-size:11px;color:var(--mu);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-top:4px}
+.section{background:var(--s1);border:1px solid var(--border);border-radius:18px;padding:20px;margin-bottom:18px}
+.sh{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center}
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{text-align:left;font-size:11px;font-weight:600;color:var(--mu);text-transform:uppercase;letter-spacing:.5px;padding:8px 12px;border-bottom:1px solid var(--border)}
+.tbl td{padding:11px 12px;border-bottom:1px solid var(--border);font-size:13px}
+.tbl tr:last-child td{border-bottom:none}
+.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700}
+.b-active{background:rgba(74,222,128,.12);color:var(--gn);border:1px solid rgba(74,222,128,.25)}
+.b-trial{background:rgba(255,179,0,.12);color:var(--gd);border:1px solid rgba(255,179,0,.25)}
+.b-inactive{background:rgba(255,82,82,.12);color:var(--rd);border:1px solid rgba(255,82,82,.25)}
+.b-grace{background:rgba(255,87,34,.12);color:var(--brand);border:1px solid rgba(255,87,34,.25)}
+.btn-s{padding:5px 11px;border-radius:8px;border:1px solid var(--border);background:var(--s2);color:var(--tx);font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif}
+.btn-gn{border-color:var(--gn);color:var(--gn)}
+.btn-rd{border-color:var(--rd);color:var(--rd)}
+.tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+.tab{padding:8px 16px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:var(--s1);color:var(--mu)}
+.tab.on{background:rgba(255,87,34,.15);border-color:var(--brand);color:var(--brand)}
+.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.75);display:none;align-items:center;justify-content:center;z-index:500;padding:20px}
+.modal-ov.open{display:flex}
+.modal{background:var(--s1);border:1px solid var(--border);border-radius:20px;padding:24px;width:100%;max-width:520px;max-height:85vh;overflow-y:auto}
+.modal-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;margin-bottom:16px;display:flex;justify-content:space-between}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#222;color:white;padding:12px 24px;border-radius:40px;font-size:14px;font-weight:600;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none}
+.toast.show{opacity:1}
+.promo-form{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin-bottom:16px}
+.promo-form .field{margin:0;flex:1;min-width:120px}
+.promo-form .field input{font-size:13px;padding:9px 12px}
+.add-btn{padding:10px 16px;background:var(--brand);color:white;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif}
+input[type=text],input[type=password],input[type=number]{background:var(--s2);border:1px solid var(--border);color:var(--tx);padding:8px 12px;border-radius:10px;font-size:13px;font-family:'Inter',sans-serif;outline:none}
+input:focus{border-color:var(--brand)}
+</style>
+</head>
+<body>
+
+<div id="login-page">
+  <div class="login-wrap">
+    <div class="login-card">
+      <div class="login-logo">🔥</div>
+      <div class="login-title">Admin Dashboard</div>
+      <div class="login-sub">Food Truck Rewards · Internal Only</div>
+      <div class="field">
+        <label>Admin Password</label>
+        <input type="password" id="admin-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')adminLogin()">
+      </div>
+      <button class="btn-p" onclick="adminLogin()">Sign In</button>
+      <div class="err" id="login-err">❌ Incorrect password</div>
+    </div>
+  </div>
+</div>
+
+<div id="dashboard" style="display:none">
+  <div class="topbar">
+    <div>
+      <div class="topbar-title">🔥 Food Truck Rewards — Admin</div>
+      <div class="topbar-sub" id="last-updated">Loading...</div>
+    </div>
+    <button class="logout-btn" onclick="adminLogout()">Sign Out</button>
+  </div>
+
+  <div class="main">
+    <div class="page-title">Dashboard</div>
+    <div class="page-sub">Platform overview · auto-refreshes every 60s</div>
+
+    <div class="tabs">
+      <div class="tab on" onclick="showTab('t-overview',this)">📊 Overview</div>
+      <div class="tab" onclick="showTab('t-vendors',this)">🚚 Vendors</div>
+      <div class="tab" onclick="showTab('t-promos',this)">🎟️ Promo Codes</div>
+    </div>
+
+    <!-- OVERVIEW -->
+    <div id="t-overview">
+      <div class="stats-grid">
+        <div class="sc"><div class="sv" style="color:var(--brand)" id="s-tv">–</div><div class="sl">Total Vendors</div></div>
+        <div class="sc"><div class="sv" style="color:var(--gn)" id="s-av">–</div><div class="sl">Active</div></div>
+        <div class="sc"><div class="sv" style="color:var(--gd)" id="s-trv">–</div><div class="sl">In Trial</div></div>
+        <div class="sc"><div class="sv" style="color:var(--rd)" id="s-gv">–</div><div class="sl">Grace Period</div></div>
+        <div class="sc"><div class="sv" id="s-tc">–</div><div class="sl">Customers</div></div>
+        <div class="sc"><div class="sv" id="s-tvi">–</div><div class="sl">Total Visits</div></div>
+        <div class="sc"><div class="sv" id="s-tr">–</div><div class="sl">Redemptions</div></div>
+        <div class="sc"><div class="sv" style="color:var(--gn)" id="s-mrr">–</div><div class="sl">MRR</div></div>
+      </div>
+      <div class="section">
+        <div class="sh">🚨 Needs Attention</div>
+        <div id="attention-list"><div style="color:var(--mu);font-size:13px">Loading...</div></div>
+      </div>
+    </div>
+
+    <!-- VENDORS -->
+    <div id="t-vendors" style="display:none">
+      <div class="section">
+        <div class="sh">All Vendors
+          <input type="text" id="v-search" placeholder="Search name or email..." oninput="filterVendors()" style="width:220px">
+        </div>
+        <div style="overflow-x:auto">
+          <table class="tbl">
+            <thead><tr><th>Truck</th><th>Email</th><th>Status</th><th>States</th><th>Joined</th><th>Actions</th></tr></thead>
+            <tbody id="v-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROMO CODES -->
+    <div id="t-promos" style="display:none">
+      <div class="section">
+        <div class="sh">Vendor Billing Promo Codes</div>
+        <div class="promo-form">
+          <div class="field"><label>Code</label><input type="text" id="pc-code" placeholder="LAUNCH50" oninput="this.value=this.value.toUpperCase()"></div>
+          <div class="field"><label>Free Months</label><input type="number" id="pc-months" value="1" min="1" max="12"></div>
+          <div class="field"><label>Max Uses</label><input type="number" id="pc-max" placeholder="Unlimited" min="1"></div>
+          <button class="add-btn" onclick="createPromoCode()">+ Create</button>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="tbl">
+            <thead><tr><th>Code</th><th>Free Months</th><th>Uses</th><th>Max</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="pc-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- VENDOR MODAL -->
+<div class="modal-ov" id="v-modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-title">🚚 Vendor Details <span onclick="closeModal()" style="cursor:pointer;font-size:20px;color:var(--mu)">✕</span></div>
+    <div id="v-modal-content"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API = 'https://truckloyal-api.onrender.com';
+let tok = sessionStorage.getItem('adm_tok') || '';
+let allVendors = [];
+
+// Auto-login if token cached
+if(tok){ showDash(); }
+
+async function adminLogin(){
+  const pass = document.getElementById('admin-pass').value;
+  const r = await fetch(API+'/api/admin/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:pass})});
+  const d = await r.json();
+  if(r.ok && d.data?.token){
+    tok = d.data.token;
+    sessionStorage.setItem('adm_tok', tok);
+    showDash();
+  } else {
+    document.getElementById('login-err').style.display='block';
+  }
+}
+
+function adminLogout(){
+  sessionStorage.removeItem('adm_tok'); tok='';
+  document.getElementById('dashboard').style.display='none';
+  document.getElementById('login-page').style.display='block';
+  document.getElementById('admin-pass').value='';
+}
+
+function showDash(){
+  document.getElementById('login-page').style.display='none';
+  document.getElementById('dashboard').style.display='block';
+  loadDash();
+}
+
+async function req(path, method='GET', body=null){
+  const opts={method,headers:{'Authorization':'Bearer '+tok,'Content-Type':'application/json'}};
+  if(body) opts.body=JSON.stringify(body);
+  const r = await fetch(API+path, opts);
+  return {ok:r.ok, data:await r.json()};
+}
+
+async function loadDash(){
+  document.getElementById('last-updated').textContent='Updated: '+new Date().toLocaleTimeString();
+  const r = await req('/api/admin/stats');
+  if(!r.ok){ toast('❌ Failed to load — check token'); return; }
+  const d = r.data.data;
+  allVendors = d.vendors||[];
+
+  // Stats
+  setText('s-tv', d.total_vendors||0);
+  setText('s-av', d.active_vendors||0);
+  setText('s-trv', d.trial_vendors||0);
+  setText('s-gv', d.grace_vendors||0);
+  setText('s-tc', (d.total_customers||0).toLocaleString());
+  setText('s-tvi', (d.total_visits||0).toLocaleString());
+  setText('s-tr', (d.total_redemptions||0).toLocaleString());
+  setText('s-mrr', '$'+(d.mrr||0).toFixed(2));
+
+  // Attention
+  const attn = allVendors.filter(v=>v.payment_failed_at||(!v.plan_active&&!_isActive(v)));
+  const aEl = document.getElementById('attention-list');
+  if(!attn.length){
+    aEl.innerHTML='<div style="color:var(--gn);font-size:13px;font-weight:600">✅ No vendors need attention</div>';
+  } else {
+    aEl.innerHTML='<table class="tbl"><thead><tr><th>Truck</th><th>Email</th><th>Issue</th><th>Fix</th></tr></thead><tbody>'+
+      attn.map(v=>`<tr><td><strong>${v.truck_name}</strong></td><td style="color:var(--mu)">${v.email}</td>
+        <td><span class="badge b-grace">⚠ ${v.payment_failed_at?'Payment Failed':'Inactive'}</span></td>
+        <td><button class="btn-s btn-gn" onclick="activateV('${v.id}')">Activate</button></td></tr>`).join('')+'</tbody></table>';
+  }
+
+  renderVendors(allVendors);
+  renderPromos(d.promo_codes||[]);
+}
+
+function _isActive(v){
+  if(v.plan_active) return true;
+  if(v.trial_ends_at && new Date(v.trial_ends_at)>new Date()) return true;
+  if(v.promo_expires_at && new Date(v.promo_expires_at)>new Date()) return true;
+  return false;
+}
+
+function setText(id,v){ const e=document.getElementById(id); if(e) e.textContent=v; }
+
+function statusBadge(v){
+  if(v.plan_active) return '<span class="badge b-active">● Paying</span>';
+  if(v.payment_failed_at) return '<span class="badge b-grace">⚠ Grace</span>';
+  if(v.trial_ends_at&&new Date(v.trial_ends_at)>new Date()) return '<span class="badge b-trial">◐ Trial</span>';
+  return '<span class="badge b-inactive">○ Inactive</span>';
+}
+
+function renderVendors(vendors){
+  const tbody = document.getElementById('v-tbody');
+  if(!vendors.length){ tbody.innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--mu);padding:20px">No vendors</td></tr>'; return; }
+  tbody.innerHTML = vendors.map(v=>`<tr>
+    <td><strong>${v.truck_name}</strong><br><span style="color:var(--mu);font-size:11px">#${v.vendor_number||'–'}</span></td>
+    <td style="color:var(--mu);font-size:12px">${v.email}</td>
+    <td>${statusBadge(v)}</td>
+    <td style="color:var(--mu);font-size:12px">${v.service_states||'–'}</td>
+    <td style="color:var(--mu);font-size:12px">${v.created_at?new Date(v.created_at).toLocaleDateString():'–'}</td>
+    <td style="display:flex;gap:5px;flex-wrap:wrap">
+      <button class="btn-s" onclick="viewV('${v.id}')">View</button>
+      ${!v.plan_active?`<button class="btn-s btn-gn" onclick="activateV('${v.id}')">Activate</button>`:''}
+      ${v.plan_active?`<button class="btn-s btn-rd" onclick="deactivateV('${v.id}')">Deactivate</button>`:''}
+    </td></tr>`).join('');
+}
+
+function filterVendors(){
+  const q=document.getElementById('v-search').value.toLowerCase();
+  renderVendors(allVendors.filter(v=>v.truck_name?.toLowerCase().includes(q)||v.email?.toLowerCase().includes(q)));
+}
+
+async function viewV(id){
+  const r = await req('/api/admin/vendor/'+id);
+  if(!r.ok){ toast('❌ Could not load vendor'); return; }
+  const v = r.data.data;
+  document.getElementById('v-modal-content').innerHTML=`
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+      ${[
+        ['Truck Name',v.truck_name],['Vendor #',v.vendor_number||'–'],
+        ['Email',v.email],['Owner',v.owner_name||'–'],
+        ['Status',v.plan_active?'✅ Active':'❌ Inactive'],['States',v.service_states||'Not set'],
+        ['Members',v.total_members||0],['Total Visits',v.total_visits||0],
+        ['Trial Ends',v.trial_ends_at?new Date(v.trial_ends_at).toLocaleDateString():'–'],
+        ['MRR',v.plan_active?'$9.99/mo':'$0'],
+      ].map(([l,val])=>`<div style="background:var(--s2);border-radius:10px;padding:12px"><div style="font-size:11px;color:var(--mu);font-weight:600;text-transform:uppercase;letter-spacing:.5px">${l}</div><div style="font-size:14px;font-weight:700;margin-top:4px">${val}</div></div>`).join('')}
+    </div>
+    <div style="display:flex;gap:8px">
+      ${!v.plan_active?`<button class="btn-s btn-gn" style="padding:9px 16px" onclick="activateV('${v.id}');closeModal()">✅ Activate</button>`:''}
+      ${v.plan_active?`<button class="btn-s btn-rd" style="padding:9px 16px" onclick="deactivateV('${v.id}');closeModal()">❌ Deactivate</button>`:''}
+    </div>`;
+  document.getElementById('v-modal').classList.add('open');
+}
+
+async function activateV(id){
+  await req('/api/admin/vendor/'+id+'/override','POST',{plan_active:true});
+  toast('✅ Vendor activated'); loadDash();
+}
+async function deactivateV(id){
+  if(!confirm('Deactivate this vendor?')) return;
+  await req('/api/admin/vendor/'+id+'/override','POST',{plan_active:false});
+  toast('⛔ Vendor deactivated'); loadDash();
+}
+function closeModal(){ document.getElementById('v-modal').classList.remove('open'); }
+
+function renderPromos(promos){
+  const tbody=document.getElementById('pc-tbody');
+  if(!promos.length){ tbody.innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--mu);padding:20px">No promo codes</td></tr>'; return; }
+  tbody.innerHTML=promos.map(p=>`<tr>
+    <td><strong style="font-family:monospace;letter-spacing:2px">${p.code}</strong></td>
+    <td>${p.free_months} mo</td><td>${p.uses||0}</td>
+    <td>${p.max_uses||'∞'}</td>
+    <td><span class="badge ${p.is_active?'b-active':'b-inactive'}">${p.is_active?'Active':'Off'}</span></td>
+    <td style="display:flex;gap:5px">
+      <button class="btn-s" onclick="toggleP('${p.id}',${!p.is_active})">${p.is_active?'Disable':'Enable'}</button>
+      <button class="btn-s btn-rd" onclick="deleteP('${p.id}')">Del</button>
+    </td></tr>`).join('');
+}
+
+async function createPromoCode(){
+  const code=(document.getElementById('pc-code').value||'').trim().toUpperCase();
+  const months=parseInt(document.getElementById('pc-months').value)||1;
+  const max=document.getElementById('pc-max').value?parseInt(document.getElementById('pc-max').value):null;
+  if(!code){ toast('Enter a code'); return; }
+  const r=await req('/api/admin/promo-codes','POST',{code,free_months:months,max_uses:max});
+  if(r.ok){ toast('✅ Created: '+code); document.getElementById('pc-code').value=''; loadDash(); }
+  else toast('❌ '+(r.data?.error||'Failed'));
+}
+async function toggleP(id,active){ await req('/api/admin/promo-codes/'+id,'PATCH',{is_active:active}); toast(active?'✅ Enabled':'⛔ Disabled'); loadDash(); }
+async function deleteP(id){ if(!confirm('Delete?')) return; await req('/api/admin/promo-codes/'+id,'DELETE'); toast('🗑️ Deleted'); loadDash(); }
+
+function showTab(id,el){
+  ['t-overview','t-vendors','t-promos'].forEach(t=>document.getElementById(t).style.display='none');
+  document.getElementById(id).style.display='block';
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  el.classList.add('on');
+}
+
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+setInterval(()=>{ if(tok) loadDash(); }, 60000);
+</script>
+</body>
+</html>
