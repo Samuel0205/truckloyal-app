@@ -9,8 +9,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <style>
   html,body{background:#FF5722 !important}
-  #splash-cover{position:fixed;inset:0;background:#FF5722;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:99999;transition:opacity .4s .2s}
+  #splash-cover{position:fixed;inset:0;background:#FF5722;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:99999;transition:opacity .5s ease;gap:40px}
   #splash-cover.hidden{opacity:0;pointer-events:none}
+  #splash-spinner{width:40px;height:40px;border:3px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:spin .8s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
@@ -40,10 +42,10 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
 #app::before{content:'';position:fixed;inset:0;max-width:430px;margin:0 auto;background-image:radial-gradient(circle,rgba(255,87,34,.08) 1px,transparent 1px);background-size:20px 20px;pointer-events:none;z-index:0}
 .scroll,#scroll{position:relative;z-index:1}
 
-.topbar{display:flex;align-items:center;justify-content:space-between;padding:6px 14px;padding-top:calc(6px + env(safe-area-inset-top,0px));background:var(--brand);flex-shrink:0;z-index:60;box-shadow:0 2px 12px rgba(255,87,34,.3);min-height:0}
-.tl-logo{font-family:var(--fd);font-weight:900;font-size:15px;letter-spacing:.2px;color:white;white-space:nowrap;text-shadow:0 1px 3px rgba(0,0,0,.2);flex-shrink:1;min-width:0;overflow:hidden;text-overflow:ellipsis}
-.mode-tog{display:flex;background:rgba(255,255,255,.2);border:1.5px solid rgba(255,255,255,.35);border-radius:99px;padding:3px;gap:2px;flex-shrink:0}
-.mb{padding:5px 10px;border-radius:99px;font-size:11px;font-weight:700;border:none;cursor:pointer;font-family:var(--fb);transition:all .2s;background:transparent;color:rgba(255,255,255,.8);white-space:nowrap}
+.topbar{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 18px;padding-top:calc(8px + env(safe-area-inset-top,0px));background:var(--brand);flex-shrink:0;z-index:60;box-shadow:0 2px 12px rgba(255,87,34,.3);gap:6px}
+.tl-logo{font-family:var(--fd);font-weight:900;font-size:16px;letter-spacing:.3px;color:white;white-space:nowrap;text-shadow:0 1px 3px rgba(0,0,0,.2);text-align:center}
+.mode-tog{display:flex;background:rgba(255,255,255,.2);border:1.5px solid rgba(255,255,255,.35);border-radius:99px;padding:3px;gap:2px}
+.mb{padding:5px 14px;border-radius:99px;font-size:11px;font-weight:700;border:none;cursor:pointer;font-family:var(--fb);transition:all .2s;background:transparent;color:rgba(255,255,255,.8);white-space:nowrap}
 .mb.on{background:white;color:var(--brand);box-shadow:var(--sh1)}
 .scroll{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:none}
 .scroll::-webkit-scrollbar{display:none}
@@ -298,10 +300,11 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
 <body>
 <!-- Splash screen — orange background with logo, fades when app loads -->
 <div id="splash-cover">
-  <img src="https://truckloyal-app.onrender.com/assets/logo.png" style="width:220px;height:220px;object-fit:contain" alt="Food Truck Rewards" onerror="this.style.display='none'">
+  <img src="https://truckloyal-app.onrender.com/logo.png" style="width:240px;height:240px;object-fit:contain" alt="Food Truck Rewards" onerror="this.src='https://truckloyal-app.onrender.com/assets/logo.png'">
+  <div id="splash-spinner"></div>
 </div>
 <div id="app">
-  <div class="topbar" style="gap:10px">
+  <div class="topbar">
     <div class="tl-logo">🔥 Food Truck Rewards</div>
     <div class="mode-tog">
       <button class="mb on" id="mb-v" onclick="setMode('vendor')">🏪 Vendor</button>
@@ -329,9 +332,33 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
             <span style="font-size:13px;color:var(--brand);font-weight:700;cursor:pointer;text-decoration:underline" onclick="goV('s-v-forgot')">Forgot password?</span>
           </div>
           <div class="auth-switch">No account? <span onclick="goV('s-v-signup')">Start free 14-day trial →</span></div>
+          <!-- DEMO MODE -->
+          <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--b1);text-align:center">
+            <div style="font-size:12px;color:var(--mu);margin-bottom:10px;font-weight:600">Want to try before you sign up?</div>
+            <button class="btn btn-s" style="width:100%" onclick="goV('s-v-demo')">🎮 Try Demo Mode</button>
+          </div>
         </div>
         <div style="text-align:center;margin-top:28px;font-size:10px;color:var(--fa);font-weight:600;letter-spacing:.5px">
           Food Truck Rewards · v2.1.0
+        </div>
+      </div>
+    </div>
+
+    <!-- VENDOR DEMO MODE -->
+    <div class="screen" id="s-v-demo">
+      <div class="auth-wrap">
+        <div class="auth-logo">🎮</div>
+        <div class="auth-title">Try Demo Mode</div>
+        <div class="auth-sub">Explore the full vendor dashboard — no payment or account required</div>
+        <div class="auth-err" id="v-demo-err"></div>
+        <div class="auth-form">
+          <div class="callout co-bl" style="margin-bottom:16px">
+            <div class="co-icon">💡</div>
+            <div><div class="co-title">What is Demo Mode?</div><div class="co-desc">You get full access to the vendor dashboard with sample data. Perfect for food trucks who want to see exactly what they're getting before signing up.</div></div>
+          </div>
+          <div class="field"><label>Demo Access Code</label><input type="text" id="v-demo-code" placeholder="Enter code from Sam" autocomplete="off" oninput="this.value=this.value.toUpperCase()"></div>
+          <button class="btn btn-p" onclick="demoVendorLogin()">🎮 Enter Demo</button>
+          <div class="auth-switch"><span onclick="goV('s-v-login')">← Back to Sign In</span></div>
         </div>
       </div>
     </div>
@@ -624,6 +651,11 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
         </div>
       </div>
       <div style="padding:14px 20px 0">
+        <!-- Demo mode banner -->
+        <div id="v-demo-banner" style="display:none;background:#E3F2FD;border:1.5px solid #90CAF9;border-radius:12px;padding:12px 16px;margin-bottom:12px;text-align:center">
+          <div style="font-size:13px;font-weight:800;color:#1565C0">🎮 DEMO MODE</div>
+          <div style="font-size:12px;color:#1565C0;margin-top:2px">You are exploring a demo account. <span style="text-decoration:underline;cursor:pointer;font-weight:700" onclick="goV('s-v-signup')">Sign up free to create your own →</span></div>
+        </div>
         <div class="stats g3">
           <div class="sc"><div class="sv" style="color:var(--brand)" id="v-stat-visits">0</div><div class="sl">Visits Today</div></div>
           <div class="sc"><div class="sv" style="color:var(--gn)" id="v-stat-members">0</div><div class="sl">Members</div></div>
@@ -2011,6 +2043,27 @@ function renderNav(tabs,activeId){
 /* ════════════════════════════════════
    VENDOR AUTH
 ════════════════════════════════════ */
+async function demoVendorLogin(){
+  const code = document.getElementById('v-demo-code')?.value.trim().toUpperCase();
+  const errEl = document.getElementById('v-demo-err');
+  if(!code){ showErr(errEl,'Enter your demo access code'); return; }
+  showLoad('Loading demo...');
+  const r = await apiPost('/api/vendor/demo-login', {secret: code});
+  hideLoad();
+  if(r.ok){
+    S.vendorToken = r.data.data.token;
+    S.vendor = r.data.data.vendor;
+    S.vendor.isDemo = true;
+    localStorage.setItem('tl_vtoken', S.vendorToken);
+    localStorage.setItem('tl_vendor', JSON.stringify(S.vendor));
+    showToast('🎮 Welcome to Demo Mode!');
+    setMode('vendor');
+  } else {
+    showErr(errEl, r.data?.error || 'Invalid demo code');
+  }
+}
+
+
 async function vendorLogin(){
   const email=document.getElementById('v-login-email').value.trim();
   const pass=document.getElementById('v-login-pass').value;
@@ -2257,6 +2310,10 @@ function vendorLogout(){
 async function loadVendorHome(){
   if(!S.vendor) return;
   setText('v-hero-name',S.vendor.truck_name+' '+(S.vendor.emoji||'🚚'));
+
+  // Show demo banner if in demo mode
+  const demoBanner = document.getElementById('v-demo-banner');
+  if(demoBanner) demoBanner.style.display = S.vendor.isDemo ? 'block' : 'none';
 
   // Always refresh vendor from API to pick up vendor_number + any new fields
   const me=await apiGet('/api/vendor/me');
