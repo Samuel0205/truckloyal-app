@@ -96,6 +96,7 @@ input:focus{border-color:var(--brand)}
     <div class="tabs">
       <div class="tab on" onclick="showTab('t-overview',this)">📊 Overview</div>
       <div class="tab" onclick="showTab('t-vendors',this)">🚚 Vendors</div>
+      <div class="tab" onclick="showTab('t-customers',this);loadCustomers()">👥 Customers</div>
       <div class="tab" onclick="showTab('t-promos',this)">🎟️ Promo Codes</div>
     </div>
 
@@ -127,6 +128,21 @@ input:focus{border-color:var(--brand)}
           <table class="tbl">
             <thead><tr><th>Truck</th><th>Email</th><th>Status</th><th>States</th><th>Joined</th><th>Actions</th></tr></thead>
             <tbody id="v-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- CUSTOMERS -->
+    <div id="t-customers" style="display:none">
+      <div class="section">
+        <div class="sh">All Customers
+          <input type="text" id="c-search" placeholder="Search name or email..." oninput="filterCustomers()" style="width:220px">
+        </div>
+        <div style="overflow-x:auto">
+          <table class="tbl">
+            <thead><tr><th>Name</th><th>Email</th><th>Visits</th><th>Joined</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="c-tbody"></tbody>
           </table>
         </div>
       </div>
@@ -247,6 +263,7 @@ function _isActive(v){
 function setText(id,v){ const e=document.getElementById(id); if(e) e.textContent=v; }
 
 function statusBadge(v){
+  if(v.is_blocked) return '<span class="badge b-inactive">🚫 Blocked</span>';
   if(v.plan_active) return '<span class="badge b-active">● Paying</span>';
   if(v.payment_failed_at) return '<span class="badge b-grace">⚠ Grace</span>';
   if(v.trial_ends_at&&new Date(v.trial_ends_at)>new Date()) return '<span class="badge b-trial">◐ Trial</span>';
@@ -264,8 +281,9 @@ function renderVendors(vendors){
     <td style="color:var(--mu);font-size:12px">${v.created_at?new Date(v.created_at).toLocaleDateString():'–'}</td>
     <td style="display:flex;gap:5px;flex-wrap:wrap">
       <button class="btn-s" onclick="viewV('${v.id}')">View</button>
-      ${!v.plan_active?`<button class="btn-s btn-gn" onclick="activateV('${v.id}')">Activate</button>`:''}
-      ${v.plan_active?`<button class="btn-s btn-rd" onclick="deactivateV('${v.id}')">Deactivate</button>`:''}
+      ${!v.is_blocked&&!v.plan_active?`<button class="btn-s btn-gn" onclick="activateV('${v.id}')">Activate</button>`:''}
+      ${v.plan_active&&!v.is_blocked?`<button class="btn-s btn-rd" onclick="deactivateV('${v.id}')">Deactivate</button>`:''}
+      ${!v.is_blocked?`<button class="btn-s btn-rd" onclick="blockV('${v.id}','vendor')">🚫 Block</button>`:`<button class="btn-s btn-gn" onclick="unblockV('${v.id}','vendor')">✅ Unblock</button>`}
     </td></tr>`).join('');
 }
 
@@ -332,6 +350,67 @@ async function createPromoCode(){
 }
 async function toggleP(id,active){ await req('/api/admin/promo-codes/'+id,'PATCH',{is_active:active}); toast(active?'✅ Enabled':'⛔ Disabled'); loadDash(); }
 async function deleteP(id){ if(!confirm('Delete?')) return; await req('/api/admin/promo-codes/'+id,'DELETE'); toast('🗑️ Deleted'); loadDash(); }
+
+// ── BLOCK / UNBLOCK ──────────────────────────────────
+async function blockV(id, type){
+  if(!confirm('Block this account? They will not be able to log in or re-register.')) return;
+  const r = await req('/api/admin/vendor/'+id+'/override','POST',{is_blocked:true});
+  if(r.ok){ toast('🚫 Vendor blocked'); loadDash(); } else toast('❌ Failed');
+}
+async function unblockV(id, type){
+  const r = await req('/api/admin/vendor/'+id+'/override','POST',{is_blocked:false});
+  if(r.ok){ toast('✅ Vendor unblocked'); loadDash(); } else toast('❌ Failed');
+}
+async function blockC(id){
+  if(!confirm('Block this customer? They will not be able to log in or re-register.')) return;
+  const r = await req('/api/admin/customer/'+id+'/block','POST',{is_blocked:true});
+  if(r.ok){ toast('🚫 Customer blocked'); loadCustomers(); } else toast('❌ Failed');
+}
+async function unblockC(id){
+  const r = await req('/api/admin/customer/'+id+'/block','POST',{is_blocked:false});
+  if(r.ok){ toast('✅ Customer unblocked'); loadCustomers(); } else toast('❌ Failed');
+}
+
+// ── CUSTOMERS ────────────────────────────────────────
+let allCustomers = [];
+async function loadCustomers(){
+  const r = await req('/api/admin/customers');
+  if(!r.ok){ toast('❌ Failed to load customers'); return; }
+  allCustomers = r.data.data || [];
+  renderCustomers(allCustomers);
+}
+
+function renderCustomers(customers){
+  const tbody = document.getElementById('c-tbody');
+  if(!customers.length){
+    tbody.innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--mu);padding:20px">No customers</td></tr>';
+    return;
+  }
+  tbody.innerHTML = customers.map(c=>`<tr>
+    <td><strong>${c.name||'–'}</strong></td>
+    <td style="color:var(--mu);font-size:12px">${c.email}</td>
+    <td>${c.total_visits||0}</td>
+    <td style="color:var(--mu);font-size:12px">${c.created_at?new Date(c.created_at).toLocaleDateString():'–'}</td>
+    <td>${c.is_blocked?'<span class="badge b-inactive">🚫 Blocked</span>':'<span class="badge b-active">● Active</span>'}</td>
+    <td style="display:flex;gap:5px">
+      ${!c.is_blocked
+        ?`<button class="btn-s btn-rd" onclick="blockC('${c.id}')">🚫 Block</button>`
+        :`<button class="btn-s btn-gn" onclick="unblockC('${c.id}')">✅ Unblock</button>`}
+    </td></tr>`).join('');
+}
+
+function filterCustomers(){
+  const q = document.getElementById('c-search').value.toLowerCase();
+  renderCustomers(allCustomers.filter(c=>
+    c.name?.toLowerCase().includes(q) || c.email?.toLowerCase().includes(q)
+  ));
+}
+
+// ── DEMO VENDOR ──────────────────────────────────────
+async function grantDemo(id){
+  const r = await req('/api/admin/vendor/'+id+'/override','POST',{is_demo:true});
+  if(r.ok){ toast('🎮 Demo access granted'); loadDash(); } else toast('❌ Failed');
+}
 
 function showTab(id,el){
   ['t-overview','t-vendors','t-promos'].forEach(t=>document.getElementById(t).style.display='none');
